@@ -56,7 +56,7 @@ const CouponManager = () => {
       <form onSubmit={handleCreate} className="admin-form-card" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'end', marginBottom: '40px', padding: '24px' }}>
         <div style={{ flex: 1, minWidth: '150px' }}>
           <label className="form-label text-xs uppercase font-bold" style={{ marginBottom: '8px' }}>Promo Code</label>
-          <input required type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value.toUpperCase()})} className="form-input" placeholder="e.g. LUXE50" />
+          <input required type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value.toUpperCase()})} className="form-input" placeholder="e.g. NOOR50" />
         </div>
         <div style={{ flex: 1, minWidth: '150px' }}>
           <label className="form-label text-xs uppercase font-bold" style={{ marginBottom: '8px' }}>Benefit Type</label>

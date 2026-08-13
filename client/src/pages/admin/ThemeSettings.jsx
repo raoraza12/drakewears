@@ -26,7 +26,7 @@ export default function ThemeSettings() {
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
     // Branding
-    siteName: 'LUXE BRAND',
+    siteName: 'NOOR BRAND',
     contactEmail: 'contact@luxe.com',
     contactPhone: '+92 300 1234567',
     
@@ -93,7 +93,7 @@ export default function ThemeSettings() {
         <div className="header-info">
           <span className="gold-label">Visual Intelligence</span>
           <h1>System Aesthetics</h1>
-          <p>Fine-tune every pixel of the LUXE Brand experience.</p>
+          <p>Fine-tune every pixel of the NOOR Brand experience.</p>
         </div>
         <button className="btn-primary" onClick={saveAll} disabled={loading}>
           <FiSave />

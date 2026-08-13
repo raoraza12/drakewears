@@ -49,7 +49,7 @@ export function SettingsProvider({ children }) {
       const formatted = {};
       data.forEach(s => formatted[s.key] = s.value);
       setSettings(formatted);
-      applyTheme(formatted);
+      // applyTheme(formatted); // Disabled to enforce strict Zara monochrome CSS theme
     } catch (err) {
       console.error('Failed to load site settings', err);
     } finally {

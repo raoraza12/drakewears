@@ -10,9 +10,9 @@ const prisma = new PrismaClient({ adapter });
 
 const premiumTheme = {
   // Branding
-  siteName: 'LUXE BRAND',
+  siteName: 'NOOR BRAND',
   contactEmail: 'concierge@luxebrand.com',
-  contactPhone: '+92 300 888 LUXE',
+  contactPhone: '+92 300 888 NOOR',
   
   // Colors (The Midnight Gold Palette)
   primaryColor: '#c9a84c',

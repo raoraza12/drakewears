@@ -21,7 +21,7 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <aside className="admin-sidebar">
         <div className="sidebar-header">
-           <Link to="/" className="sidebar-logo">LUXE ADMIN</Link>
+           <Link to="/" className="sidebar-logo">NOOR ADMIN</Link>
         </div>
         <nav className="sidebar-nav">
           {links.map((link) => {

@@ -15,7 +15,7 @@ const SORT_OPTIONS = [
   { value: 'popular', label: 'Most Popular' },
 ];
 
-export default function Shop() {
+export default function Accessories() {
   const [params, setParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
@@ -24,7 +24,7 @@ export default function Shop() {
   const [sortOpen, setSortOpen] = useState(false);
   const [search, setSearch] = useState(params.get('search') || '');
   const [filters, setFilters] = useState({
-    category: params.get('category') || '',
+    category: 'Accessories',
     size: params.get('size') || '',
     sort: params.get('sort') || 'newest',
     minPrice: params.get('minPrice') || '',
@@ -41,7 +41,6 @@ export default function Shop() {
       Object.entries(filters).forEach(([k, v]) => v && q.set(k, v));
       if (search) q.set('search', search);
       q.set('limit', '20');
-      q.set('_t', Date.now()); // Force bypass browser cache
       const { data } = await API.get(`/products?${q}`);
       setProducts(data.products);
       setTotal(data.total);
@@ -67,7 +66,7 @@ export default function Shop() {
         <div className="container shop-header-inner">
           <div>
             <h1 className="section-title">
-              {filters.category || 'All Collections'}
+              Accessories
               {filters.newArrival && ' — New Arrivals'}
               {filters.bestseller && ' — Bestsellers'}
             </h1>
@@ -122,20 +121,7 @@ export default function Shop() {
             <button className="filter-close-btn" onClick={() => setFilterOpen(false)}><FiX size={18} /></button>
           </div>
 
-          <div className="filter-group">
-            <h4 className="filter-group-title">Category</h4>
-            <div className="category-filter-list">
-              {CATEGORIES.map(cat => (
-                <button 
-                  key={cat} 
-                  className={`category-filter-btn ${filters.category === cat ? 'active' : ''}`} 
-                  onClick={() => setFilter('category', cat)}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
+
 
 
           <div className="filter-group">

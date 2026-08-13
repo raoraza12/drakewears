@@ -10,7 +10,7 @@ const prisma = new PrismaClient({ adapter });
 
 const bambooTheme = {
   // Branding
-  siteName: 'LUXE BRAND',
+  siteName: 'NOOR BRAND',
   contactEmail: 'natural@luxebrand.com',
   contactPhone: '+92 300 NATURAL',
   

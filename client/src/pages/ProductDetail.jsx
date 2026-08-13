@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FiHeart, FiShoppingBag, FiStar, FiTruck, FiRefreshCw, FiShield, FiMinus, FiPlus } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import API from '../api';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 import './ProductDetail.css';
 
 export default function ProductDetail() {
@@ -15,8 +17,12 @@ export default function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState(null);
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState('description');
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewLoading, setReviewLoading] = useState(false);
   const { addToCart } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
+  const { user } = useAuth();
 
   useEffect(() => {
     API.get(`/products/${slug}`).then(r => {
@@ -25,6 +31,25 @@ export default function ProductDetail() {
       setSelectedColor(r.data.colors?.[0] || null);
     }).finally(() => setLoading(false));
   }, [slug]);
+
+  const submitReview = async (e) => {
+    e.preventDefault();
+    if (!user) return toast.error('Please login to submit a review');
+    if (!reviewComment.trim()) return toast.error('Comment is required');
+    
+    setReviewLoading(true);
+    try {
+      await API.post(`/products/${product._id}/reviews`, { rating: reviewRating, comment: reviewComment });
+      toast.success('Review submitted successfully!');
+      setReviewComment('');
+      setReviewRating(5);
+      const r = await API.get(`/products/${slug}`);
+      setProduct(r.data);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit review');
+    }
+    setReviewLoading(false);
+  };
 
   if (loading) return (
     <div className="page-wrapper" style={{ padding: '80px 0' }}>
@@ -135,7 +160,13 @@ export default function ProductDetail() {
               <button
                 className="btn-primary add-to-cart-btn"
                 disabled={!product.stock}
-                onClick={() => addToCart(product, selectedSize, selectedColor, qty)}
+                onClick={() => {
+                  if (!user) {
+                    toast.error('Please sign in to add to cart');
+                    return;
+                  }
+                  addToCart(product, selectedSize, selectedColor, qty);
+                }}
               >
                 <FiShoppingBag size={18} />
                 {product.stock ? 'Add to Cart' : 'Out of Stock'}
@@ -185,6 +216,29 @@ export default function ProductDetail() {
                         <p className="review-comment">{r.comment}</p>
                       </div>
                     ))}
+                    
+                    {user ? (
+                      <form onSubmit={submitReview} className="review-form" style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid var(--border)' }}>
+                        <h3 style={{ marginBottom: 16 }}>Write a Review</h3>
+                        <div className="form-group">
+                          <label className="form-label">Rating</label>
+                          <div className="stars-input" style={{ display: 'flex', gap: 4, cursor: 'pointer', marginBottom: 12 }}>
+                            {[1, 2, 3, 4, 5].map(num => (
+                              <FiStar key={num} size={20} fill={num <= reviewRating ? '#c9a84c' : 'none'} color="#c9a84c" onClick={() => setReviewRating(num)} />
+                            ))}
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Comment</label>
+                          <textarea className="form-input" rows="4" value={reviewComment} onChange={e => setReviewComment(e.target.value)} required placeholder="What did you like or dislike?"></textarea>
+                        </div>
+                        <button type="submit" className="btn-primary" disabled={reviewLoading}>{reviewLoading ? 'Submitting...' : 'Submit Review'}</button>
+                      </form>
+                    ) : (
+                      <div style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid var(--border)' }}>
+                        <p className="tab-text">Please <Link to="/login" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>login</Link> to write a review.</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

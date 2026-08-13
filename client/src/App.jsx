@@ -12,6 +12,7 @@ import CartDrawer from './components/CartDrawer';
 import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
+import Accessories from './pages/Accessories';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -40,6 +41,7 @@ const StorefrontLayout = () => (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/shop" element={<Shop />} />
+      <Route path="/accessories" element={<Accessories />} />
       <Route path="/shop/:slug" element={<ProductDetail />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Checkout />} />

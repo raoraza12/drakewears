@@ -13,9 +13,11 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: user?.name || '', phone: '', street: '', city: '', state: '', zip: '', country: 'Pakistan', paymentMethod: 'Cash on Delivery' });
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
 
   const shippingFee = total >= 5000 ? 0 : 150;
-  const grandTotal = total + shippingFee;
+  const grandTotal = total + shippingFee - discount;
 
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -26,7 +28,7 @@ export default function Checkout() {
     setLoading(true);
     try {
       const orderItems = items.map(i => ({ product: i.product._id, name: i.product.name, image: i.product.images?.[0], price: i.product.price, quantity: i.quantity, size: i.size, color: i.color?.name || '' }));
-      await API.post('/orders', { items: orderItems, shippingAddress: { name: form.name, phone: form.phone, street: form.street, city: form.city, state: form.state, zip: form.zip, country: form.country }, paymentMethod: form.paymentMethod, subtotal: total, shippingFee, discount: 0, total: grandTotal });
+      await API.post('/orders', { items: orderItems, shippingAddress: { name: form.name, phone: form.phone, street: form.street, city: form.city, state: form.state, zip: form.zip, country: form.country }, paymentMethod: form.paymentMethod, subtotal: total, shippingFee, discount, total: grandTotal });
       clearCart();
       toast.success('Order placed successfully! 🎉');
       navigate('/orders');
@@ -34,6 +36,25 @@ export default function Checkout() {
       toast.error(err.response?.data?.message || 'Failed to place order');
     }
     setLoading(false);
+  };
+
+  const applyCoupon = async (e) => {
+    e.preventDefault();
+    if (!couponCode) return;
+    try {
+      const res = await API.post('/orders/apply-coupon', { code: couponCode });
+      let val = 0;
+      if (res.data.discountType === 'percentage') {
+        val = (total * res.data.discountValue) / 100;
+      } else {
+        val = res.data.discountValue;
+      }
+      setDiscount(val);
+      toast.success('Coupon applied successfully!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Invalid coupon code');
+      setDiscount(0);
+    }
   };
 
   if (items.length === 0) return (
@@ -124,6 +145,14 @@ export default function Checkout() {
             <div className="summary-row"><span>Subtotal</span><span>Rs. {total.toLocaleString()}</span></div>
             <div className="summary-row"><span>Shipping</span><span>{shippingFee === 0 ? <span style={{color:'var(--green)'}}>FREE</span> : `Rs. ${shippingFee}`}</span></div>
             {shippingFee > 0 && <p className="free-ship-note">Add Rs. {(5000 - total).toLocaleString()} more for free shipping</p>}
+            
+            <form onSubmit={applyCoupon} className="coupon-form" style={{ display: 'flex', gap: 8, margin: '16px 0', borderTop: '1px solid var(--border-light)', paddingTop: 16 }}>
+              <input type="text" className="form-input" style={{ padding: '10px 14px' }} placeholder="Coupon code (e.g. NOOR20)" value={couponCode} onChange={e => setCouponCode(e.target.value)} />
+              <button type="submit" className="btn-outline" style={{ padding: '10px 20px' }}>Apply</button>
+            </form>
+
+            {discount > 0 && <div className="summary-row" style={{ color: 'var(--gold)' }}><span>Discount</span><span>- Rs. {discount.toLocaleString()}</span></div>}
+            
             <div className="summary-row total-row"><span>Total</span><span className="total-amount">Rs. {grandTotal.toLocaleString()}</span></div>
           </div>
         </div>

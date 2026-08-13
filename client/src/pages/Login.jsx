@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiLogIn } from 'react-icons/fi';
+import { FcGoogle } from 'react-icons/fc';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
@@ -30,12 +31,20 @@ export default function Login() {
 
   return (
     <div className="auth-page page-wrapper">
-      <div className="auth-bg" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=80)' }} />
+      <div className="auth-bg" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1549439602-43ebca2327af?w=1400&q=80)' }} />
       <div className="auth-overlay" />
-      <div className="auth-card">
-        <div className="auth-brand">LUXE</div>
+      <div className="auth-card animate-slide-up">
+        <div className="auth-brand">MAISON VÊTU</div>
         <h1 className="auth-title">Welcome Back</h1>
         <p className="auth-sub">Sign in to your account to continue</p>
+        
+        <button type="button" className="google-auth-btn" onClick={() => toast.success('Mock Google Login Successful!')}>
+          <FcGoogle size={20} className="google-icon" />
+          Continue with Google
+        </button>
+
+        <div className="auth-divider"><span>OR</span></div>
+
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label className="form-label">Email Address</label>

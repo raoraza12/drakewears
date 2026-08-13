@@ -31,7 +31,7 @@ app.use('/api/admin', require('./routes/admin'));
 
 // Health check
 app.get('/', (req, res) => {
-  res.json({ message: 'LUXE Brand API Running ✨', status: 'OK' });
+  res.json({ message: 'NOOR Brand API Running ✨', status: 'OK' });
 });
 
 // Error handler

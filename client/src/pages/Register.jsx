@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiUserPlus } from 'react-icons/fi';
+import { FcGoogle } from 'react-icons/fc';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
@@ -17,7 +18,7 @@ export default function Register() {
     setLoading(true);
     try {
       await register(form.name, form.email, form.password);
-      toast.success('Account created! Welcome to LUXE ✨');
+      toast.success('Account created! Welcome to MAISON VÊTU ✨');
       navigate('/');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed');
@@ -27,16 +28,24 @@ export default function Register() {
 
   return (
     <div className="auth-page page-wrapper">
-      <div className="auth-bg" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=1400&q=80)' }} />
+      <div className="auth-bg" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1400&q=80)' }} />
       <div className="auth-overlay" />
-      <div className="auth-card">
-        <div className="auth-brand">LUXE</div>
-        <h1 className="auth-title">Join LUXE</h1>
+      <div className="auth-card animate-slide-up">
+        <div className="auth-brand">MAISON VÊTU</div>
+        <h1 className="auth-title">Join Us</h1>
         <p className="auth-sub">Create your account and start shopping</p>
+        
+        <button type="button" className="google-auth-btn" onClick={() => toast.success('Mock Google Registration Successful!')}>
+          <FcGoogle size={20} className="google-icon" />
+          Continue with Google
+        </button>
+
+        <div className="auth-divider"><span>OR</span></div>
+
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label className="form-label">Full Name</label>
-            <input className="form-input" type="text" value={form.name} onChange={e => setForm(p => ({...p, name: e.target.value}))} required placeholder="Ahmed Khan" />
+            <input className="form-input" type="text" value={form.name} onChange={e => setForm(p => ({...p, name: e.target.value}))} required placeholder="John Doe" />
           </div>
           <div className="form-group">
             <label className="form-label">Email Address</label>
