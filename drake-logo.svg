@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inspiration&amp;display=swap');
+      .logo-text {
+        font-family: 'Inspiration', cursive;
+        font-size: 140px;
+        fill: #000000;
+      }
+    </style>
+  </defs>
+  <text x="50%" y="65%" dominant-baseline="middle" text-anchor="middle" class="logo-text">Drake</text>
+</svg>
