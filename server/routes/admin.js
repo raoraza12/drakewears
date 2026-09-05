@@ -18,12 +18,23 @@ router.post('/products', async (req, res) => {
 
 router.put('/products/:id', async (req, res) => {
   try {
+    const updateData = {};
+    if (req.body.stock !== undefined) updateData.stock = parseInt(req.body.stock);
+    if (req.body.name !== undefined) updateData.name = req.body.name;
+    if (req.body.price !== undefined) updateData.price = parseFloat(req.body.price);
+    if (req.body.description !== undefined) updateData.description = req.body.description;
+    if (req.body.category !== undefined) updateData.category = req.body.category;
+    if (req.body.images !== undefined) updateData.images = req.body.images;
+    if (req.body.colors !== undefined) updateData.colors = req.body.colors;
+    if (req.body.sizes !== undefined) updateData.sizes = req.body.sizes;
+
     const product = await req.prisma.product.update({
       where: { id: req.params.id },
-      data: req.body
+      data: updateData
     });
     res.json(product);
   } catch (err) {
+    console.error('Admin update error:', err);
     res.status(400).json({ message: err.message });
   }
 });
@@ -91,6 +102,50 @@ router.delete('/users/:id', async (req, res) => {
 });
 
 // --- ORDER / PAYMENT / DELIVERY MANAGEMENT ---
+router.post('/orders/whatsapp', async (req, res) => {
+  try {
+    const { customerName, phoneNumber, productId, productName, price, size, color } = req.body;
+    
+    // Create or find dummy user for this whatsapp customer
+    const dummyEmail = `wa_${phoneNumber}@drakewearsbrand.local`;
+    let user = await req.prisma.user.findUnique({ where: { email: dummyEmail } });
+    if (!user) {
+      const hashedPassword = await bcrypt.hash(phoneNumber, 10);
+      user = await req.prisma.user.create({
+        data: { name: customerName, email: dummyEmail, password: hashedPassword, phone: phoneNumber, role: 'user' }
+      });
+    }
+
+    const order = await req.prisma.order.create({
+      data: {
+        userId: user.id,
+        shippingAddress: { name: customerName, phone: phoneNumber, city: 'N/A', country: 'N/A' },
+        paymentMethod: 'WhatsApp',
+        subtotal: Number(price),
+        shippingFee: 0,
+        discount: 0,
+        total: Number(price),
+        notes: `[WHATSAPP_ORDER] Customer: ${customerName}, Phone: ${phoneNumber}`,
+        items: {
+          create: [{
+            productId: productId || 'whatsapp-custom',
+            name: productName,
+            image: '',
+            price: Number(price),
+            quantity: 1,
+            size: size || null,
+            color: color || null
+          }]
+        }
+      },
+      include: { items: true, user: true }
+    });
+    res.status(201).json(order);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 router.get('/orders', async (req, res) => {
   try {
     const orders = await req.prisma.order.findMany({

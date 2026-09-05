@@ -1,197 +1,285 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { FiHeart, FiShoppingBag, FiStar, FiTruck, FiRefreshCw, FiShield, FiMinus, FiPlus } from 'react-icons/fi';
-import API from '../api';
 import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
 import './ProductDetail.css';
 
-export default function ProductDetail() {
+const ProductDetail = () => {
   const { slug } = useParams();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeImg, setActiveImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [qty, setQty] = useState(1);
-  const [tab, setTab] = useState('description');
-  const { addToCart } = useCart();
-  const { toggleWishlist, isWishlisted } = useWishlist();
+  const [selectedColor, setSelectedColor] = useState('');
+  const [showWhatsappModal, setShowWhatsappModal] = useState(false);
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
+  const [activeAccordion, setActiveAccordion] = useState(0);
+  const [mainImage, setMainImage] = useState('');
 
-  useEffect(() => {
-    API.get(`/products/${slug}`).then(r => {
-      setProduct(r.data);
-      setSelectedSize(r.data.sizes?.[0] || '');
-      setSelectedColor(r.data.colors?.[0] || null);
-    }).finally(() => setLoading(false));
+  React.useEffect(() => {
+    import('../api').then(module => {
+      const API = module.default;
+      API.get(`/products/${slug}`).then(res => {
+        setProduct(res.data);
+        if (res.data?.images?.length > 0) {
+          setMainImage(res.data.images[0]);
+        }
+        if (res.data?.colors?.length > 0) {
+          setSelectedColor(res.data.colors[0].name);
+        }
+        setLoading(false);
+      }).catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+    });
   }, [slug]);
+  
+  const handleWhatsappOrder = (e) => {
+    e.preventDefault();
+    const message = `🛍️ *NEW ORDER - DRAKEWEARS*\n\n*Item:* ${product?.name} (Size: ${selectedSize || 'Any'})\n*Name:* ${customerName}\n*Phone:* ${customerPhone}\n*Payment Method:* ${paymentMethod}\n\nHello drakewears! I want to confirm this order.`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappNumber = '923458999091'; 
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      window.location.href = `whatsapp://send?phone=${whatsappNumber}&text=${encodedMessage}`;
+    } else {
+      window.open(`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`, '_blank');
+    }
+    setShowWhatsappModal(false);
+  };
+  
+  const handleAddToCart = () => {
+    if (!product) return;
+    addToCart(product, selectedSize || 'M', null, 1);
+  };
 
-  if (loading) return (
-    <div className="page-wrapper" style={{ padding: '80px 0' }}>
-      <div className="container product-detail-grid">
-        <div className="skeleton" style={{ aspectRatio: '3/4', borderRadius: 'var(--radius-lg)' }} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {[...Array(6)].map((_, i) => <div key={i} className="skeleton" style={{ height: 24, borderRadius: 8, width: `${80 - i * 8}%` }} />)}
-        </div>
-      </div>
-    </div>
-  );
-
-  if (!product) return <div className="page-wrapper container" style={{ paddingTop: 120, textAlign: 'center', color: 'var(--text-muted)' }}>Product not found</div>;
-
-  const wishlisted = isWishlisted(product._id);
-  const discount = product.comparePrice ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100) : 0;
+  if (loading) {
+    return <div className="page-wrapper"><main className="main-content"><div className="container">Loading product...</div></main></div>;
+  }
+  
+  if (!product) {
+    return <div className="page-wrapper"><main className="main-content"><div className="container">Product not found.</div></main></div>;
+  }
 
   return (
     <div className="page-wrapper">
-      <div className="container">
-        <div className="breadcrumb">
-          <Link to="/">Home</Link> / <Link to="/shop">Shop</Link> / <Link to={`/shop?category=${product.category}`}>{product.category}</Link> / <span>{product.name}</span>
-        </div>
-
-        <div className="product-detail-grid">
-          {/* Gallery */}
-          <div className="product-gallery">
-            <div className="gallery-thumbs">
-              {product.images.map((img, i) => (
-                <button key={i} className={`gallery-thumb ${activeImg === i ? 'active' : ''}`} onClick={() => setActiveImg(i)}>
-                  <img src={img} alt={`${product.name} ${i+1}`} />
-                </button>
-              ))}
-            </div>
-            <div className="gallery-main">
-              <img src={product.images[activeImg]} alt={product.name} className="gallery-main-img" />
-              {discount > 0 && <span className="badge-sale gallery-badge">-{discount}%</span>}
-              {product.newArrival && <span className="badge-new gallery-badge-new">New</span>}
-            </div>
-          </div>
-
-          {/* Info */}
-          <div className="product-info">
-            <div className="product-info-top">
-              <span className="gold-label">{product.subcategory || product.category}</span>
-              <h1 className="product-detail-name">{product.name}</h1>
-              <div className="product-info-rating">
-                <div className="stars">
-                  {[...Array(5)].map((_, i) => (
-                    <FiStar key={i} size={16} fill={i < Math.round(product.rating) ? '#c9a84c' : 'none'} color={i < Math.round(product.rating) ? '#c9a84c' : '#5a5468'} />
-                  ))}
-                </div>
-                <span className="rating-val">{product.rating.toFixed(1)}</span>
-                <span className="rating-count-big">({product.numReviews} reviews)</span>
+      <main className="main-content">
+        <div className="container">
+          <div className="product-detail-layout">
+            
+            {/* Product Images */}
+            <div className="product-gallery">
+              <div className="gallery-main">
+                <img src={mainImage || product.images?.[0] || 'https://via.placeholder.com/800'} alt={product.name} />
               </div>
-              <div className="product-info-price">
-                <span className="price-big">Rs. {product.price.toLocaleString()}</span>
-                {product.comparePrice > 0 && <span className="price-compare-big">Rs. {product.comparePrice.toLocaleString()}</span>}
-                {discount > 0 && <span className="price-save">Save {discount}%</span>}
-              </div>
-            </div>
-
-            {/* Colors */}
-            {product.colors?.length > 0 && (
-              <div className="selector-group">
-                <label className="selector-label">Color: <strong>{selectedColor?.name}</strong></label>
-                <div className="color-options">
-                  {product.colors.map(c => (
-                    <button
-                      key={c.name}
-                      className={`color-swatch ${selectedColor?.name === c.name ? 'active' : ''}`}
-                      style={{ background: c.hex, borderColor: selectedColor?.name === c.name ? 'var(--gold)' : 'transparent' }}
-                      onClick={() => setSelectedColor(c)}
-                      title={c.name}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Sizes */}
-            {product.sizes?.length > 0 && (
-              <div className="selector-group">
-                <label className="selector-label">Size: <strong>{selectedSize}</strong></label>
-                <div className="size-options">
-                  {product.sizes.map(s => (
-                    <button key={s} className={`size-option ${selectedSize === s ? 'active' : ''}`} onClick={() => setSelectedSize(s)}>{s}</button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Quantity */}
-            <div className="selector-group">
-              <label className="selector-label">Quantity</label>
-              <div className="qty-row">
-                <div className="qty-control-big">
-                  <button className="qty-btn-big" onClick={() => setQty(q => Math.max(1, q - 1))}><FiMinus /></button>
-                  <span className="qty-val-big">{qty}</span>
-                  <button className="qty-btn-big" onClick={() => setQty(q => q + 1)}><FiPlus /></button>
-                </div>
-                <span className="stock-info">{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</span>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="product-actions">
-              <button
-                className="btn-primary add-to-cart-btn"
-                disabled={!product.stock}
-                onClick={() => addToCart(product, selectedSize, selectedColor, qty)}
-              >
-                <FiShoppingBag size={18} />
-                {product.stock ? 'Add to Cart' : 'Out of Stock'}
-              </button>
-              <button
-                className={`wishlist-action-btn ${wishlisted ? 'wishlisted' : ''}`}
-                onClick={() => toggleWishlist(product._id, product.name)}
-              >
-                <FiHeart size={18} fill={wishlisted ? 'currentColor' : 'none'} />
-              </button>
-            </div>
-
-            {/* Perks */}
-            <div className="product-perks">
-              <div className="perk"><FiTruck size={16} /><span>Free shipping over Rs. 5,000</span></div>
-              <div className="perk"><FiRefreshCw size={16} /><span>30-day easy returns</span></div>
-              <div className="perk"><FiShield size={16} /><span>Authenticity guaranteed</span></div>
-            </div>
-
-            {/* Tabs */}
-            <div className="product-tabs">
-              <div className="tabs-nav">
-                {['description', 'details', 'reviews'].map(t => (
-                  <button key={t} className={`tab-btn ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>
+              <div className="gallery-thumbnails">
+                {product.images?.map((img, idx) => (
+                  <img 
+                    key={idx} 
+                    src={img} 
+                    alt={`Thumbnail ${idx + 1}`} 
+                    className={mainImage === img ? 'active' : ''} 
+                    onClick={() => setMainImage(img)}
+                  />
                 ))}
               </div>
-              <div className="tab-content">
-                {tab === 'description' && <p className="tab-text">{product.description}</p>}
-                {tab === 'details' && (
-                  <div className="tab-details">
-                    {product.material && <div className="detail-row"><span>Material</span><span>{product.material}</span></div>}
-                    {product.care && <div className="detail-row"><span>Care</span><span>{product.care}</span></div>}
-                    <div className="detail-row"><span>Category</span><span>{product.category}</span></div>
-                    {product.tags?.length > 0 && <div className="detail-row"><span>Tags</span><span>{product.tags.join(', ')}</span></div>}
+            </div>
+
+            {/* Product Info */}
+            <div className="product-detail-info">
+              <div className="breadcrumb">
+                <Link to="/">Home</Link> / <Link to="/shop">Shop</Link> / <span>{product.name}</span>
+              </div>
+              
+              <div className="product-header">
+                <h1 className="product-title h2" style={{ marginTop: '16px', marginBottom: '8px' }}>{product.name}</h1>
+                <div className="product-price h3" style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>Rs. {product.price}</div>
+              </div>
+              
+              <div className="product-description text-muted" style={{ marginTop: '32px', marginBottom: '40px' }}>
+                <p className="text-body">
+                  {product.description || 'Premium quality garment.'}
+                </p>
+              </div>
+              
+              <div className="product-variants">
+                <div className="product-options">
+                
+                {product.colors && product.colors.length > 0 && (
+                <div className="option-group" style={{ marginBottom: '24px' }}>
+                  <div className="option-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                    <span className="text-caption" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Color: <span style={{ fontWeight: 400 }}>{selectedColor}</span></span>
                   </div>
-                )}
-                {tab === 'reviews' && (
-                  <div className="reviews-list">
-                    {product.reviews?.length === 0 ? (
-                      <p className="tab-text" style={{ color: 'var(--text-muted)' }}>No reviews yet. Be the first!</p>
-                    ) : product.reviews?.map((r, i) => (
-                      <div key={i} className="review-item">
-                        <div className="review-header">
-                          <strong className="review-author">{r.name}</strong>
-                          <div className="stars">{[...Array(r.rating)].map((_, j) => <FiStar key={j} size={12} fill="#c9a84c" color="#c9a84c" />)}</div>
-                        </div>
-                        <p className="review-comment">{r.comment}</p>
-                      </div>
+                  <div className="color-selector" style={{ display: 'flex', gap: '12px' }}>
+                    {product.colors.map(color => (
+                      <button 
+                        key={color.name}
+                        onClick={() => {
+                          setSelectedColor(color.name);
+                          if (color.image) setMainImage(color.image);
+                        }}
+                        style={{
+                          width: '32px', height: '32px', borderRadius: '50%',
+                          backgroundColor: (color.hex === '#000000' && color.name && color.name.toLowerCase() !== 'black') ? color.name.replace(/\s+/g, '').toLowerCase() : color.hex,
+                          border: selectedColor === color.name ? '2px solid var(--border-dark)' : '1px solid var(--border-medium)',
+                          padding: 0, cursor: 'pointer',
+                          boxShadow: selectedColor === color.name ? 'inset 0 0 0 2px white' : 'none',
+                          transition: 'all 0.2s ease'
+                        }}
+                        title={color.name}
+                      />
                     ))}
                   </div>
+                </div>
                 )}
+                
+                <div className="option-group">
+                  <div className="option-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                    <span className="text-caption" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Size</span>
+                    <span className="text-caption" style={{ textDecoration: 'underline', cursor: 'pointer' }}>Size Guide</span>
+                  </div>
+                  <div className="size-selector">
+                    {product.sizes?.length > 0 ? product.sizes.map(size => (
+                      <button 
+                        key={size}
+                        className={`size-btn ${selectedSize === size ? 'active' : ''}`}
+                        onClick={() => setSelectedSize(size)}
+                      >
+                        {size}
+                      </button>
+                    )) : (
+                      ['S', 'M', 'L', 'XL'].map(size => (
+                        <button 
+                          key={size}
+                          className={`size-btn ${selectedSize === size ? 'active' : ''}`}
+                          onClick={() => setSelectedSize(size)}
+                        >
+                          {size}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+                </div>
               </div>
+              
+              <div className="product-actions" style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <button className="btn-primary" style={{ width: '100%', padding: '20px' }} onClick={handleAddToCart}>Add to Cart</button>
+                <button 
+                  className="btn-outline" 
+                  style={{ width: '100%', padding: '20px' }}
+                  onClick={() => setShowWhatsappModal(true)}
+                >
+                  Order via WhatsApp
+                </button>
+              </div>
+              
+              <div className="product-accordion" style={{ marginTop: '40px' }}>
+                <div className={`accordion-item ${activeAccordion === 0 ? 'active' : ''}`} style={{ borderTop: '1px solid var(--border-light)', padding: '24px 0' }}>
+                  <button 
+                    className="accordion-title" 
+                    style={{ width: '100%', display: 'flex', justifyContent: 'space-between', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: '1.25rem', textTransform: 'uppercase' }}
+                    onClick={() => setActiveAccordion(activeAccordion === 0 ? -1 : 0)}
+                  >
+                    <span>Details</span>
+                    <span>{activeAccordion === 0 ? '-' : '+'}</span>
+                  </button>
+                  {activeAccordion === 0 && (
+                    <div className="accordion-content animate-slide-up" style={{ marginTop: '16px', color: 'var(--text-secondary)' }}>
+                      <p>A classic staple redefined. This piece features a relaxed fit, crafted from premium heavyweight cotton for maximum comfort and durability.</p>
+                      <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+                        <li>100% Organic Cotton</li>
+                        <li>Relaxed, slightly boxy fit</li>
+                        <li>Garment dyed for vintage feel</li>
+                        <li>Machine wash cold</li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+                
+                <div className={`accordion-item ${activeAccordion === 1 ? 'active' : ''}`} style={{ borderTop: '1px solid var(--border-light)', borderBottom: '1px solid var(--border-light)', padding: '24px 0' }}>
+                  <button 
+                    className="accordion-title" 
+                    style={{ width: '100%', display: 'flex', justifyContent: 'space-between', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: '1.25rem', textTransform: 'uppercase' }}
+                    onClick={() => setActiveAccordion(activeAccordion === 1 ? -1 : 1)}
+                  >
+                    <span>Shipping & Returns</span>
+                    <span>{activeAccordion === 1 ? '-' : '+'}</span>
+                  </button>
+                  {activeAccordion === 1 && (
+                    <div className="accordion-content animate-slide-up" style={{ marginTop: '16px', color: 'var(--text-secondary)' }}>
+                      <p>Free standard shipping on all orders over $200. Delivery typically takes 3-5 business days.</p>
+                      <p style={{ marginTop: '8px' }}>Returns are accepted within 14 days of delivery. Items must be unworn with original tags attached.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
             </div>
           </div>
         </div>
-      </div>
+
+        {/* WhatsApp Modal */}
+        {showWhatsappModal && (
+          <>
+            <div className="overlay" onClick={() => setShowWhatsappModal(false)}></div>
+            <div className="whatsapp-modal">
+              <div className="modal-header">
+                <h3 className="h3" style={{ fontSize: '1.25rem' }}>Direct WhatsApp Order</h3>
+                <button className="icon-btn" onClick={() => setShowWhatsappModal(false)}>×</button>
+              </div>
+              <form onSubmit={handleWhatsappOrder} className="modal-body">
+                <p className="text-body" style={{ marginBottom: '24px' }}>
+                  Enter your details and we will direct you to WhatsApp to confirm your order for <strong>{title}</strong>.
+                </p>
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label htmlFor="wa-name">Your Name</label>
+                  <input 
+                    type="text" 
+                    id="wa-name" 
+                    className="form-input" 
+                    required 
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label htmlFor="wa-phone">Contact Number</label>
+                  <input 
+                    type="tel" 
+                    id="wa-phone" 
+                    className="form-input" 
+                    required 
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: '24px' }}>
+                  <label htmlFor="wa-payment">Payment Method</label>
+                  <select 
+                    id="wa-payment" 
+                    className="form-input"
+                    value={paymentMethod}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  >
+                    <option value="Cash on Delivery">Cash on Delivery (COD)</option>
+                    <option value="EasyPaisa">EasyPaisa</option>
+                    <option value="JazzCash">JazzCash</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                  </select>
+                </div>
+                <button type="submit" className="btn-primary" style={{ width: '100%' }}>Proceed to WhatsApp</button>
+              </form>
+            </div>
+          </>
+        )}
+      </main>
     </div>
   );
-}
+};
+
+export default ProductDetail;
+

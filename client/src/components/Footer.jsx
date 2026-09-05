@@ -1,83 +1,64 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiInstagram, FiTwitter, FiFacebook, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
+import { FiInstagram, FiTwitter, FiFacebook } from 'react-icons/fi';
 import { useSettings } from '../context/SettingsContext';
 import './Footer.css';
 
-export default function Footer() {
+const Footer = () => {
   const { settings } = useSettings();
+  
   return (
     <footer className="footer">
-      <div className="footer-glow" />
-      <div className="container">
-        <div className="footer-top">
+      <div className="footer-top">
+        <div className="container footer-container">
           <div className="footer-brand">
-            <span className="footer-logo">{settings.siteName || 'LUXE'}</span>
-            <p className="footer-tagline">Haute Couture</p>
-            <p className="footer-desc">
-              Elevating everyday style through meticulously crafted garments. Where luxury meets wearability.
-            </p>
-            <div className="footer-socials">
-              <a href="#" className="social-link" title="Instagram"><FiInstagram size={18} /></a>
-              <a href="#" className="social-link" title="Twitter"><FiTwitter size={18} /></a>
-              <a href="#" className="social-link" title="Facebook"><FiFacebook size={18} /></a>
-            </div>
+            <Link to="/" style={{ display: 'inline-block', textDecoration: 'none', padding: '4px 0', marginBottom: '8px' }}>
+              <img src="/drakewears-logo-white.png?v=4" alt="drakewears" style={{ height: '50px', width: 'auto', objectFit: 'contain' }} />
+            </Link>
+            <p className="text-body">Contemporary Fashion</p>
           </div>
-
-          <div className="footer-col">
-            <h4 className="footer-col-title">Collections</h4>
-            <Link to="/shop?category=Men" className="footer-link">Men's Collection</Link>
-            <Link to="/shop?category=Women" className="footer-link">Women's Collection</Link>
-            <Link to="/shop?category=Kids" className="footer-link">Kids' Collection</Link>
-            <Link to="/shop?category=Accessories" className="footer-link">Accessories</Link>
-            <Link to="/shop?newArrival=true" className="footer-link">New Arrivals</Link>
-            <Link to="/shop?bestseller=true" className="footer-link">Bestsellers</Link>
+          
+          <div className="footer-links-group">
+            <h3 className="footer-heading">Shop</h3>
+            <Link to="/shop">All Products</Link>
+            <Link to="/shop?category=baggy-trousers">Baggy Trousers</Link>
+            <Link to="/shop?category=drop-shoulder-tees">Drop Shoulder Tees</Link>
           </div>
-
-          <div className="footer-col">
-            <h4 className="footer-col-title">Company</h4>
-            <a href="#" className="footer-link">Our Story</a>
-            <a href="#" className="footer-link">Craftsmanship</a>
-            <a href="#" className="footer-link">Sustainability</a>
-            <a href="#" className="footer-link">Careers</a>
-            <a href="#" className="footer-link">Press</a>
-            <a href="#" className="footer-link">Stockists</a>
+          
+          <div className="footer-links-group">
+            <h3 className="footer-heading">Information</h3>
+            <Link to="/about">Our Story</Link>
+            <Link to="/journal">Journal</Link>
+            <Link to="/contact">Contact</Link>
           </div>
-
-          <div className="footer-col">
-            <h4 className="footer-col-title">Support</h4>
-            <a href="#" className="footer-link">Size Guide</a>
-            <a href="#" className="footer-link">Shipping Policy</a>
-            <a href="#" className="footer-link">Returns & Exchanges</a>
-            <a href="#" className="footer-link">Track Your Order</a>
-            <a href="#" className="footer-link">Care Instructions</a>
-            <a href="#" className="footer-link">Contact Us</a>
-          </div>
-
-          <div className="footer-col footer-contact">
-            <h4 className="footer-col-title">Get In Touch</h4>
-            <div className="contact-item"><FiMail size={14} /><span>{settings.contactEmail || 'hello@luxebrand.com'}</span></div>
-            <div className="contact-item"><FiPhone size={14} /><span>{settings.contactPhone || '+92 300 1234567'}</span></div>
-            <div className="contact-item"><FiMapPin size={14} /><span>Lahore, Pakistan</span></div>
-
-            <div className="newsletter">
-              <p className="newsletter-title">Join the Inner Circle</p>
-              <form className="newsletter-form" onSubmit={e => e.preventDefault()}>
-                <input type="email" className="newsletter-input" placeholder="Your email address" />
-                <button type="submit" className="newsletter-btn">Subscribe</button>
-              </form>
-            </div>
+          
+          <div className="footer-newsletter">
+            <h3 className="footer-heading">Newsletter</h3>
+            <p className="text-caption">Subscribe to receive updates, access to exclusive deals, and more.</p>
+            <form className="newsletter-form">
+              <input type="email" placeholder="Enter your email address" className="form-input" />
+              <button type="submit" className="btn-primary">Subscribe</button>
+            </form>
           </div>
         </div>
-
-        <div className="footer-bottom">
-          <p className="footer-copy">© 2026 {settings.siteName || 'LUXE'} Haute Couture. All rights reserved.</p>
-          <div className="footer-bottom-links">
-            <a href="#" className="footer-bottom-link">Privacy Policy</a>
-            <a href="#" className="footer-bottom-link">Terms of Service</a>
-            <a href="#" className="footer-bottom-link">Cookie Policy</a>
+      </div>
+      
+      <div className="footer-bottom">
+        <div className="container footer-bottom-container">
+          <p className="text-caption">© {new Date().getFullYear()} drakewears. All rights reserved.</p>
+          <div className="footer-socials">
+            <a href="#" className="social-link"><FiInstagram size={18} /></a>
+            <a href="#" className="social-link"><FiTwitter size={18} /></a>
+            <a href="#" className="social-link"><FiFacebook size={18} /></a>
+          </div>
+          <div className="footer-legals">
+            <Link to="/privacy" className="text-caption">Privacy Policy</Link>
+            <Link to="/terms" className="text-caption">Terms of Service</Link>
           </div>
         </div>
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;

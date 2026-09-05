@@ -4,17 +4,20 @@ import toast from 'react-hot-toast';
 import { FiShoppingBag } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useSettings } from '../context/SettingsContext';
 import API from '../api';
 import './Checkout.css';
 
 export default function Checkout() {
   const { user } = useAuth();
   const { items, total, clearCart } = useCart();
+  const { settings } = useSettings();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: user?.name || '', phone: '', street: '', city: '', state: '', zip: '', country: 'Pakistan', paymentMethod: 'Cash on Delivery' });
 
-  const shippingFee = total >= 5000 ? 0 : 150;
+  const defaultShipping = settings?.shippingFee || 150;
+  const shippingFee = total >= 5000 ? 0 : defaultShipping;
   const grandTotal = total + shippingFee;
 
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));

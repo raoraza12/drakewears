@@ -10,9 +10,9 @@ const prisma = new PrismaClient({ adapter });
 
 const premiumTheme = {
   // Branding
-  siteName: 'LUXE BRAND',
-  contactEmail: 'concierge@luxebrand.com',
-  contactPhone: '+92 300 888 LUXE',
+  siteName: 'drakewears',
+  contactEmail: 'concierge@drakewearsbrand.com',
+  contactPhone: '+92 300 888 DRAKEWEARS',
   
   // Colors (The Midnight Gold Palette)
   primaryColor: '#c9a84c',
@@ -49,7 +49,7 @@ async function seed() {
     });
   }
   
-  console.log('✅ Theme synchronization complete. Luxe Brand is now elite.');
+  console.log('✅ Theme synchronization complete. drakewears is now elite.');
   process.exit(0);
 }
 

@@ -6,13 +6,13 @@ export const useCart = () => useContext(CartContext);
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState(() => {
-    const saved = localStorage.getItem('luxe_cart');
+    const saved = localStorage.getItem('drakewears_cart');
     return saved ? JSON.parse(saved) : [];
   });
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('luxe_cart', JSON.stringify(items));
+    localStorage.setItem('drakewears_cart', JSON.stringify(items));
   }, [items]);
 
   const addToCart = (product, size, color, quantity = 1) => {

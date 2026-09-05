@@ -3,16 +3,50 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const path = require('path');
 const app = express();
 
-const JWT_SECRET = 'luxe_demo_secret_2024';
+const storage = multer.diskStorage({
+  destination: 'uploads/',
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+});
+const upload = multer({ storage });
+
+const JWT_SECRET = 'drakewears_demo_secret_2024';
 const PORT = 5000;
 
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.post('/api/upload', upload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+  res.json({ url: `/uploads/${req.file.filename}` });
+});
 
 // ── MOCK DATA ─────────────────────────────────────────────────
 const productsData = [
+  {
+    _id: "prd_ghost_thorn_1",
+    id: "prd_ghost_thorn_1",
+    name: "Ghost Thorn Cyber Baggy Trousers",
+    slug: "ghost-thorn-cyber-baggy-trousers",
+    price: 2300,
+    comparePrice: 3000,
+    category: "Bottoms",
+    rating: 5,
+    numReviews: 12,
+    images: [
+      "http://localhost:5000/uploads/ghost_thorn.jpg",
+      "https://images.unsplash.com/photo-1604136172384-b2e9c43271ec?auto=format&fit=crop&q=80&w=800" // Placeholder for hover until user uploads
+    ],
+    colors: [{ name: "White", hex: "#ffffff" }],
+    sizes: ["S", "M", "L", "XL"],
+    stock: 50,
+    newArrival: true,
+    bestseller: true
+  },
   { _id: '1', name: 'Obsidian Slim Suit', slug: 'obsidian-slim-suit', description: 'A masterfully tailored slim-fit suit in premium obsidian wool blend. Perfect for boardrooms and black-tie events.', price: 28999, comparePrice: 35000, category: 'Men', subcategory: 'Suits', images: ['https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=600&q=80','https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80'], sizes: ['S','M','L','XL','XXL'], colors: [{name:'Black',hex:'#1a1a1a'},{name:'Charcoal',hex:'#36454F'}], stock: 45, featured: true, bestseller: true, newArrival: false, material: '80% Wool, 20% Polyester', care: 'Dry clean only', tags: ['suit','formal'], rating: 4.8, numReviews: 124, reviews: [] },
   { _id: '2', name: 'Ivory Linen Blazer', slug: 'ivory-linen-blazer', description: 'Breathable linen blazer for sophisticated summer looks. Crafted with Italian linen for ultimate comfort.', price: 14999, comparePrice: 18500, category: 'Men', subcategory: 'Blazers', images: ['https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80','https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=600&q=80'], sizes: ['S','M','L','XL'], colors: [{name:'Ivory',hex:'#FFFFF0'},{name:'Beige',hex:'#F5F5DC'}], stock: 30, featured: true, newArrival: true, bestseller: false, material: '100% Linen', care: 'Hand wash cold', tags: ['blazer','summer'], rating: 4.6, numReviews: 87, reviews: [] },
   { _id: '3', name: 'Midnight Oxford Shirt', slug: 'midnight-oxford-shirt', description: 'Classic Oxford weave shirt in deep midnight blue. Versatile enough for casual and semi-formal occasions.', price: 5499, comparePrice: 7000, category: 'Men', subcategory: 'Shirts', images: ['https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=600&q=80','https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80'], sizes: ['S','M','L','XL','XXL','XXXL'], colors: [{name:'Navy',hex:'#000080'},{name:'White',hex:'#FFFFFF'},{name:'Slate',hex:'#708090'}], stock: 100, featured: false, bestseller: true, newArrival: false, material: '100% Cotton', care: 'Machine wash cold', tags: ['shirt','oxford'], rating: 4.7, numReviews: 203, reviews: [] },
@@ -26,12 +60,12 @@ const productsData = [
   { _id: '11', name: 'Mini Explorer Set', slug: 'mini-explorer-set', description: 'Adventure-ready outfit set for little explorers. Durable yet stylish with fun prints and vibrant colors.', price: 3999, comparePrice: 5000, category: 'Kids', subcategory: 'Sets', images: ['https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?w=600&q=80','https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=600&q=80'], sizes: ['XS','S','M','L'], colors: [{name:'Blue',hex:'#4169E1'},{name:'Green',hex:'#32CD32'}], stock: 80, newArrival: true, featured: false, bestseller: false, material: '100% Cotton', care: 'Machine wash warm', tags: ['kids'], rating: 4.7, numReviews: 94, reviews: [] },
   { _id: '12', name: 'Rainbow Unicorn Dress', slug: 'rainbow-unicorn-dress', description: 'Magical unicorn-themed dress with rainbow tulle. Your little princess will love twirling in this dreamlike outfit.', price: 4999, comparePrice: 6500, category: 'Kids', subcategory: 'Dresses', images: ['https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=600&q=80','https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=600&q=80'], sizes: ['XS','S','M','L'], colors: [{name:'Pink',hex:'#FFB6C1'},{name:'Lavender',hex:'#E6E6FA'}], stock: 45, featured: true, bestseller: true, newArrival: false, material: 'Polyester Tulle', care: 'Hand wash cold', tags: ['kids','princess'], rating: 4.9, numReviews: 167, reviews: [] },
   { _id: '13', name: 'Artisan Leather Tote', slug: 'artisan-leather-tote', description: 'Hand-stitched full-grain leather tote bag. Spacious, structured and effortlessly luxurious.', price: 26999, comparePrice: 35000, category: 'Accessories', subcategory: 'Bags', images: ['https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80','https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=600&q=80'], sizes: ['Free Size'], colors: [{name:'Cognac',hex:'#9A4522'},{name:'Black',hex:'#1a1a1a'}], stock: 25, featured: true, bestseller: true, newArrival: false, material: 'Full-Grain Leather', care: 'Leather conditioner', tags: ['bag','leather'], rating: 4.9, numReviews: 143, reviews: [] },
-  { _id: '14', name: 'Silk Scarf Collection', slug: 'silk-scarf-collection', description: 'Hand-painted silk scarves featuring exclusive LUXE patterns. Wear as scarf, belt or bag accessory.', price: 8999, comparePrice: 12000, category: 'Accessories', subcategory: 'Scarves', images: ['https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=600&q=80','https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80'], sizes: ['Free Size'], colors: [{name:'Multicolor',hex:'#FF69B4'},{name:'Gold',hex:'#FFD700'}], stock: 60, newArrival: true, featured: true, bestseller: false, material: '100% Silk', care: 'Dry clean only', tags: ['scarf','silk'], rating: 4.8, numReviews: 211, reviews: [] },
+  { _id: '14', name: 'Silk Scarf Collection', slug: 'silk-scarf-collection', description: 'Hand-painted silk scarves featuring exclusive DRAKEWEARS patterns. Wear as scarf, belt or bag accessory.', price: 8999, comparePrice: 12000, category: 'Accessories', subcategory: 'Scarves', images: ['https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=600&q=80','https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80'], sizes: ['Free Size'], colors: [{name:'Multicolor',hex:'#FF69B4'},{name:'Gold',hex:'#FFD700'}], stock: 60, newArrival: true, featured: true, bestseller: false, material: '100% Silk', care: 'Dry clean only', tags: ['scarf','silk'], rating: 4.8, numReviews: 211, reviews: [] },
 ];
 
 const usersData = [
-  { _id: 'admin1', name: 'Admin User', email: 'admin@luxe.com', passwordHash: bcrypt.hashSync('admin123', 10), role: 'admin', wishlist: [], addresses: [] },
-  { _id: 'user1', name: 'Test User', email: 'test@luxe.com', passwordHash: bcrypt.hashSync('test1234', 10), role: 'user', wishlist: [], addresses: [] },
+  { _id: 'admin1', name: 'Admin User', email: 'raoraza5417@gmail.com', passwordHash: bcrypt.hashSync('huzaifaraza123', 10), role: 'admin', wishlist: [], addresses: [] },
+  { _id: 'user1', name: 'Test User', email: 'test@drakewears.com', passwordHash: bcrypt.hashSync('test1234', 10), role: 'user', wishlist: [], addresses: [] },
 ];
 const ordersData = [];
 
@@ -138,11 +172,88 @@ app.get('/api/orders/:id', authMiddleware, (req, res) => {
   res.json(order);
 });
 
+// ── ADMIN ROUTES ──────────────────────────────────────────────
+app.post('/api/admin/products', authMiddleware, (req, res) => {
+  const newProduct = {
+    _id: Date.now().toString(),
+    id: Date.now().toString(),
+    ...req.body,
+    createdAt: new Date().toISOString()
+  };
+  productsData.push(newProduct);
+  res.status(201).json(newProduct);
+});
+
+app.delete('/api/admin/products/:id', authMiddleware, (req, res) => {
+  const index = productsData.findIndex(p => p._id === req.params.id || p.id === req.params.id);
+  if (index !== -1) {
+    productsData.splice(index, 1);
+  }
+  res.json({ message: 'Product deleted' });
+});
+app.get('/api/admin/stats', authMiddleware, (req, res) => {
+  const usersCount = usersData.length;
+  const productsCount = productsData.length;
+  const ordersCount = ordersData.length;
+  const totalRevenue = ordersData.reduce((sum, o) => sum + (o.total || 0), 0);
+  const lowStockProducts = productsData.filter(p => p.stock < 5).slice(0, 5);
+  const avgWatchTime = '8.5';
+  res.json({ usersCount, productsCount, ordersCount, totalRevenue, orders: ordersData, lowStockProducts, avgWatchTime });
+});
+
+app.get('/api/admin/categories', authMiddleware, (req, res) => {
+  const cats = {};
+  productsData.forEach(p => {
+    if (!cats[p.category]) cats[p.category] = { id: p.category, name: p.category, items: 0, status: 'Active' };
+    cats[p.category].items++;
+  });
+  res.json(Object.values(cats));
+});
+
+app.get('/api/admin/reviews', authMiddleware, (req, res) => {
+  const allReviews = [];
+  productsData.forEach(p => {
+    if (p.reviews && p.reviews.length > 0) {
+      p.reviews.forEach(r => {
+        allReviews.push({
+          id: r.id || Math.random().toString(),
+          product: p.name,
+          customer: r.name,
+          rating: r.rating,
+          date: r.date || new Date().toISOString().split('T')[0],
+          comment: r.comment,
+          status: r.status || 'Pending'
+        });
+      });
+    }
+  });
+  res.json(allReviews);
+});
+
+app.put('/api/admin/reviews/:id/status', authMiddleware, (req, res) => {
+  const { status } = req.body;
+  // Deep search and update review status in productsData
+  let found = false;
+  for (let p of productsData) {
+    if (p.reviews) {
+      for (let r of p.reviews) {
+        if (r.id === req.params.id) {
+          r.status = status;
+          found = true;
+          break;
+        }
+      }
+    }
+    if (found) break;
+  }
+  res.json({ success: true, status });
+});
+
 // ── START ─────────────────────────────────────────────────────
-app.get('/', (req, res) => res.json({ message: 'LUXE API Running (Demo Mode) ✨' }));
+app.get('/', (req, res) => res.json({ message: 'DRAKEWEARS API Running (Demo Mode) ✨' }));
 app.listen(PORT, () => {
-  console.log(`✅ LUXE Mock Server running at http://localhost:${PORT}`);
+  console.log(`✅ DRAKEWEARS Mock Server running at http://localhost:${PORT}`);
   console.log(`📦 ${productsData.length} products loaded`);
-  console.log(`🔑 Demo: admin@luxe.com / admin123`);
-  console.log(`🔑 Demo: test@luxe.com / test1234`);
+  console.log(`🔑 Demo: raoraza5417@gmail.com / huzaifaraza123`);
+  console.log(`🔑 Demo: test@drakewears.com / test1234`);
 });

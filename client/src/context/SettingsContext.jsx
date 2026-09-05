@@ -1,71 +1,41 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import API from '../api';
 
 const SettingsContext = createContext();
+
 export const useSettings = () => useContext(SettingsContext);
 
-export function SettingsProvider({ children }) {
-  const [settings, setSettings] = useState({});
+export const SettingsProvider = ({ children }) => {
+  const [settings, setSettings] = useState({
+    storeName: 'drakewears',
+    currency: 'RS',
+    shippingFee: 150,
+    contactEmail: 'contact@drakewearsbrand.com',
+    contactPhone: '0300-0000000'
+  });
   const [loading, setLoading] = useState(true);
 
-  const applyTheme = (themeData) => {
-    const root = document.documentElement;
-    
-    // Mapping of setting keys to CSS variable names
-    const variableMap = {
-      primaryColor: '--gold',
-      secondaryColor: '--cream',
-      bgColor: '--bg-dark',
-      cardColor: '--bg-card',
-      elevatedColor: '--bg-elevated',
-      inputColor: '--bg-input',
-      textPrimary: '--text-primary',
-      textSecondary: '--text-secondary',
-      borderRadius: '--radius',
-      borderRadiusLg: '--radius-lg',
-      navHeight: '--nav-height',
-      fontHeading: '--font-heading',
-      fontBody: '--font-body',
-    };
-
-    Object.entries(themeData).forEach(([key, value]) => {
-      const varName = variableMap[key];
-      if (varName) {
-        if (key === 'borderRadius' || key === 'borderRadiusLg' || key === 'navHeight') {
-          root.style.setProperty(varName, `${value}px`);
-        } else if (key === 'fontHeading' || key === 'fontBody') {
-           root.style.setProperty(varName, `"${value}", sans-serif`);
-           // Handle fonts if needed (injecting google fonts link could be done here too)
-        } else {
-          root.style.setProperty(varName, value);
-        }
-      }
-    });
-  };
-
-  const fetchSettings = async () => {
-    try {
-      const { data } = await API.get('/admin/settings');
-      const formatted = {};
-      data.forEach(s => formatted[s.key] = s.value);
-      setSettings(formatted);
-      applyTheme(formatted);
-    } catch (err) {
-      console.error('Failed to load site settings', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await API.get('/settings');
+        if (res.data && Object.keys(res.data).length > 0) {
+          // ensure numerical fields are mapped
+          if (res.data.shippingFee !== undefined) res.data.shippingFee = Number(res.data.shippingFee);
+          setSettings(prev => ({ ...prev, ...res.data }));
+        }
+      } catch (err) {
+        console.error('Failed to load global settings', err);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchSettings();
   }, []);
 
-  const refreshSettings = () => fetchSettings();
-
   return (
-    <SettingsContext.Provider value={{ settings, loading, refreshSettings }}>
+    <SettingsContext.Provider value={{ settings, loading }}>
       {children}
     </SettingsContext.Provider>
   );
-}
+};

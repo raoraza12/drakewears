@@ -52,8 +52,7 @@ router.get('/', async (req, res) => {
         where,
         orderBy,
         skip,
-        take: Number(limit),
-        include: { reviews: true }
+        take: Number(limit)
       }),
       req.prisma.product.count({ where })
     ]);
@@ -92,14 +91,25 @@ router.post('/', verifyToken, isAdmin, async (req, res) => {
 });
 
 // PUT update product (admin)
-router.put('/:id', verifyToken, isAdmin, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
+    const updateData = {};
+    if (req.body.stock !== undefined) updateData.stock = parseInt(req.body.stock);
+    if (req.body.name !== undefined) updateData.name = req.body.name;
+    if (req.body.price !== undefined) updateData.price = parseFloat(req.body.price);
+    if (req.body.description !== undefined) updateData.description = req.body.description;
+    if (req.body.category !== undefined) updateData.category = req.body.category;
+    if (req.body.images !== undefined) updateData.images = req.body.images;
+    if (req.body.colors !== undefined) updateData.colors = req.body.colors;
+    if (req.body.sizes !== undefined) updateData.sizes = req.body.sizes;
+
     const product = await req.prisma.product.update({
       where: { id: req.params.id },
-      data: req.body
+      data: updateData
     });
     res.json(product);
   } catch (err) {
+    console.error('Update error:', err);
     res.status(500).json({ message: err.message });
   }
 });

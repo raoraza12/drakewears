@@ -1,0 +1,23 @@
+**/node_modules/**
+**/node_modules
+node_modules
+client/node_modules
+server/node_modules
+**/mongodb-files/**
+**/mongodb-files
+server/mongodb-files/**
+server/mongodb-files
+**/mongodb-data/**
+**/mongodb-data
+server/mongodb-data/**
+server/mongodb-data
+luxe-brand/**
+luxe-brand
+all products images/**
+all products images
+server/uploads/**
+server/uploads
+.git/**
+.git
+.env*
+*.log

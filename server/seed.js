@@ -43,7 +43,7 @@ const products = [
   { name: 'Denim Stars Jacket', slug: 'denim-stars-jacket', description: 'Cool denim jacket with star embroidery for trendy little ones. Built tough for active kids.', price: 5499, comparePrice: 7000, category: 'Kids', subcategory: 'Jackets', images: [unsplashKids[2], unsplashKids[0]], sizes: ['XS','S','M','L'], colors: [{name:'Blue Denim',hex:'#4169E1'},{name:'Black Denim',hex:'#1a1a1a'}], stock: 55, newArrival: true, material: 'Denim', care: 'Machine wash', tags: ['kids','denim','jacket'], rating: 4.6, numReviews: 89 },
 
   { name: 'Artisan Leather Tote', slug: 'artisan-leather-tote', description: 'Hand-stitched full-grain leather tote bag. Spacious, structured and effortlessly luxurious.', price: 26999, comparePrice: 35000, category: 'Accessories', subcategory: 'Bags', images: [unsplashAcc[0], unsplashAcc[1]], sizes: ['Free Size'], colors: [{name:'Cognac',hex:'#9A4522'},{name:'Black',hex:'#1a1a1a'},{name:'Tan',hex:'#D2B48C'}], stock: 25, featured: true, bestseller: true, material: 'Full-Grain Leather', care: 'Leather conditioner recommended', tags: ['bag','leather','tote','luxury'], rating: 4.9, numReviews: 143 },
-  { name: 'Silk Scarf Collection', slug: 'silk-scarf-collection', description: 'Hand-painted silk scarves featuring exclusive LUXE patterns. Wear as scarf, belt or bag accessory.', price: 8999, comparePrice: 12000, category: 'Accessories', subcategory: 'Scarves', images: [unsplashAcc[1], unsplashAcc[0]], sizes: ['Free Size'], colors: [{name:'Multicolor',hex:'#FF69B4'},{name:'Gold',hex:'#FFD700'},{name:'Navy',hex:'#000080'}], stock: 60, newArrival: true, featured: true, material: '100% Silk', care: 'Dry clean only', tags: ['scarf','silk','accessory'], rating: 4.8, numReviews: 211 },
+  { name: 'Silk Scarf Collection', slug: 'silk-scarf-collection', description: 'Hand-painted silk scarves featuring exclusive DRAKEWEARS patterns. Wear as scarf, belt or bag accessory.', price: 8999, comparePrice: 12000, category: 'Accessories', subcategory: 'Scarves', images: [unsplashAcc[1], unsplashAcc[0]], sizes: ['Free Size'], colors: [{name:'Multicolor',hex:'#FF69B4'},{name:'Gold',hex:'#FFD700'},{name:'Navy',hex:'#000080'}], stock: 60, newArrival: true, featured: true, material: '100% Silk', care: 'Dry clean only', tags: ['scarf','silk','accessory'], rating: 4.8, numReviews: 211 },
 ];
 
 async function seed() {
@@ -67,14 +67,14 @@ async function seed() {
     console.log(`✅ Seeded ${products.length} products`);
 
     // Seed Users (Manually hash passwords)
-    const adminPassword = await bcrypt.hash('admin123', 12);
+    const adminPassword = await bcrypt.hash('huzaifaraza123', 12);
     const userPassword = await bcrypt.hash('test1234', 12);
 
     await prisma.user.create({
-      data: { name: 'Admin User', email: 'admin@luxe.com', password: adminPassword, role: 'admin' }
+      data: { name: 'Admin User', email: 'raoraza5417@gmail.com', password: adminPassword, role: 'admin' }
     });
     await prisma.user.create({
-      data: { name: 'Test User', email: 'test@luxe.com', password: userPassword, role: 'user' }
+      data: { name: 'Test User', email: 'test@drakewears.com', password: userPassword, role: 'user' }
     });
 
     console.log('✅ Seeded admin and test users');
@@ -82,7 +82,7 @@ async function seed() {
     // Seed a Coupon
     await prisma.coupon.create({
         data: {
-            code: 'LUXE10',
+            code: 'DRAKEWEARS10',
             discountType: 'percentage',
             discountValue: 10,
             minPurchaseAmount: 1000,

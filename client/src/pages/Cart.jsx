@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom';
 import { FiMinus, FiPlus, FiTrash2, FiShoppingBag } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
+import { useSettings } from '../context/SettingsContext';
 import './Cart.css';
 
 export default function Cart() {
   const { items, updateQty, removeFromCart, total, clearCart } = useCart();
-  const shippingFee = total >= 5000 ? 0 : 150;
+  const { settings } = useSettings();
+  const defaultShipping = settings?.shippingFee || 150;
+  const shippingFee = total >= 5000 ? 0 : defaultShipping;
 
   if (items.length === 0) return (
     <div className="page-wrapper empty-page">

@@ -10,8 +10,8 @@ const prisma = new PrismaClient({ adapter });
 
 const bambooTheme = {
   // Branding
-  siteName: 'LUXE BRAND',
-  contactEmail: 'natural@luxebrand.com',
+  siteName: 'drakewears',
+  contactEmail: 'natural@drakewearsbrand.com',
   contactPhone: '+92 300 NATURAL',
   
   // Colors (The Natural Bamboo Elite Palette)

@@ -16,16 +16,16 @@ const ProductForm = () => {
     description: '',
     price: '',
     comparePrice: '',
-    category: 'Men',
+    category: '',
     stock: '',
     images: [''],
-    colors: [{ name: '', hex: '#000000' }],
+    colors: [{ name: '', hex: '#000000', image: '' }],
     sizes: [],
     material: '',
     care: '',
   });
 
-  const categories = ['Men', 'Women', 'Kids', 'Accessories'];
+  const categories = ['Baggy Trousers', 'Drop Shoulder Tees'];
   const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'Free Size'];
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const ProductForm = () => {
         .then(res => setForm({
           ...res.data,
           images: res.data.images.length ? res.data.images : [''],
-          colors: res.data.colors.length ? res.data.colors : [{ name: '', hex: '#000000' }]
+          colors: res.data.colors.length ? res.data.colors : [{ name: '', hex: '#000000', image: '' }]
         }))
         .catch(() => toast.error('Error loading product data'));
     }
@@ -85,7 +85,16 @@ const ProductForm = () => {
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Commercial Name</label>
-            <input required className="form-input" value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="e.g. Signature Silk Blazer" />
+            <input required className="form-input" value={form.name} onChange={e => {
+              const val = e.target.value;
+              let autoCategory = form.category;
+              if (val.toLowerCase().includes('trouser') || val.toLowerCase().includes('pant')) {
+                autoCategory = 'Baggy Trousers';
+              } else if (val.toLowerCase().includes('tee') || val.toLowerCase().includes('shirt')) {
+                autoCategory = 'Drop Shoulder Tees';
+              }
+              setForm({...form, name: val, category: autoCategory});
+            }} placeholder="e.g. Signature Silk Blazer" />
           </div>
           <div className="form-group">
             <label className="form-label">SEO Slug</label>
@@ -106,7 +115,8 @@ const ProductForm = () => {
 
         <div className="form-group">
           <label className="form-label">Exhibition Category</label>
-          <select className="form-input" value={form.category} onChange={e => setForm({...form, category: e.target.value})}>
+          <select required className="form-input" value={form.category} onChange={e => setForm({...form, category: e.target.value})}>
+            <option value="" disabled>-- Select Category --</option>
             {categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
@@ -136,8 +146,8 @@ const ProductForm = () => {
         <div className="form-group">
           <label className="form-label">Artisan Palette</label>
            {form.colors.map((c, idx) => (
-            <div key={idx} className="dynamic-list-item">
-              <input className="form-input" style={{ flex: 1 }} value={c.name} onChange={e => {
+            <div key={idx} className="dynamic-list-item" style={{ flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+              <input className="form-input" style={{ flex: 1, minWidth: '150px' }} value={c.name} onChange={e => {
                 const newList = [...form.colors];
                 newList[idx].name = e.target.value;
                 setForm({...form, colors: newList});
@@ -147,10 +157,15 @@ const ProductForm = () => {
                 newList[idx].hex = e.target.value;
                 setForm({...form, colors: newList});
               }} />
+              <input className="form-input" style={{ flex: 2, minWidth: '200px' }} value={c.image || ''} onChange={e => {
+                const newList = [...form.colors];
+                newList[idx].image = e.target.value;
+                setForm({...form, colors: newList});
+              }} placeholder="Image URL (optional)" />
               {form.colors.length > 1 && <button type="button" onClick={() => removeItem('colors', idx)} style={{ background: 'none', color: 'var(--red)' }}><FiTrash2 /></button>}
             </div>
           ))}
-          <button type="button" onClick={() => addItem('colors', { name: '', hex: '#000000' })} className="btn-add-more">
+          <button type="button" onClick={() => addItem('colors', { name: '', hex: '#000000', image: '' })} className="btn-add-more">
             <FiPlus /> Introduce Hue
           </button>
         </div>

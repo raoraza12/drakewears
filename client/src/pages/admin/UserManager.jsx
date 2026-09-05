@@ -1,9 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import API from '../../api';
 import toast from 'react-hot-toast';
-import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
-import './Admin.css';
 
 const UserManager = () => {
   const [users, setUsers] = useState([]);
@@ -14,74 +11,97 @@ const UserManager = () => {
   }, []);
 
   const fetchUsers = async () => {
+    setLoading(true);
     try {
       const res = await API.get('/admin/users');
       setUsers(res.data);
-    } catch (error) {
+    } catch (err) {
       toast.error('Failed to load users');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete user? This cannot be undone.')) return;
+  const handleUpdateRole = async (id, newRole) => {
+    try {
+      await API.put(`/admin/users/${id}/role`, { role: newRole });
+      toast.success('User role updated');
+      setUsers(users.map(u => u.id === id || u._id === id ? { ...u, role: newRole } : u));
+    } catch (err) {
+      toast.error('Failed to update role');
+    }
+  };
+
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this user? This cannot be undone.')) return;
     try {
       await API.delete(`/admin/users/${id}`);
       toast.success('User deleted');
-      fetchUsers();
-    } catch (error) {
+      setUsers(users.filter(u => u.id !== id && u._id !== id));
+    } catch (err) {
       toast.error('Failed to delete user');
     }
   };
 
-  if (loading) return <div className="text-gold">Loading stakeholders...</div>;
-
   return (
-    <div className="user-manager-wrapper">
-      <div className="flex-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h2 className="section-title" style={{ fontSize: '1.5rem' }}>Management: Accounts</h2>
-        <Link to="/admin/users/new" className="btn-primary" style={{ padding: '10px 20px', fontSize: '0.75rem' }}>
-          <FiPlus /> New Stakeholder
-        </Link>
+    <div className="dashboard-container animate-fade-in">
+      <div className="panel-header" style={{ padding: '0 0 24px 0', borderBottom: 'none' }}>
+        <h1 className="h2">Users</h1>
+        <p className="text-body" style={{ marginTop: '8px' }}>Manage customer accounts and admin access.</p>
       </div>
 
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Client Name</th>
-              <th>Email Credential</th>
-              <th>Access Role</th>
-              <th>Membership</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(user => (
-              <tr key={user._id}>
-                <td style={{ fontWeight: '600' }}>{user.name}</td>
-                <td>{user.email}</td>
-                <td>
-                  <span className={`status-badge ${user.role === 'admin' ? 'status-pending' : 'bg-gray-800 text-gray-400'}`}>
-                    {user.role}
-                  </span>
-                </td>
-                <td style={{ fontSize: '0.8rem', opacity: 0.6 }}>{new Date(user.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    <Link to={`/admin/users/edit/${user._id}`} className="text-gold" title="Edit Role">
-                      <FiEdit2 size={18} />
-                    </Link>
-                    <button onClick={() => handleDelete(user._id)} style={{ background: 'none', color: 'var(--red)' }} title="Delete User">
-                      <FiTrash2 size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="admin-panel">
+        <div className="panel-body">
+          {loading ? <p>Loading users...</p> : (
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Joined</th>
+                  <th>Role</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length === 0 ? (
+                  <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>No users found</td></tr>
+                ) : users.map(user => (
+                  <tr key={user.id || user._id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                        {user.name}
+                      </div>
+                    </td>
+                    <td>{user.email}</td>
+                    <td>{user.phone || 'N/A'}</td>
+                    <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <select 
+                        className="form-input" 
+                        style={{ padding: '4px 8px', fontSize: '0.8rem', width: 'auto', background: user.role === 'admin' ? '#fff3cd' : 'var(--bg-primary)' }}
+                        value={user.role}
+                        onChange={(e) => handleUpdateRole(user.id || user._id, e.target.value)}
+                      >
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--red)', color: 'var(--red)' }} onClick={() => handleDeleteUser(user.id || user._id)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
     </div>
   );
