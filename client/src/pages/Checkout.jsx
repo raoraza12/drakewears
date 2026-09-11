@@ -28,7 +28,7 @@ export default function Checkout() {
     if (items.length === 0) return;
     setLoading(true);
     try {
-      const orderItems = items.map(i => ({ product: i.product._id, name: i.product.name, image: i.product.images?.[0], price: i.product.price, quantity: i.quantity, size: i.size, color: i.color?.name || '' }));
+      const orderItems = items.map(i => ({ product: i.product.id || i.product._id, name: i.product.name, image: i.product.images?.[0], price: i.product.price, quantity: i.quantity, size: i.size, color: i.color?.name || '' }));
       await API.post('/orders', { items: orderItems, shippingAddress: { name: form.name, phone: form.phone, street: form.street, city: form.city, state: form.state, zip: form.zip, country: form.country }, paymentMethod: form.paymentMethod, subtotal: total, shippingFee, discount: 0, total: grandTotal });
       clearCart();
       toast.success('Order placed successfully! 🎉');

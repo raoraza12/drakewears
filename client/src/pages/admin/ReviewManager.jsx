@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FiStar, FiCheck, FiX, FiMessageSquare } from 'react-icons/fi';
-import axios from 'axios';
 import toast from 'react-hot-toast';
+import API from '../../api';
 import './Admin.css';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const ReviewManager = () => {
   const [reviews, setReviews] = useState([]);
@@ -16,10 +14,7 @@ const ReviewManager = () => {
 
   const fetchReviews = async () => {
     try {
-      const token = localStorage.getItem('drakewears_token');
-      const res = await axios.get(`${API_URL}/admin/reviews`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await API.get('/admin/reviews');
       setReviews(res.data);
     } catch (error) {
       toast.error('Failed to load reviews');
@@ -30,10 +25,7 @@ const ReviewManager = () => {
 
   const handleAction = async (id, action) => {
     try {
-      const token = localStorage.getItem('drakewears_token');
-      await axios.put(`${API_URL}/admin/reviews/${id}/status`, { status: action }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await API.put(`/admin/reviews/${id}/status`, { status: action });
       setReviews(reviews.map(r => r.id === id ? { ...r, status: action } : r));
       toast.success(`Review ${action.toLowerCase()}`);
     } catch (error) {

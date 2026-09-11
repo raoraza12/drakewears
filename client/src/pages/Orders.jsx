@@ -35,10 +35,10 @@ export default function Orders() {
           </div>
         ) : (
           orders.map(order => (
-            <div key={order._id} className="order-card">
+            <div key={order.id || order._id} className="order-card">
               <div className="order-card-header">
                 <div>
-                  <span className="order-id">Order #{order._id.slice(-8).toUpperCase()}</span>
+                  <span className="order-id">Order #{(order.id || order._id || '').slice(-8).toUpperCase()}</span>
                   <span className="order-date"><FiClock size={12} /> {new Date(order.createdAt).toLocaleDateString('en-PK', { day:'numeric', month:'long', year:'numeric' })}</span>
                 </div>
                 <div className="order-right">

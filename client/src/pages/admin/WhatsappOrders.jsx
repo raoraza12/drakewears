@@ -30,7 +30,7 @@ const WhatsappOrders = () => {
       ]);
       const waOrders = ordersRes.data.filter(o => o.paymentMethod === 'WhatsApp' || (o.notes && o.notes.includes('[WHATSAPP_ORDER]')));
       setOrders(waOrders);
-      setProducts(productsRes.data);
+      setProducts(productsRes.data.products || productsRes.data || []);
     } catch (err) {
       toast.error('Failed to load data');
     } finally {

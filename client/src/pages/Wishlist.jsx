@@ -47,7 +47,7 @@ export default function Wishlist() {
           </div>
         ) : (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:20 }}>
-            {products.map(p => <ProductCard key={p._id} product={p} />)}
+            {products.map(p => <ProductCard key={p.id || p._id} product={p} />)}
           </div>
         )}
       </div>

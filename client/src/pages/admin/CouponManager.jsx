@@ -95,12 +95,12 @@ const CouponManager = () => {
                     <td colSpan="4" style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>No active promotional codes found.</td>
                 </tr>
             ) : coupons.map(coupon => (
-              <tr key={coupon._id}>
+              <tr key={coupon.id || coupon._id}>
                 <td style={{ fontWeight: '700', color: 'var(--gold)', letterSpacing: '0.1em' }}><FiTag size={12} style={{ marginRight: '8px' }} /> {coupon.code}</td>
                 <td>{coupon.discountValue}{coupon.discountType === 'percentage' ? '%' : '$'} Reduction</td>
                 <td style={{ fontSize: '0.8rem', opacity: 0.6 }}>Valid until {new Date(coupon.expirationDate).toLocaleDateString()}</td>
                 <td>
-                  <button onClick={() => handleDelete(coupon._id)} style={{ background: 'none', color: 'var(--red)', fontSize: '0.8rem' }} className="flex items-center gap-1">
+                  <button onClick={() => handleDelete(coupon.id || coupon._id)} style={{ background: 'none', color: 'var(--red)', fontSize: '0.8rem' }} className="flex items-center gap-1">
                     <FiTrash2 size={16} /> Retire
                   </button>
                 </td>

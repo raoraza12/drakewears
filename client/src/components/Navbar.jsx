@@ -81,7 +81,6 @@ const Navbar = () => {
           <div className="nav-center desktop-only">
             <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
             <Link to="/shop" className={location.pathname === '/shop' ? 'active' : ''}>Shop</Link>
-            <Link to="/journal" className={location.pathname === '/journal' ? 'active' : ''}>Journal</Link>
             <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About us</Link>
             <Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>Contact us</Link>
           </div>
@@ -140,7 +139,6 @@ const Navbar = () => {
           <div className="mobile-links">
             <Link to="/">Home</Link>
             <Link to="/shop">Shop</Link>
-            <Link to="/journal">Journal</Link>
             <Link to="/about">About us</Link>
             <Link to="/contact">Contact us</Link>
           </div>

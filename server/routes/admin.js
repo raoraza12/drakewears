@@ -303,6 +303,41 @@ router.post('/settings/bulk', async (req, res) => {
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
+// --- REVIEW MANAGEMENT ---
+router.get('/reviews', async (req, res) => {
+  try {
+    const reviews = await req.prisma.review.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        product: { select: { name: true, images: true } },
+        user: { select: { name: true, email: true } }
+      }
+    });
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.put('/reviews/:id/status', async (req, res) => {
+  try {
+    const review = await req.prisma.review.update({
+      where: { id: req.params.id },
+      data: { status: req.body.status }
+    });
+    res.json(review);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.delete('/reviews/:id', async (req, res) => {
+  try {
+    await req.prisma.review.delete({ where: { id: req.params.id } });
+    res.json({ message: 'Review deleted' });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
 module.exports = router;

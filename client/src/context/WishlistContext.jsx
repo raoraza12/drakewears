@@ -13,7 +13,7 @@ export function WishlistProvider({ children }) {
   useEffect(() => {
     if (user) {
       API.get('/users/profile').then(res => {
-        setWishlistIds(res.data.wishlist?.map(p => p._id || p) || []);
+        setWishlistIds(res.data.wishlist?.map(p => p.id || p._id || p) || []);
       });
     } else setWishlistIds([]);
   }, [user]);

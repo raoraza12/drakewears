@@ -28,7 +28,6 @@ const Footer = () => {
           <div className="footer-links-group">
             <h3 className="footer-heading">Information</h3>
             <Link to="/about">Our Story</Link>
-            <Link to="/journal">Journal</Link>
             <Link to="/contact">Contact</Link>
           </div>
           

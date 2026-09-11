@@ -13,7 +13,6 @@ import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
-import Journal from './pages/Journal';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
@@ -38,6 +37,7 @@ import CategoryManager from './pages/admin/CategoryManager';
 import Analytics from './pages/admin/Analytics';
 import Inventory from './pages/admin/Inventory';
 import ReviewManager from './pages/admin/ReviewManager';
+import CouponManager from './pages/admin/CouponManager';
 
 const StorefrontLayout = () => {
   const { settings } = useSettings();
@@ -53,7 +53,6 @@ const StorefrontLayout = () => {
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/shop/:slug" element={<ProductDetail />} />
-          <Route path="/journal" element={<Journal />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
@@ -108,6 +107,7 @@ function App() {
           <Route path="analytics" element={<Analytics />} />
           <Route path="inventory" element={<Inventory />} />
           <Route path="reviews" element={<ReviewManager />} />
+          <Route path="coupons" element={<CouponManager />} />
         </Route>
         
         {/* Auth Pages */}

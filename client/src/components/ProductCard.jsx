@@ -9,7 +9,7 @@ export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
   const [currentImage, setCurrentImage] = useState(product.images?.[0]);
-  const wishlisted = isWishlisted(product._id);
+  const wishlisted = isWishlisted(product.id || product._id);
   const discount = product.comparePrice ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100) : 0;
 
   const handleQuickAdd = (e) => {
@@ -31,7 +31,7 @@ export default function ProductCard({ product }) {
         </div>
         <button
           className={`wishlist-btn ${wishlisted ? 'wishlisted' : ''}`}
-          onClick={(e) => { e.preventDefault(); toggleWishlist(product._id, product.name); }}
+          onClick={(e) => { e.preventDefault(); toggleWishlist(product.id || product._id, product.name); }}
           title="Save to Wishlist"
         >
           <FiHeart size={16} fill={wishlisted ? 'currentColor' : 'none'} />

@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import './Shop.css';
 
 const Shop = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category');
   const [activeCategory, setActiveCategory] = useState('all');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    if (categoryParam) {
+      setActiveCategory(categoryParam.replace(/-/g, ' ').toLowerCase());
+    }
+  }, [categoryParam]);
+
+  useEffect(() => {
     import('../api').then(module => {
       const API = module.default;
       API.get('/products').then(res => {
@@ -23,7 +31,12 @@ const Shop = () => {
 
   const filteredProducts = activeCategory === 'all' 
     ? products 
-    : products.filter(p => p.category === activeCategory || p.type === activeCategory || p.category?.toLowerCase() === activeCategory?.toLowerCase());
+    : products.filter(p => {
+        const cat = (p.category || '').toLowerCase();
+        const sub = (p.subcategory || '').toLowerCase();
+        const act = activeCategory.toLowerCase();
+        return cat.includes(act) || sub.includes(act) || act.includes(cat);
+      });
 
   return (
     <div className="page-wrapper">

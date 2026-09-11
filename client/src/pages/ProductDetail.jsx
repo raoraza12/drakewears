@@ -53,7 +53,8 @@ const ProductDetail = () => {
   
   const handleAddToCart = () => {
     if (!product) return;
-    addToCart(product, selectedSize || 'M', null, 1);
+    const colorObj = product.colors?.find(c => c.name === selectedColor) || (selectedColor ? { name: selectedColor } : null);
+    addToCart(product, selectedSize || 'M', colorObj, 1);
   };
 
   if (loading) {
@@ -233,7 +234,7 @@ const ProductDetail = () => {
               </div>
               <form onSubmit={handleWhatsappOrder} className="modal-body">
                 <p className="text-body" style={{ marginBottom: '24px' }}>
-                  Enter your details and we will direct you to WhatsApp to confirm your order for <strong>{title}</strong>.
+                  Enter your details and we will direct you to WhatsApp to confirm your order for <strong>{product?.name}</strong>.
                 </p>
                 <div className="form-group" style={{ marginBottom: '16px' }}>
                   <label htmlFor="wa-name">Your Name</label>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
-import { FiHome, FiBox, FiShoppingCart, FiMessageCircle, FiUsers, FiSettings, FiLogOut, FiMenu, FiX, FiBarChart2, FiLayers, FiAlertTriangle, FiStar, FiSidebar } from 'react-icons/fi';
+import { FiHome, FiBox, FiShoppingCart, FiMessageCircle, FiUsers, FiSettings, FiLogOut, FiMenu, FiX, FiBarChart2, FiLayers, FiAlertTriangle, FiStar, FiSidebar, FiTag } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import './Admin.css';
 
@@ -22,6 +22,7 @@ const AdminLayout = () => {
     { path: '/admin/analytics', icon: <FiBarChart2 />, label: 'Analytics' },
     { path: '/admin/products', icon: <FiBox />, label: 'Products' },
     { path: '/admin/categories', icon: <FiLayers />, label: 'Categories' },
+    { path: '/admin/coupons', icon: <FiTag />, label: 'Coupons' },
     { path: '/admin/inventory', icon: <FiAlertTriangle />, label: 'Inventory' },
     { path: '/admin/reviews', icon: <FiStar />, label: 'Reviews' },
     { path: '/admin/orders', icon: <FiShoppingCart />, label: 'Web Orders' },
