@@ -303,6 +303,8 @@ router.post('/settings/bulk', async (req, res) => {
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
+});
+
 // --- REVIEW MANAGEMENT ---
 router.get('/reviews', async (req, res) => {
   try {

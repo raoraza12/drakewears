@@ -6,6 +6,7 @@
     "client-install": "cd client && npm install",
     "server-install": "cd server && npm install",
     "install-all": "npm run client-install && npm run server-install",
-    "build": "npm run install-all && cd server && npx prisma generate && cd .. && npm run build --prefix client"
+    "build": "npm run install-all && cd server && npx prisma generate && cd .. && npm run build --prefix client",
+    "start": "node server/server.js"
   }
 }

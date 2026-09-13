@@ -37,9 +37,26 @@ app.use('/api/upload', require('./routes/upload'));
 app.use('/api/settings', require('./routes/settings'));
 
 // Health check
-app.get('/', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ message: 'drakewears API Running ✨', status: 'OK' });
 });
+
+// Serve Frontend build in Production
+const fs = require('fs');
+const clientDist = path.join(__dirname, '../client/dist');
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get('*', (req, res) => {
+    if (req.originalUrl.startsWith('/api')) {
+      return res.status(404).json({ message: 'API route not found' });
+    }
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.json({ message: 'drakewears API Running ✨', status: 'OK' });
+  });
+}
 
 // Error handler
 app.use((err, req, res, next) => {
