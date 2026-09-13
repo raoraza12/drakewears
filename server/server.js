@@ -43,8 +43,17 @@ app.get('/api/health', (req, res) => {
 
 // Serve Frontend build in Production
 const fs = require('fs');
-const clientDist = path.join(__dirname, '../client/dist');
-if (fs.existsSync(clientDist)) {
+const candidatePaths = [
+  path.join(__dirname, '../client/dist'),
+  path.join(process.cwd(), 'client/dist'),
+  path.join(process.cwd(), 'dist'),
+  path.join(__dirname, 'client/dist')
+];
+
+let clientDist = candidatePaths.find(p => fs.existsSync(p));
+
+if (clientDist) {
+  console.log(`Serving frontend build from: ${clientDist}`);
   app.use(express.static(clientDist));
   app.get('*', (req, res) => {
     if (req.originalUrl.startsWith('/api')) {
@@ -53,6 +62,7 @@ if (fs.existsSync(clientDist)) {
     res.sendFile(path.join(clientDist, 'index.html'));
   });
 } else {
+  console.warn('Frontend build folder not found in candidates:', candidatePaths);
   app.get('/', (req, res) => {
     res.json({ message: 'drakewears API Running ✨', status: 'OK' });
   });
@@ -68,7 +78,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 if (!process.env.VERCEL) {
-  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server running on port ${PORT}`));
 }
 
 // Export for Vercel Serverless
