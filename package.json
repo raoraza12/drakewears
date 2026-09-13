@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "client-install": "cd client && npm install",
-    "server-install": "cd server && npm install",
+    "client-install": "cd client && npm install --include=dev",
+    "server-install": "cd server && npm install --include=dev",
     "install-all": "npm run client-install && npm run server-install",
-    "build": "npm run install-all && cd server && npx prisma generate && cd .. && npm run build --prefix client",
+    "build": "npm run install-all && cd server && npx prisma generate && cd ../client && npm run build && cd ..",
     "start": "node server/server.js"
   }
 }
