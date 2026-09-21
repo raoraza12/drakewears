@@ -280,15 +280,15 @@ export default function Checkout() {
             </div>
           </div>
 
-          {(placedOrder.paymentMethod === 'EasyPaisa' || placedOrder.paymentMethod === 'JazzCash' || placedOrder.paymentMethod === 'Bank Transfer') && (
+          {placedOrder.paymentMethod === 'EasyPaisa' && (
             <div className="payment-alert-box">
-              <h4 style={{ color: 'var(--gold)', marginBottom: 8, fontSize: '0.95rem' }}>Payment Instructions:</h4>
+              <h4 style={{ color: 'var(--gold)', marginBottom: 8, fontSize: '0.95rem' }}>EasyPaisa Payment Instructions:</h4>
               <p style={{ fontSize: '0.85rem', color: 'var(--cream)', lineHeight: 1.5 }}>
                 Please transfer <strong>Rs. {placedOrder.total.toLocaleString()}</strong> to:
               </p>
               <div style={{ background: 'rgba(0,0,0,0.3)', padding: 10, borderRadius: 8, marginTop: 8, fontSize: '0.82rem' }}>
-                <p><strong>EasyPaisa / JazzCash:</strong> {displayPhone}</p>
-                <p><strong>Account Title:</strong> RAO RAZA / DRAKEWEARS</p>
+                <p><strong>EasyPaisa Number:</strong> 03458999091</p>
+                <p><strong>Account Title:</strong> Huzaifa</p>
               </div>
               <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 8 }}>
                 Please send a screenshot of the payment receipt on WhatsApp with your Order ID.
@@ -441,9 +441,7 @@ export default function Checkout() {
               <h3 className="checkout-section-title">2. Payment Method</h3>
               {[
                 { method: 'Cash on Delivery', note: 'Pay in cash when order arrives at your door' },
-                { method: 'EasyPaisa', note: `Account: ${settings?.contactPhone || '+92 321 8254922'} (RAO RAZA)` },
-                { method: 'JazzCash', note: `Account: ${settings?.contactPhone || '+92 321 8254922'} (RAO RAZA)` },
-                { method: 'Bank Transfer', note: 'Contact via WhatsApp for IBAN details' }
+                { method: 'EasyPaisa', note: 'Account: 03458999091 (Huzaifa)' }
               ].map(({ method, note }) => (
                 <label key={method} className="payment-option">
                   <input type="radio" name="paymentMethod" value={method} checked={form.paymentMethod === method} onChange={handleChange} />
@@ -454,9 +452,9 @@ export default function Checkout() {
                 </label>
               ))}
 
-              {form.paymentMethod !== 'Cash on Delivery' && (
+              {form.paymentMethod === 'EasyPaisa' && (
                 <div className="payment-notice-banner">
-                  ⚡ <strong>Note:</strong> After placing your order, please transfer the exact total to <strong>{settings?.contactPhone || '+92 321 8254922'}</strong> and share the confirmation screenshot on WhatsApp.
+                  ⚡ <strong>EasyPaisa Instructions:</strong> Please transfer the exact order amount to <strong>03458999091 (Account Title: Huzaifa)</strong> and send the payment screenshot on WhatsApp after placing the order.
                 </div>
               )}
             </div>

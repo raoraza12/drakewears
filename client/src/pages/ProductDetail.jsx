@@ -720,7 +720,7 @@ const ProductDetail = () => {
 
                   <div className="qa-card">
                     <h4><FiMessageSquare size={20} color="#e53935" /> Payment Options</h4>
-                    <p>Pay easily with Cash on Delivery (COD), JazzCash, EasyPaisa, or direct Bank Transfer at checkout or via WhatsApp.</p>
+                    <p>Pay easily with Cash on Delivery (COD) or EasyPaisa (03458999091 - Huzaifa) at checkout or via WhatsApp.</p>
                   </div>
                 </div>
               </div>
@@ -773,9 +773,7 @@ const ProductDetail = () => {
                     onChange={(e) => setPaymentMethod(e.target.value)}
                   >
                     <option value="Cash on Delivery">Cash on Delivery (COD)</option>
-                    <option value="EasyPaisa">EasyPaisa</option>
-                    <option value="JazzCash">JazzCash</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="EasyPaisa">EasyPaisa (03458999091 - Huzaifa)</option>
                   </select>
                 </div>
                 <button type="submit" className="btn-primary" style={{ width: '100%' }}>Proceed to WhatsApp</button>

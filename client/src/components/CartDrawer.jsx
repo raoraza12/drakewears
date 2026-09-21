@@ -194,9 +194,7 @@ const CartDrawer = () => {
                 <label htmlFor="cart-payment">Payment Method</label>
                 <select id="cart-payment" className="form-input" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
                   <option value="Cash on Delivery">Cash on Delivery (COD)</option>
-                  <option value="EasyPaisa">EasyPaisa</option>
-                  <option value="JazzCash">JazzCash</option>
-                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="EasyPaisa">EasyPaisa (03458999091 - Huzaifa)</option>
                 </select>
               </div>
               
