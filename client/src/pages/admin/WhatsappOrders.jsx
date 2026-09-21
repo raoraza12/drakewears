@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FiMessageCircle, FiPlus } from 'react-icons/fi';
+import { FiMessageCircle, FiPlus, FiCheckCircle, FiTruck, FiPackage } from 'react-icons/fi';
 import API from '../../api';
 import toast from 'react-hot-toast';
+import './OrderManager.css';
 
 const WhatsappOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -67,6 +68,8 @@ const WhatsappOrders = () => {
     }
   };
 
+  const [expandedOrder, setExpandedOrder] = useState(null);
+
   return (
     <div className="dashboard-container animate-fade-in">
       <div className="panel-header" style={{ padding: '0 0 24px 0', borderBottom: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -108,6 +111,20 @@ const WhatsappOrders = () => {
               <label className="form-label">Agreed Price (Rs)</label>
               <input required type="number" className="form-input" value={form.price} onChange={e => setForm({...form, price: e.target.value})} />
             </div>
+            <div>
+              <label className="form-label">Size</label>
+              <select className="form-input" value={form.size} onChange={e => setForm({...form, size: e.target.value})}>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+              </select>
+            </div>
+            <div>
+              <label className="form-label">Color</label>
+              <input className="form-input" value={form.color} onChange={e => setForm({...form, color: e.target.value})} placeholder="Black, Navy, etc." />
+            </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <button type="submit" className="btn-primary">Save Order</button>
             </div>
@@ -116,7 +133,7 @@ const WhatsappOrders = () => {
       )}
 
       <div className="admin-panel">
-        <div className="panel-body">
+        <div className="panel-body" style={{ overflowX: 'auto' }}>
           {loading ? <p>Loading...</p> : (
             <table className="admin-table">
               <thead>
@@ -133,29 +150,95 @@ const WhatsappOrders = () => {
               <tbody>
                 {orders.length === 0 ? (
                   <tr><td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>No WhatsApp orders found</td></tr>
-                ) : orders.map(order => (
-                  <tr key={order.id || order._id}>
-                    <td>#{String(order.id || order._id).slice(-6).toUpperCase()}</td>
-                    <td>{order.shippingAddress?.name || order.user?.name}</td>
-                    <td>{order.shippingAddress?.phone || (order.notes && order.notes.split('Phone: ')[1]) || 'N/A'}</td>
-                    <td>Rs. {order.total}</td>
-                    <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                    <td>
-                      <span className={`status-badge status-${order.status === 'delivered' ? 'completed' : order.status}`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td>
-                      {order.status !== 'delivered' && order.status !== 'completed' ? (
-                        <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }} onClick={() => handleUpdateStatus(order.id || order._id, 'delivered')}>
-                          Mark Delivered
-                        </button>
-                      ) : (
-                        <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }} disabled>Done</button>
+                ) : orders.map(order => {
+                  const isExpanded = expandedOrder === (order.id || order._id);
+                  return (
+                    <React.Fragment key={order.id || order._id}>
+                      <tr style={{ cursor: 'pointer' }} onClick={() => setExpandedOrder(isExpanded ? null : (order.id || order._id))}>
+                        <td>
+                          <strong>{order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id || order._id).slice(-6).toUpperCase()}`}</strong>
+                          <br />
+                          <small style={{ color: 'var(--gold)', fontSize: '0.72rem' }}>{isExpanded ? '▲ Close Items' : '▼ View Items'}</small>
+                        </td>
+                        <td>{order.shippingAddress?.name || order.user?.name || 'WhatsApp Customer'}</td>
+                        <td>{order.shippingAddress?.phone || (order.notes && order.notes.split('Phone: ')[1]) || order.user?.phone || 'N/A'}</td>
+                        <td><strong>Rs. {order.total.toLocaleString()}</strong></td>
+                        <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                        <td>
+                          <span className={`status-badge status-${order.status === 'delivered' ? 'completed' : order.status}`}>
+                            {order.status}
+                          </span>
+                        </td>
+                        <td onClick={e => e.stopPropagation()}>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                            {order.status === 'pending' && (
+                              <button 
+                                type="button"
+                                className="btn-approve" 
+                                onClick={() => handleUpdateStatus(order.id || order._id, 'processing')}
+                              >
+                                <FiCheckCircle size={13} /> Approve
+                              </button>
+                            )}
+                            {order.status === 'processing' && (
+                              <button 
+                                type="button"
+                                className="btn-ship" 
+                                onClick={() => handleUpdateStatus(order.id || order._id, 'shipped')}
+                              >
+                                <FiTruck size={13} /> Ship
+                              </button>
+                            )}
+                            {order.status === 'shipped' && (
+                              <button 
+                                type="button"
+                                className="btn-deliver" 
+                                onClick={() => handleUpdateStatus(order.id || order._id, 'delivered')}
+                              >
+                                <FiPackage size={13} /> Delivered
+                              </button>
+                            )}
+                            <select 
+                              className="form-input" 
+                              style={{ padding: '5px 8px', fontSize: '0.78rem', width: 'auto', background: '#1c1c22' }}
+                              value={order.status}
+                              onChange={(e) => handleUpdateStatus(order.id || order._id, e.target.value)}
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="processing">Processing</option>
+                              <option value="shipped">Shipped</option>
+                              <option value="delivered">Delivered</option>
+                              <option value="cancelled">Cancelled</option>
+                            </select>
+                          </div>
+                        </td>
+                      </tr>
+                      {isExpanded && (
+                        <tr>
+                          <td colSpan="7" style={{ backgroundColor: 'var(--bg-secondary)', padding: '16px 24px' }}>
+                            <h4 style={{ fontSize: '0.85rem', color: 'var(--gold)', textTransform: 'uppercase', marginBottom: '8px' }}>Ordered Items</h4>
+                            {order.items && order.items.length > 0 ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                {order.items.map((item, idx) => (
+                                  <div key={idx} style={{ fontSize: '0.82rem', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-light)', paddingBottom: '4px' }}>
+                                    <span>
+                                      <strong>{item.quantity}x</strong> {item.name}
+                                      {item.size && <span style={{ color: 'var(--text-secondary)' }}> (Size: {item.size})</span>}
+                                      {item.color && <span style={{ color: 'var(--text-secondary)' }}> ({item.color})</span>}
+                                    </span>
+                                    <span>Rs. {(item.price * item.quantity).toLocaleString()}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{order.notes || 'No item details recorded'}</p>
+                            )}
+                          </td>
+                        </tr>
                       )}
-                    </td>
-                  </tr>
-                ))}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           )}

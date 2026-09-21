@@ -83,7 +83,7 @@ const Dashboard = () => {
               <tbody>
                 {stats.orders.slice(0, 5).map(order => (
                   <tr key={order.id || order._id}>
-                    <td>#{String(order.id || order._id).slice(-6).toUpperCase()}</td>
+                    <td><strong>{order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id || order._id).slice(-6).toUpperCase()}`}</strong></td>
                     <td>{order.shippingAddress?.name || order.user?.name || 'Unknown'}</td>
                     <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td>

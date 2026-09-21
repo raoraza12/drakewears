@@ -21,6 +21,23 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
+const optionalAuth = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const db = req.prisma || prisma;
+      req.user = await db.user.findUnique({
+        where: { id: decoded.id },
+        select: { id: true, name: true, email: true, role: true, avatar: true }
+      });
+    }
+  } catch (err) {
+    // Continue as guest
+  }
+  next();
+};
+
 const isAdmin = (req, res, next) => {
   if (req.user?.role !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
@@ -28,4 +45,5 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = { verifyToken, isAdmin };
+module.exports = { verifyToken, optionalAuth, isAdmin };
+

@@ -43,60 +43,27 @@ const Shop = () => {
       <main className="main-content">
         <div className="container">
           <div className="shop-header" style={{ marginBottom: '32px' }}>
-            <h1 className="h1" style={{ fontSize: '2.5rem', fontWeight: 600, letterSpacing: '-0.02em', marginBottom: '12px' }}>
-              drakewears 2026 Collection
+            <h1 className="h1" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 800, letterSpacing: '0.04em', marginBottom: '16px', color: '#ffffff', textTransform: 'uppercase' }}>
+              Collection
             </h1>
 
-            {/* Horizontal Category Filter Pills matching screenshot #3 */}
-            <div className="category-pills" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '16px' }}>
+            {/* Horizontal Category Filter Pills */}
+            <div className="category-pills" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <button 
                 className={`category-pill ${activeCategory === 'all' ? 'active' : ''}`}
                 onClick={() => setActiveCategory('all')}
-                style={{
-                  padding: '10px 24px',
-                  borderRadius: '30px',
-                  border: 'none',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  backgroundColor: activeCategory === 'all' ? '#000000' : '#f4f4f5',
-                  color: activeCategory === 'all' ? '#ffffff' : '#18181b',
-                  transition: 'all 0.2s ease'
-                }}
               >
                 All
               </button>
               <button 
                 className={`category-pill ${activeCategory.toLowerCase() === 'drop shoulder tees' ? 'active' : ''}`}
                 onClick={() => setActiveCategory('drop shoulder tees')}
-                style={{
-                  padding: '10px 24px',
-                  borderRadius: '30px',
-                  border: 'none',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  backgroundColor: activeCategory.toLowerCase() === 'drop shoulder tees' ? '#000000' : '#f4f4f5',
-                  color: activeCategory.toLowerCase() === 'drop shoulder tees' ? '#ffffff' : '#18181b',
-                  transition: 'all 0.2s ease'
-                }}
               >
                 Drop Shoulder Tees
               </button>
               <button 
                 className={`category-pill ${activeCategory.toLowerCase() === 'baggy trousers' ? 'active' : ''}`}
                 onClick={() => setActiveCategory('baggy trousers')}
-                style={{
-                  padding: '10px 24px',
-                  borderRadius: '30px',
-                  border: 'none',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  backgroundColor: activeCategory.toLowerCase() === 'baggy trousers' ? '#000000' : '#f4f4f5',
-                  color: activeCategory.toLowerCase() === 'baggy trousers' ? '#ffffff' : '#18181b',
-                  transition: 'all 0.2s ease'
-                }}
               >
                 Baggy Trousers
               </button>
@@ -105,7 +72,7 @@ const Shop = () => {
 
             {/* Product Grid */}
             <div className="shop-products">
-              <div className="products-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+              <div className="products-grid">
                 {loading ? (
                   <p>Loading products...</p>
                 ) : filteredProducts.length === 0 ? (

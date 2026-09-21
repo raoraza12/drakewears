@@ -1,0 +1,181 @@
+/* ==========================================================
+   DRAKEWEARS — FROSTED GLASS LIVE-SITE INTRO ANIMATION
+   Shows the live website underneath through high-end frosted blur
+   (ZERO empty white page!)
+   ========================================================== */
+
+.site-intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s ease;
+}
+
+/* 
+  Frosted Glass Veil: 
+  Completely translucent frosted layer blurring the live site underneath.
+*/
+.site-intro-frosted-veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  transition: 
+    backdrop-filter 0.65s cubic-bezier(0.16, 1, 0.3, 1), 
+    -webkit-backdrop-filter 0.65s cubic-bezier(0.16, 1, 0.3, 1), 
+    background-color 0.65s ease;
+}
+
+[data-theme="dark"] .site-intro-frosted-veil {
+  background: rgba(8, 8, 10, 0.42);
+}
+
+/* Dissolve Stage: Blur gently evaporates into the crystal clear store */
+.site-intro-overlay.stage-dissolve {
+  opacity: 0;
+  transform: scale(1.02);
+  pointer-events: none;
+}
+
+.site-intro-overlay.stage-dissolve .site-intro-frosted-veil {
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  background: transparent;
+}
+
+.site-intro-overlay.stage-dissolve .site-intro-center-stage {
+  transform: translateY(-16px) scale(0.98);
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Center Cinematic Brand Container */
+.site-intro-center-stage {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 36px 24px;
+  max-width: 600px;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Top Subtle Capsule Pill */
+.site-intro-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 0.68rem;
+  letter-spacing: 0.25em;
+  font-weight: 800;
+  color: #27272a;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: introFadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+}
+
+[data-theme="dark"] .site-intro-pill-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #d4d4d8;
+}
+
+/* Center Brand Name Typography */
+.site-intro-brand-name {
+  margin: 0;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: clamp(2.6rem, 7vw, 5rem);
+  font-weight: 900;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #0a0a0c;
+  line-height: 1.1;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  animation: introBrandReveal 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity, letter-spacing;
+}
+
+[data-theme="dark"] .site-intro-brand-name {
+  color: #ffffff;
+  text-shadow: 0 4px 30px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+
+/* Luminous Accent Expansion Line */
+.site-intro-accent-line {
+  height: 2px;
+  width: 0;
+  background: #0a0a0c;
+  border-radius: 2px;
+  opacity: 0.4;
+  animation: introLineExpand 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+[data-theme="dark"] .site-intro-accent-line {
+  background: #ffffff;
+  opacity: 0.6;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Subtitle Tagline */
+.site-intro-tagline {
+  margin: 4px 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.28em;
+  font-weight: 700;
+  color: #52525b;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: introFadeSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
+}
+
+[data-theme="dark"] .site-intro-tagline {
+  color: #a1a1aa;
+}
+
+/* Keyframes */
+@keyframes introBrandReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+    letter-spacing: 0.18em;
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    letter-spacing: 0.35em;
+    filter: blur(0px);
+  }
+}
+
+@keyframes introLineExpand {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 54px;
+  }
+}
+
+@keyframes introFadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

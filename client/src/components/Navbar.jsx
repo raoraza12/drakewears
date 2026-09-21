@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FiMenu, FiX, FiSearch, FiShoppingBag, FiUser } from 'react-icons/fi';
+import { FiMenu, FiX, FiSearch, FiShoppingBag, FiUser, FiHeart, FiSun, FiMoon } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useSettings } from '../context/SettingsContext';
 import API from '../api';
 import './Navbar.css';
@@ -16,14 +17,36 @@ const Navbar = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
+  // Theme Mode State: 'light' (White Major / Black Minor) vs 'dark' (Black Major / White Minor)
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('drakewears_theme') || 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      document.body.classList.add('dark-theme');
+      document.body.classList.remove('light-theme');
+    } else {
+      document.body.classList.add('light-theme');
+      document.body.classList.remove('dark-theme');
+    }
+    localStorage.setItem('drakewears_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
+
   const location = useLocation();
   const { count, setIsOpen: setCartOpen } = useCart();
   const { user, logout } = useAuth();
+  const { count: wishlistCount } = useWishlist();
   const { settings } = useSettings();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      setIsScrolled(window.scrollY > 25);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -36,7 +59,7 @@ const Navbar = () => {
     setSearchOpen(false);
   }, [location]);
 
-  // Live Search Handler
+  // Live Search Handler with Debounce
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
@@ -56,47 +79,82 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Top Free Shipping Announcement Bar */}
-      <div className="announcement-bar">
-        <span>⚡ FREE SHIPPING ON ALL ORDERS OVER RS. 4000 | USE CODE: <strong>DRAKEFREESHIP</strong> ⚡</span>
-      </div>
+      {/* Main Full-Width Header (Outfitters Style) */}
+      <header className={`outfitters-header ${isScrolled ? 'is-scrolled' : ''} ${location.pathname === '/' ? 'on-home' : 'on-inner'}`}>
+        {/* Top Free Shipping Strip */}
+        <div className="outfitters-top-strip">
+          <span>ALL OVER PAKISTAN FREE SHIPPING ON ORDERS OVER RS. 5,000 | CASH ON DELIVERY</span>
+        </div>
 
-      <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
-        <div className="navbar-container">
-          {/* Left: Mobile Menu & Logo */}
-          <div className="nav-left">
+        <div className="outfitters-nav-bar">
+          {/* Left Block: Hamburger + Brand Logo + Nav Links */}
+          <div className="outfitters-nav-left">
             <button 
-              className="mobile-menu-btn"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle Menu"
+              className="outfitters-menu-btn"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open Navigation Menu"
             >
-              {mobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+              <FiMenu size={22} />
             </button>
-            <Link to="/" className="navbar-logo" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', padding: '4px 12px', marginRight: '24px' }}>
-              <img src="/drakewears-logo.png?v=4" alt="drakewears" style={{ height: '44px', width: 'auto', objectFit: 'contain' }} />
+
+            <Link to="/" className="outfitters-brand-logo" aria-label="DrakeWears Home">
+              <span className="outfitters-logo-text">drakewears</span>
             </Link>
+
+            {/* Nav links right next to logo, exactly like Outfitters MEN, WOMEN, JUNIORS */}
+            <nav className="outfitters-nav-links desktop-only">
+              <Link to="/" className={`outfitters-nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+                HOME
+              </Link>
+              <Link to="/shop" className={`outfitters-nav-link ${location.pathname === '/shop' ? 'active' : ''}`}>
+                SHOP
+              </Link>
+              <Link to="/about" className={`outfitters-nav-link ${location.pathname === '/about' ? 'active' : ''}`}>
+                ABOUT
+              </Link>
+              <Link to="/contact" className={`outfitters-nav-link ${location.pathname === '/contact' ? 'active' : ''}`}>
+                CONTACT
+              </Link>
+            </nav>
           </div>
 
-          {/* Center: Desktop Links */}
-          <div className="nav-center desktop-only">
-            <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
-            <Link to="/shop" className={location.pathname === '/shop' ? 'active' : ''}>Shop</Link>
-            <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About us</Link>
-            <Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>Contact us</Link>
-          </div>
+          {/* Right Block: Search underline trigger + Account + Bag */}
+          <div className="outfitters-nav-right">
+            {/* Search Input Trigger with Underline (Outfitters Style) */}
+            <div 
+              className="outfitters-search-trigger"
+              onClick={() => setSearchOpen(true)}
+              role="button"
+              tabIndex={0}
+              title="Search products"
+            >
+              <FiSearch size={16} />
+              <span className="outfitters-search-text">Search</span>
+              <span className="outfitters-search-line"></span>
+            </div>
 
-          {/* Right: Icons & Cart */}
-          <div className="nav-right desktop-only">
-            <button className="icon-btn" aria-label="Search" onClick={() => setSearchOpen(true)}>
-              <FiSearch size={20} />
-            </button>
-            
-            <div className="profile-menu-container" style={{ position: 'relative' }}>
-              <button className="icon-btn" aria-label="Profile" onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}>
-                <FiUser size={20} />
+            {/* Wishlist Link & Live Count */}
+            <Link 
+              to="/wishlist" 
+              className="outfitters-icon-btn outfitters-wishlist-btn" 
+              aria-label={`Wishlist, ${wishlistCount || 0} items`}
+              title="Saved Wishlist"
+            >
+              <FiHeart size={19} />
+              {wishlistCount > 0 && <span className="outfitters-bag-count">{wishlistCount}</span>}
+            </Link>
+
+            {/* User Account / Profile */}
+            <div className="outfitters-profile-wrap">
+              <button 
+                className="outfitters-icon-btn" 
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                aria-label="Account Menu"
+                title="Account"
+              >
+                <FiUser size={19} />
               </button>
-              
-              {/* Profile Card */}
+
               {profileDropdownOpen && (
                 <div className="profile-dropdown-card">
                   {user ? (
@@ -107,43 +165,82 @@ const Navbar = () => {
                       </div>
                       <div className="profile-links">
                         <Link to="/profile">My Profile</Link>
+                        <Link to="/orders">My Orders</Link>
+                        <Link to="/wishlist">Saved Wishlist {wishlistCount > 0 && `(${wishlistCount})`}</Link>
                         {user.role === 'admin' && (
-                          <Link to="/admin" style={{ color: '#007BFF', fontWeight: '500' }}>Admin Dashboard</Link>
+                          <Link to="/admin" style={{ color: '#2563eb', fontWeight: '700' }}>Admin Dashboard</Link>
                         )}
                         <button onClick={logout} className="logout-btn">Logout</button>
                       </div>
                     </>
                   ) : (
                     <div className="profile-links">
-                      <Link to="/login" style={{ fontWeight: '500' }}>Login</Link>
-                      <Link to="/register">Register</Link>
+                      <Link to="/login" style={{ fontWeight: '700' }}>Login</Link>
+                      <Link to="/register">Create Account</Link>
                     </div>
                   )}
                 </div>
               )}
             </div>
 
-            {/* Cart Link Style [ Cart (0) ] */}
+            {/* Shopping Bag Button */}
             <button 
-              className="nav-cart-btn" 
+              className="outfitters-icon-btn outfitters-bag-btn" 
               onClick={() => setCartOpen(true)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.9rem', fontWeight: 500 }}
+              aria-label={`Shopping Bag, ${count} items`}
+              title="Shopping Bag"
             >
-              [ Cart ({count}) ]
+              <FiShoppingBag size={20} />
+              {count > 0 && <span className="outfitters-bag-count">{count}</span>}
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Menu Overlay */}
-        <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
-          <div className="mobile-links">
-            <Link to="/">Home</Link>
-            <Link to="/shop">Shop</Link>
-            <Link to="/about">About us</Link>
-            <Link to="/contact">Contact us</Link>
+      {/* Outfitters Mobile Drawer Menu */}
+      <div className={`outfitters-drawer-overlay ${mobileMenuOpen ? 'is-open' : ''}`} onClick={() => setMobileMenuOpen(false)}>
+        <div className="outfitters-drawer" onClick={(e) => e.stopPropagation()}>
+          <div className="outfitters-drawer-header">
+            <span className="outfitters-logo-text" style={{ fontSize: '1.6rem' }}>drakewears</span>
+            <button className="outfitters-drawer-close" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
+              <FiX size={24} />
+            </button>
+          </div>
+
+          <div className="outfitters-drawer-links">
+            <Link to="/" onClick={() => setMobileMenuOpen(false)}>HOME</Link>
+            <Link to="/shop" onClick={() => setMobileMenuOpen(false)}>SHOP</Link>
+            <Link to="/about" onClick={() => setMobileMenuOpen(false)}>ABOUT</Link>
+            <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>CONTACT</Link>
+          </div>
+
+          <div className="outfitters-drawer-secondary">
+            <Link to="/wishlist" onClick={() => setMobileMenuOpen(false)}>
+              WISHLIST {wishlistCount > 0 && `(${wishlistCount})`}
+            </Link>
+            <Link to="/orders" onClick={() => setMobileMenuOpen(false)}>TRACK ORDERS</Link>
+            {user ? (
+              <>
+                <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>MY ACCOUNT ({user.name})</Link>
+                {user.role === 'admin' && (
+                  <Link to="/admin" onClick={() => setMobileMenuOpen(false)} style={{ color: '#3b82f6', fontWeight: 700 }}>
+                    ADMIN PANEL →
+                  </Link>
+                )}
+                <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="drawer-logout-btn">
+                  LOGOUT
+                </button>
+              </>
+            ) : (
+              <div className="outfitters-drawer-auth">
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="btn-primary" style={{ textAlign: 'center', padding: '12px' }}>
+                  LOGIN / SIGN UP
+                </Link>
+              </div>
+            )}
           </div>
         </div>
-      </nav>
+      </div>
 
       {/* Live Search Modal Overlay */}
       {searchOpen && (
@@ -155,21 +252,21 @@ const Navbar = () => {
                 <input 
                   type="text" 
                   autoFocus 
-                  placeholder="Search products by name or category..." 
+                  placeholder="Search hoodies, baggy pants, oversized tees..." 
                   value={searchQuery} 
                   onChange={(e) => setSearchQuery(e.target.value)} 
                   className="search-modal-input" 
                 />
               </div>
-              <button className="search-close-btn" onClick={() => setSearchOpen(false)}>
+              <button className="search-close-btn" onClick={() => setSearchOpen(false)} aria-label="Close search">
                 <FiX size={24} />
               </button>
             </div>
 
             <div className="search-results-container">
-              {searchLoading && <p style={{ padding: '20px', color: 'var(--text-secondary)' }}>Searching products...</p>}
+              {searchLoading && <p style={{ padding: '24px', color: 'var(--text-secondary)' }}>Searching catalog...</p>}
               {!searchLoading && searchQuery.trim() && searchResults.length === 0 && (
-                <p style={{ padding: '20px', color: 'var(--text-secondary)' }}>No products found for "{searchQuery}"</p>
+                <p style={{ padding: '24px', color: 'var(--text-secondary)' }}>No products found for "{searchQuery}"</p>
               )}
               {!searchLoading && searchResults.length > 0 && (
                 <div className="search-results-list">
@@ -183,7 +280,7 @@ const Navbar = () => {
                       <img src={p.images?.[0] || 'https://via.placeholder.com/60'} alt={p.name} />
                       <div className="search-result-info">
                         <h4>{p.name}</h4>
-                        <p className="search-result-price">Rs. {p.price} • {p.category}</p>
+                        <p className="search-result-price">Rs. {p.price.toLocaleString()} • {p.category}</p>
                       </div>
                     </Link>
                   ))}
@@ -193,7 +290,6 @@ const Navbar = () => {
           </div>
         </div>
       )}
-
     </>
   );
 };

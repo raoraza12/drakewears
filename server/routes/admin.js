@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { verifyToken, isAdmin } = require('../middleware/auth');
+const { sendOrderNotification } = require('../lib/mailer');
 
 // Protect all admin routes
 router.use(verifyToken, isAdmin);
@@ -116,6 +117,8 @@ router.post('/orders/whatsapp', async (req, res) => {
       });
     }
 
+    const validProductId = (productId && productId.length > 20 && !productId.includes('custom')) ? productId : null;
+
     const order = await req.prisma.order.create({
       data: {
         userId: user.id,
@@ -128,7 +131,7 @@ router.post('/orders/whatsapp', async (req, res) => {
         notes: `[WHATSAPP_ORDER] Customer: ${customerName}, Phone: ${phoneNumber}`,
         items: {
           create: [{
-            productId: productId || 'whatsapp-custom',
+            productId: validProductId,
             name: productName,
             image: '',
             price: Number(price),
@@ -141,6 +144,18 @@ router.post('/orders/whatsapp', async (req, res) => {
       include: { items: true, user: true }
     });
     res.status(201).json(order);
+    
+    // Send email notification to admin (non-blocking)
+    const emailItems = [{
+      name: productName,
+      price: Number(price),
+      quantity: 1,
+      size: size || 'N/A',
+      color: color || 'N/A'
+    }];
+    sendOrderNotification(order, emailItems, 'whatsapp').catch(err => {
+      console.error('[Admin] WhatsApp order email error:', err.message);
+    });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -150,7 +165,10 @@ router.get('/orders', async (req, res) => {
   try {
     const orders = await req.prisma.order.findMany({
       orderBy: { createdAt: 'desc' },
-      include: { user: { select: { name: true, email: true } } }
+      include: { 
+        user: { select: { name: true, email: true, phone: true } },
+        items: true
+      }
     });
     res.json(orders);
   } catch (err) {
@@ -315,7 +333,18 @@ router.get('/reviews', async (req, res) => {
         user: { select: { name: true, email: true } }
       }
     });
-    res.json(reviews);
+
+    const formatted = reviews.map(r => ({
+      id: r.id,
+      customer: r.name || r.user?.name || 'Customer',
+      date: new Date(r.createdAt).toLocaleDateString(),
+      product: r.product?.name || 'Product',
+      rating: r.rating,
+      comment: r.comment,
+      status: r.status ? (r.status.charAt(0).toUpperCase() + r.status.slice(1).toLowerCase()) : 'Pending'
+    }));
+
+    res.json(formatted);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -323,11 +352,29 @@ router.get('/reviews', async (req, res) => {
 
 router.put('/reviews/:id/status', async (req, res) => {
   try {
+    const { status } = req.body;
+    const normalizedStatus = (status || 'approved').toLowerCase();
     const review = await req.prisma.review.update({
       where: { id: req.params.id },
-      data: { status: req.body.status }
+      data: { status: normalizedStatus }
     });
-    res.json(review);
+
+    // Recalculate product rating considering approved reviews
+    const aggregates = await req.prisma.review.aggregate({
+      where: { productId: review.productId, status: 'approved' },
+      _avg: { rating: true },
+      _count: { rating: true }
+    });
+
+    await req.prisma.product.update({
+      where: { id: review.productId },
+      data: {
+        rating: aggregates._avg.rating ? Number(aggregates._avg.rating.toFixed(1)) : 0,
+        numReviews: aggregates._count.rating || 0
+      }
+    });
+
+    res.json({ message: `Review marked as ${normalizedStatus}`, review });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -335,8 +382,25 @@ router.put('/reviews/:id/status', async (req, res) => {
 
 router.delete('/reviews/:id', async (req, res) => {
   try {
+    const review = await req.prisma.review.findUnique({ where: { id: req.params.id } });
     await req.prisma.review.delete({ where: { id: req.params.id } });
-    res.json({ message: 'Review deleted' });
+
+    if (review) {
+      const aggregates = await req.prisma.review.aggregate({
+        where: { productId: review.productId, status: 'approved' },
+        _avg: { rating: true },
+        _count: { rating: true }
+      });
+      await req.prisma.product.update({
+        where: { id: review.productId },
+        data: {
+          rating: aggregates._avg.rating ? Number(aggregates._avg.rating.toFixed(1)) : 0,
+          numReviews: aggregates._count.rating || 0
+        }
+      });
+    }
+
+    res.json({ message: 'Review deleted successfully' });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

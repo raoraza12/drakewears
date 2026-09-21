@@ -164,3 +164,55 @@
 .auth-demo-btn:hover { 
   border-color: var(--text-primary); 
 }
+
+/* Highly Visible Inline Auth Error Alert Banner */
+.auth-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 14px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  animation: fadeUp 0.3s ease-out;
+}
+
+[data-theme="dark"] .auth-error-banner {
+  background: rgba(220, 38, 38, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.auth-error-icon {
+  flex-shrink: 0;
+  color: #dc2626;
+}
+
+[data-theme="dark"] .auth-error-icon {
+  color: #f87171;
+}
+
+.auth-error-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.auth-error-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  padding: 0 4px;
+  transition: opacity 0.2s;
+}
+
+.auth-error-close:hover {
+  opacity: 1;
+}

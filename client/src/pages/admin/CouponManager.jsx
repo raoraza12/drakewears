@@ -97,7 +97,7 @@ const CouponManager = () => {
             ) : coupons.map(coupon => (
               <tr key={coupon.id || coupon._id}>
                 <td style={{ fontWeight: '700', color: 'var(--gold)', letterSpacing: '0.1em' }}><FiTag size={12} style={{ marginRight: '8px' }} /> {coupon.code}</td>
-                <td>{coupon.discountValue}{coupon.discountType === 'percentage' ? '%' : '$'} Reduction</td>
+                <td>{coupon.discountValue} {coupon.discountType === 'percentage' ? '%' : 'PKR'} Reduction</td>
                 <td style={{ fontSize: '0.8rem', opacity: 0.6 }}>Valid until {new Date(coupon.expirationDate).toLocaleDateString()}</td>
                 <td>
                   <button onClick={() => handleDelete(coupon.id || coupon._id)} style={{ background: 'none', color: 'var(--red)', fontSize: '0.8rem' }} className="flex items-center gap-1">

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiUserPlus, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiUserPlus, FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
@@ -9,19 +9,26 @@ export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.password.length < 6) return toast.error('Password must be at least 6 characters');
+    if (form.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
     setLoading(true);
+    setError('');
     try {
       await register(form.name, form.email, form.password);
       toast.success('Account created! Welcome to drakewears ✨');
       navigate('/');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed');
+      const msg = err.response?.data?.message || 'Registration failed. Please check your details and try again.';
+      setError(msg);
+      toast.error(msg);
     }
     setLoading(false);
   };
@@ -32,14 +39,37 @@ export default function Register() {
         <div className="auth-brand text-script" style={{ fontSize: '3.5rem', lineHeight: 1, textTransform: 'none', background: 'none', WebkitTextFillColor: 'initial', color: 'var(--text-primary)' }}>drakewears</div>
         <h1 className="auth-title">Join drakewears</h1>
         <p className="auth-sub">Create your account and start shopping</p>
+
+        {error && (
+          <div className="auth-error-banner animate-fade-in" role="alert">
+            <FiAlertCircle size={18} className="auth-error-icon" />
+            <div className="auth-error-text">{error}</div>
+            <button type="button" onClick={() => setError('')} className="auth-error-close" aria-label="Dismiss error">×</button>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label className="form-label">Full Name</label>
-            <input className="form-input" type="text" value={form.name} onChange={e => setForm(p => ({...p, name: e.target.value}))} required placeholder="Ahmed Khan" />
+            <input 
+              className="form-input" 
+              type="text" 
+              value={form.name} 
+              onChange={e => { setError(''); setForm(p => ({...p, name: e.target.value})); }} 
+              required 
+              placeholder="Ahmed Khan" 
+            />
           </div>
           <div className="form-group">
             <label className="form-label">Email Address</label>
-            <input className="form-input" type="email" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))} required placeholder="you@example.com" />
+            <input 
+              className="form-input" 
+              type="email" 
+              value={form.email} 
+              onChange={e => { setError(''); setForm(p => ({...p, email: e.target.value})); }} 
+              required 
+              placeholder="you@example.com" 
+            />
           </div>
           <div className="form-group">
             <label className="form-label">Password</label>

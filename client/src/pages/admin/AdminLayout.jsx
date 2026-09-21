@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
-import { FiHome, FiBox, FiShoppingCart, FiMessageCircle, FiUsers, FiSettings, FiLogOut, FiMenu, FiX, FiBarChart2, FiLayers, FiAlertTriangle, FiStar, FiSidebar, FiTag } from 'react-icons/fi';
+import { FiHome, FiBox, FiShoppingCart, FiMessageCircle, FiUsers, FiSettings, FiLogOut, FiMenu, FiX, FiBarChart2, FiLayers, FiAlertTriangle, FiStar, FiSidebar, FiTag, FiFileText } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import './Admin.css';
 
@@ -8,10 +8,19 @@ const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0a0a0a', color: '#c9a84c', gap: '12px' }}>
+        <div style={{ width: '32px', height: '32px', border: '3px solid #333', borderTopColor: '#c9a84c', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        <p style={{ letterSpacing: '0.15em', fontSize: '0.85rem', textTransform: 'uppercase', color: '#888' }}>Verifying Admin Access...</p>
+      </div>
+    );
+  }
 
   if (!user || user.role !== 'admin') {
     return <Navigate to="/admin/login" replace />;
@@ -19,14 +28,15 @@ const AdminLayout = () => {
 
   const menuItems = [
     { path: '/admin', icon: <FiHome />, label: 'Dashboard' },
+    { path: '/admin/orders-summary', icon: <FiFileText />, label: 'Orders Summary' },
+    { path: '/admin/orders', icon: <FiShoppingCart />, label: 'Web Orders' },
+    { path: '/admin/whatsapp-orders', icon: <FiMessageCircle />, label: 'WhatsApp Orders' },
     { path: '/admin/analytics', icon: <FiBarChart2 />, label: 'Analytics' },
     { path: '/admin/products', icon: <FiBox />, label: 'Products' },
     { path: '/admin/categories', icon: <FiLayers />, label: 'Categories' },
     { path: '/admin/coupons', icon: <FiTag />, label: 'Coupons' },
     { path: '/admin/inventory', icon: <FiAlertTriangle />, label: 'Inventory' },
     { path: '/admin/reviews', icon: <FiStar />, label: 'Reviews' },
-    { path: '/admin/orders', icon: <FiShoppingCart />, label: 'Web Orders' },
-    { path: '/admin/whatsapp-orders', icon: <FiMessageCircle />, label: 'WhatsApp Orders' },
     { path: '/admin/users', icon: <FiUsers />, label: 'Users' },
     { path: '/admin/settings', icon: <FiSettings />, label: 'Settings' }
   ];

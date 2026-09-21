@@ -13,6 +13,9 @@
 .contact-form-wrapper {
   background-color: var(--bg-elevated);
   padding: 60px;
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--card-shadow);
 }
 
 .contact-form {
@@ -35,12 +38,22 @@
 
 .form-group label {
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .form-group .form-input {
   background-color: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm, 6px);
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-group .form-input:focus {
+  border-color: var(--text-primary);
 }
 
 @media (max-width: 1024px) {

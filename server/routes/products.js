@@ -1,5 +1,5 @@
 const express = require('express');
-const { verifyToken, isAdmin } = require('../middleware/auth');
+const { verifyToken, optionalAuth, isAdmin } = require('../middleware/auth');
 const router = express.Router();
 
 // GET all products with filters
@@ -67,13 +67,24 @@ router.get('/', async (req, res) => {
 router.get('/:slug', async (req, res) => {
   try {
     const product = await req.prisma.product.findUnique({
-      where: { slug: req.params.slug },
-      include: { reviews: true }
+      where: { slug: req.params.slug }
     });
     
     if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    try {
+      const reviews = await req.prisma.review.findMany({
+        where: { productId: product.id, status: 'approved' },
+        select: { id: true, name: true, rating: true, comment: true, createdAt: true }
+      });
+      product.reviews = reviews;
+    } catch (e) {
+      product.reviews = [];
+    }
+
     res.json(product);
   } catch (err) {
+    console.error('Error fetching product by slug:', err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -91,7 +102,7 @@ router.post('/', verifyToken, isAdmin, async (req, res) => {
 });
 
 // PUT update product (admin)
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, isAdmin, async (req, res) => {
   try {
     const updateData = {};
     if (req.body.stock !== undefined) updateData.stock = parseInt(req.body.stock);
@@ -126,46 +137,57 @@ router.delete('/:id', verifyToken, isAdmin, async (req, res) => {
   }
 });
 
-// POST add review
-router.post('/:id/reviews', verifyToken, async (req, res) => {
+// POST add review (Supports logged-in & guest customers)
+router.post('/:id/reviews', optionalAuth, async (req, res) => {
   try {
     const productId = req.params.id;
-    const userId = req.user.id; // Now accessing string id, not _id
+    const { name, rating, comment } = req.body;
 
-    const existingReview = await req.prisma.review.findFirst({
-      where: { productId, userId }
-    });
+    if (!rating || Number(rating) < 1 || Number(rating) > 5) {
+      return res.status(400).json({ message: 'Please provide a rating between 1 and 5 stars' });
+    }
 
-    if (existingReview) return res.status(400).json({ message: 'Already reviewed' });
+    if (!comment || !comment.trim()) {
+      return res.status(400).json({ message: 'Please provide a review comment' });
+    }
 
-    // Create review
-    await req.prisma.review.create({
+    let userId = req.user?.id;
+    let reviewerName = req.user?.name || name || 'Customer';
+
+    if (!userId) {
+      const bcrypt = require('bcryptjs');
+      const dummyEmail = `reviewer_${Date.now()}_${Math.floor(Math.random()*1000)}@drakewearsbrand.local`;
+      const hashedPassword = await bcrypt.hash('reviewer_pass_123', 10);
+      const guestUser = await req.prisma.user.create({
+        data: {
+          name: reviewerName,
+          email: dummyEmail,
+          password: hashedPassword,
+          role: 'user'
+        }
+      });
+      userId = guestUser.id;
+    }
+
+    // Create review with pending status for admin moderation
+    const review = await req.prisma.review.create({
       data: {
         productId,
         userId,
-        name: req.user.name,
-        rating: Number(req.body.rating),
-        comment: req.body.comment
+        name: reviewerName,
+        rating: Number(rating),
+        comment: comment.trim(),
+        status: 'pending'
       }
     });
 
-    // Recalculate product rating
-    const aggregates = await req.prisma.review.aggregate({
-      where: { productId },
-      _avg: { rating: true },
-      _count: { rating: true }
+    res.status(201).json({ 
+      message: 'Review submitted successfully! It will appear once approved by admin.',
+      review,
+      pendingApproval: true
     });
-
-    await req.prisma.product.update({
-      where: { id: productId },
-      data: {
-        rating: aggregates._avg.rating || 0,
-        numReviews: aggregates._count.rating || 0
-      }
-    });
-
-    res.status(201).json({ message: 'Review added' });
   } catch (err) {
+    console.error('Submit review error:', err);
     res.status(500).json({ message: err.message });
   }
 });

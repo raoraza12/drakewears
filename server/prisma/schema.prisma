@@ -48,6 +48,8 @@ model Product {
   wishedBy     User[]      @relation("UserWishlist")
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+
+  @@index([category])
 }
 
 model Review {
@@ -57,15 +59,19 @@ model Review {
   name      String
   rating    Int
   comment   String
-  status    String   @default("Pending")
+  status    String   @default("pending")
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([userId])
 }
 
 model Order {
   id              String      @id @default(uuid())
+  orderNumber     Int         @default(autoincrement()) @unique
   userId          String
   shippingAddress Json        // Contains name, phone, street, city, state, zip, country
   paymentMethod   String      @default("Cash on Delivery")
@@ -82,20 +88,26 @@ model Order {
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   orderId   String
-  productId String
+  productId String?
   name      String
   image     String
   price     Float
-  quantity  Int     @default(1)
+  quantity  Int      @default(1)
   size      String?
   color     String?
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id])
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model Coupon {

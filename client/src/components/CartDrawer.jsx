@@ -1,32 +1,91 @@
-import React, { useState } from 'react';
-import { FiX, FiTrash2, FiMinus, FiPlus } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FiX, FiTrash2, FiMinus, FiPlus, FiShoppingBag } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
+import API from '../api';
 import './CartDrawer.css';
 
 const CartDrawer = () => {
-  const { items, isOpen, setIsOpen, removeFromCart, updateQty, total, count } = useCart();
+  const { items, isOpen, setIsOpen, removeFromCart, updateQty, total, count, clearCart } = useCart();
+  const { user } = useAuth();
+  const { settings } = useSettings();
+  const navigate = useNavigate();
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerName, setCustomerName] = useState(user?.name || '');
+  const [customerPhone, setCustomerPhone] = useState(user?.phone || '');
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
+  const cartUserInitRef = React.useRef(false);
+
+  useEffect(() => {
+    if (user && !cartUserInitRef.current) {
+      if (user.name) setCustomerName(user.name);
+      if (user.phone) setCustomerPhone(user.phone);
+      cartUserInitRef.current = true;
+    }
+  }, [user]);
 
   // Listen for custom event to open cart (could be triggered by Navbar)
-  React.useEffect(() => {
+  useEffect(() => {
     const handleOpenCart = () => setIsOpen(true);
     window.addEventListener('open-cart', handleOpenCart);
     return () => window.removeEventListener('open-cart', handleOpenCart);
   }, [setIsOpen]);
 
-  const handleWhatsappCheckout = (e) => {
+  const handleProceedToCheckout = () => {
+    setIsOpen(false);
+    if (!user) {
+      toast.error('Please login or register to checkout');
+      navigate('/login?redirect=/checkout');
+      return;
+    }
+    navigate('/checkout');
+  };
+
+  const handleWhatsappCheckout = async (e) => {
     e.preventDefault();
     
-    let itemsText = items.map(item => `${item.quantity}x ${item.product.name} (Size: ${item.size}) - $${item.product.price}`).join('\n');
+    // Save order to database via public whatsapp orders endpoint
+    try {
+      const orderItems = items.map(i => ({
+        product: i.product.id || i.product._id,
+        name: i.product.name,
+        image: i.product.images?.[0] || '',
+        price: i.product.price,
+        quantity: i.quantity,
+        size: i.size || null,
+        color: (typeof i.color === 'object' ? i.color?.name : i.color) || null
+      }));
+      
+      await API.post('/orders/whatsapp', {
+        items: orderItems,
+        customerName,
+        phoneNumber: customerPhone,
+        paymentMethod,
+        subtotal: total,
+        shippingFee: 0,
+        discount: 0,
+        total
+      });
+      clearCart();
+    } catch (err) {
+      console.error('Failed to save WhatsApp order:', err);
+      // Continue to WhatsApp even if save fails
+    }
     
-    const message = `🛍️ *NEW CART ORDER - DRAKEWEARS*\n\n*Items:*\n${itemsText}\n\n*Total:* $${total}\n\n*Customer Details:*\nName: ${customerName}\nPhone: ${customerPhone}\nPayment: ${paymentMethod}\n\nHello drakewears! I want to confirm this order.`;
+    let itemsText = items.map(item => {
+      const colorStr = typeof item.color === 'object' ? item.color?.name : item.color;
+      const meta = [item.size ? `Size: ${item.size}` : '', colorStr ? `Color: ${colorStr}` : ''].filter(Boolean).join(', ');
+      return `• ${item.quantity}x ${item.product.name}${meta ? ` (${meta})` : ''} - Rs. ${(item.product.price * item.quantity).toLocaleString()}`;
+    }).join('\n');
+    
+    const message = `🛍️ *NEW CART ORDER - DRAKEWEARS*\n\n*Items:*\n${itemsText}\n\n*Total:* Rs. ${total.toLocaleString()}\n\n*Customer Details:*\nName: ${customerName}\nPhone: ${customerPhone}\nPayment: ${paymentMethod}\n\nHello drakewears! I want to confirm this order.`;
     
     const encodedMessage = encodeURIComponent(message);
-    const whatsappNumber = '923458999091';
+    const whatsappNumber = settings?.contactPhone ? settings.contactPhone.replace(/[^0-9]/g, '') : '923218254922';
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (isMobile) {
@@ -37,6 +96,8 @@ const CartDrawer = () => {
     setShowCheckoutModal(false);
     setIsOpen(false);
   };
+
+
 
   return (
     <>
@@ -54,39 +115,54 @@ const CartDrawer = () => {
           {items.length === 0 ? (
             <p className="text-body text-center" style={{ marginTop: '40px' }}>Your cart is empty.</p>
           ) : (
-            items.map(item => (
-              <div key={item.key} className="cart-item">
-                <img src={item.product.images?.[0]} alt={item.product.name} className="cart-item-img" />
-                <div className="cart-item-details">
-                  <h4 className="text-body" style={{ fontWeight: 500 }}>{item.product.name}</h4>
-                  <p className="text-caption">Size: {item.size}</p>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-                    <span className="text-body">${item.product.price}</span>
-                    <div className="qty-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--border-medium)', padding: '2px 8px' }}>
-                      <button className="icon-btn" style={{ padding: 0 }} onClick={() => updateQty(item.key, item.quantity - 1)}><FiMinus size={12} /></button>
-                      <span className="text-caption">{item.quantity}</span>
-                      <button className="icon-btn" style={{ padding: 0 }} onClick={() => updateQty(item.key, item.quantity + 1)}><FiPlus size={12} /></button>
+            items.map(item => {
+              const colorStr = typeof item.color === 'object' ? item.color?.name : item.color;
+              const metaText = [item.size ? `Size: ${item.size}` : '', colorStr ? `Color: ${colorStr}` : ''].filter(Boolean).join(' • ');
+              return (
+                <div key={item.key} className="cart-item">
+                  <img src={item.product.images?.[0]} alt={item.product.name} className="cart-item-img" />
+                  <div className="cart-item-details">
+                    <h4 className="text-body" style={{ fontWeight: 500 }}>{item.product.name}</h4>
+                    {metaText && <p className="text-caption">{metaText}</p>}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                      <span className="text-body">Rs. {item.product.price.toLocaleString()}</span>
+                      <div className="qty-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--border-medium)', padding: '2px 8px' }}>
+                        <button className="icon-btn" style={{ padding: 0 }} onClick={() => updateQty(item.key, item.quantity - 1)}><FiMinus size={12} /></button>
+                        <span className="text-caption">{item.quantity}</span>
+                        <button className="icon-btn" style={{ padding: 0 }} onClick={() => updateQty(item.key, item.quantity + 1)}><FiPlus size={12} /></button>
+                      </div>
                     </div>
                   </div>
+                  <button className="remove-btn" onClick={() => removeFromCart(item.key)}><FiTrash2 size={16} /></button>
                 </div>
-                <button className="remove-btn" onClick={() => removeFromCart(item.key)}><FiTrash2 size={16} /></button>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
         
         <div className="cart-footer">
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
             <span className="h3" style={{ fontSize: '1.25rem' }}>Total</span>
-            <span className="h3" style={{ fontSize: '1.25rem' }}>${total}</span>
+            <span className="h3" style={{ fontSize: '1.25rem' }}>Rs. {total.toLocaleString()}</span>
           </div>
-          <button 
-            className="btn-primary" 
-            style={{ width: '100%' }}
-            onClick={() => setShowCheckoutModal(true)}
-          >
-            Checkout via WhatsApp
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <button 
+              className="btn-primary" 
+              style={{ width: '100%', padding: '14px', fontSize: '0.95rem' }}
+              onClick={handleProceedToCheckout}
+              disabled={items.length === 0}
+            >
+              Proceed to Checkout
+            </button>
+            <button 
+              className="btn-outline" 
+              style={{ width: '100%', padding: '12px', fontSize: '0.9rem', borderColor: '#25D366', color: '#25D366' }}
+              onClick={() => setShowCheckoutModal(true)}
+              disabled={items.length === 0}
+            >
+              Order via WhatsApp
+            </button>
+          </div>
         </div>
       </div>
 

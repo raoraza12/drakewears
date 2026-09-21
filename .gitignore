@@ -44,3 +44,7 @@ mongodb-files/
 
 .vercel
 .env*.local
+
+# Local Archived Scratch & Test Dumps (Kept locally on computer, ignored by Git)
+_local_archive/
+_local_archive/**

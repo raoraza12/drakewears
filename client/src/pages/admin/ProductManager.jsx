@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import API from '../../api';
 import toast from 'react-hot-toast';
-import { FiPlus, FiList, FiTrash2, FiArrowLeft } from 'react-icons/fi';
+import { FiPlus, FiList, FiTrash2, FiArrowLeft, FiImage, FiUploadCloud, FiArrowUp, FiArrowDown } from 'react-icons/fi';
 
 const ProductManager = () => {
   const [activeTab, setActiveTab] = useState('list'); // 'list' or 'add'
@@ -16,12 +16,13 @@ const ProductManager = () => {
     category: '',
     colors: '',
   });
-  const [imageFile, setImageFile] = useState(null);
-  const [imageUrlInput, setImageUrlInput] = useState('');
-  const [imageFile2, setImageFile2] = useState(null);
-  const [imageUrlInput2, setImageUrlInput2] = useState('');
+
+  // Dynamic Gallery Items: [{ id, url, file, preview }]
+  const [galleryItems, setGalleryItems] = useState([
+    { id: 'img-1', url: '', file: null, preview: '' }
+  ]);
   const [uploading, setUploading] = useState(false);
-  const [colorItems, setColorItems] = useState([{ name: '', hex: '#000000', image: '' }]);
+  const [colorItems, setColorItems] = useState([{ name: '', hex: '#000000', image: '', file: null, preview: '' }]);
 
   useEffect(() => {
     if (activeTab === 'list') {
@@ -33,7 +34,6 @@ const ProductManager = () => {
     setLoading(true);
     try {
       const res = await API.get('/products');
-      // The backend returns { products, total, page, pages }
       setProducts(res.data.products || []);
     } catch (err) {
       toast.error('Failed to fetch products');
@@ -61,9 +61,25 @@ const ProductManager = () => {
       category: product.category,
       colors: product.colors?.map(c => c.name).join(', ') || ''
     });
-    setColorItems(product.colors?.length ? product.colors.map(c => ({ name: c.name || '', hex: c.hex || '#000000', image: c.image || '' })) : [{ name: '', hex: '#000000', image: '' }]);
-    setImageUrlInput(product.images?.[0] || '');
-    setImageUrlInput2(product.images?.[1] || '');
+    setColorItems(product.colors?.length ? product.colors.map(c => ({ 
+      name: c.name || '', 
+      hex: c.hex || '#000000', 
+      image: c.image || '',
+      file: null,
+      preview: c.image || ''
+    })) : [{ name: '', hex: '#000000', image: '', file: null, preview: '' }]);
+    
+    // Populate dynamic gallery with existing product images
+    if (product.images && product.images.length > 0) {
+      setGalleryItems(product.images.map((imgUrl, idx) => ({
+        id: `existing-${idx}-${Date.now()}`,
+        url: imgUrl,
+        file: null,
+        preview: imgUrl
+      })));
+    } else {
+      setGalleryItems([{ id: 'img-1', url: '', file: null, preview: '' }]);
+    }
     setActiveTab('add');
   };
 
@@ -82,14 +98,81 @@ const ProductManager = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    setImageFile(e.target.files[0]);
+  // Add multiple files from device
+  const handleMultipleGalleryFiles = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    const newItems = files.map(file => ({
+      id: 'file-' + Math.random().toString(36).substring(2, 9),
+      url: '',
+      file: file,
+      preview: URL.createObjectURL(file)
+    }));
+    setGalleryItems(prev => {
+      const filtered = prev.filter(it => it.url?.trim() || it.file);
+      return [...filtered, ...newItems];
+    });
+    e.target.value = '';
+  };
+
+  // Add individual empty slot
+  const handleAddGallerySlot = () => {
+    setGalleryItems(prev => [...prev, { id: 'slot-' + Date.now(), url: '', file: null, preview: '' }]);
+  };
+
+  // Remove a gallery item
+  const handleRemoveGalleryItem = (index) => {
+    setGalleryItems(prev => {
+      const copy = [...prev];
+      const removed = copy.splice(index, 1)[0];
+      if (removed?.preview && removed?.file) {
+        URL.revokeObjectURL(removed.preview);
+      }
+      return copy.length > 0 ? copy : [{ id: 'empty-1', url: '', file: null, preview: '' }];
+    });
+  };
+
+  // Update gallery item URL
+  const handleUpdateGalleryUrl = (index, url) => {
+    setGalleryItems(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], url, file: null, preview: url };
+      return copy;
+    });
+  };
+
+  // Update gallery item file
+  const handleUpdateGalleryFile = (index, file) => {
+    if (!file) return;
+    setGalleryItems(prev => {
+      const copy = [...prev];
+      copy[index] = { 
+        ...copy[index], 
+        file, 
+        url: '', 
+        preview: URL.createObjectURL(file) 
+      };
+      return copy;
+    });
+  };
+
+  // Move gallery item up / down in order
+  const handleMoveGalleryItem = (index, direction) => {
+    setGalleryItems(prev => {
+      const copy = [...prev];
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= copy.length) return prev;
+      const temp = copy[index];
+      copy[index] = copy[targetIndex];
+      copy[targetIndex] = temp;
+      return copy;
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.price || (!imageFile && !imageUrlInput)) {
-      toast.error('Name, price, and either an image file or URL are required.');
+    if (!formData.name || !formData.price) {
+      toast.error('Name and price are required.');
       return;
     }
     if (!formData.category) {
@@ -97,30 +180,29 @@ const ProductManager = () => {
       return;
     }
 
+    const validGallery = galleryItems.filter(it => it.url?.trim() || it.file);
+    if (validGallery.length === 0) {
+      toast.error('Please add at least one product image (upload a file or paste a URL).');
+      return;
+    }
+
     setUploading(true);
 
     try {
-      // 1. Image Handling
-      let imageUrl1 = imageUrlInput;
-      if (imageFile) {
-        const uploadData = new FormData();
-        uploadData.append('image', imageFile);
-
-        const uploadRes = await API.post('/upload', uploadData, { headers: { 'Content-Type': 'multipart/form-data' } });
-        imageUrl1 = uploadRes.data.url;
-      }
-
-      let imageUrl2 = imageUrlInput2;
-      if (imageFile2) {
-        const uploadData2 = new FormData();
-        uploadData2.append('image', imageFile2);
-
-        const uploadRes2 = await API.post('/upload', uploadData2, { headers: { 'Content-Type': 'multipart/form-data' } });
-        imageUrl2 = uploadRes2.data.url;
-      }
-
-      const finalImages = [imageUrl1];
-      if (imageUrl2) finalImages.push(imageUrl2);
+      // 1. Upload Gallery Files to Cloudinary
+      const finalImages = await Promise.all(
+        validGallery.map(async (item) => {
+          if (item.file) {
+            const uploadData = new FormData();
+            uploadData.append('image', item.file);
+            const uploadRes = await API.post('/upload', uploadData, { 
+              headers: { 'Content-Type': 'multipart/form-data' } 
+            });
+            return uploadRes.data.url;
+          }
+          return item.url.trim();
+        })
+      );
 
       // 2. Format Colors (Upload color variant files if attached)
       const colorMap = {
@@ -147,7 +229,7 @@ const ProductManager = () => {
         })
       );
 
-      if (colorsArray.length === 0 && formData.colors.trim()) {
+      if (colorsArray.length === 0 && formData.colors?.trim()) {
         colorsArray = formData.colors.split(',').map(c => {
           const name = c.trim();
           const hex = colorMap[name.toLowerCase()] || '#333333';
@@ -175,17 +257,15 @@ const ProductManager = () => {
       }
 
       setFormData({ name: '', price: '', category: '', colors: '' });
-      setColorItems([{ name: '', hex: '#000000', image: '' }]);
-      setImageFile(null);
-      setImageUrlInput('');
-      setImageFile2(null);
-      setImageUrlInput2('');
+      setColorItems([{ name: '', hex: '#000000', image: '', file: null, preview: '' }]);
+      setGalleryItems([{ id: 'img-init-1', url: '', file: null, preview: '' }]);
       setEditingId(null);
       if (e.target.reset) e.target.reset();
-      setActiveTab('list'); // switch back to list
+      setActiveTab('list');
+      fetchProducts();
     } catch (err) {
       console.error(err);
-      toast.error('Error adding product: ' + (err.response?.data?.message || err.message));
+      toast.error('Error saving product: ' + (err.response?.data?.message || err.message));
     } finally {
       setUploading(false);
     }
@@ -439,118 +519,187 @@ const ProductManager = () => {
               </button>
             </div>
 
-            {/* Main Product Image Section */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <label style={{ fontWeight: '600', fontSize: '0.95rem' }}>Main Product Image *</label>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', background: 'var(--bg-elevated)', padding: '20px', borderRadius: '10px', border: '1px solid var(--border-medium)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+            {/* Dynamic Multi-Image Product Gallery Section */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
                 <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>Option 1: Paste Image URL (High Quality Recommended)</label>
-                  <input 
-                    type="url" 
-                    value={imageUrlInput} 
-                    onChange={(e) => { setImageUrlInput(e.target.value); setImageFile(null); }} 
-                    className="form-input" 
-                    placeholder="https://example.com/image.jpg" 
-                    disabled={!!imageFile}
-                  />
-                  {imageUrlInput && (
-                    <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Preview:</span>
-                      <img src={imageUrlInput} alt="Preview" style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border-medium)' }} onError={(e) => e.target.style.display = 'none'} />
-                    </div>
-                  )}
+                  <label style={{ fontWeight: '600', fontSize: '0.98rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FiImage style={{ color: 'var(--gold)' }} /> Product Images Gallery ({galleryItems.filter(i => i.url?.trim() || i.file).length} added) *
+                  </label>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px', marginBottom: 0 }}>
+                    Image #1 is the <strong>Cover Photo</strong> displayed on shop cards. User can scroll through all photos when viewing the product.
+                  </p>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <hr style={{ flex: 1, borderTop: '1px solid var(--border-medium)', margin: 0 }} />
-                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>OR</span>
-                  <hr style={{ flex: 1, borderTop: '1px solid var(--border-medium)', margin: 0 }} />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '8px', display: 'block', fontWeight: '500' }}>Option 2: Upload File</label>
+                {/* Batch Multi-Upload Button */}
+                <label style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 16px',
+                  borderRadius: '6px',
+                  background: 'rgba(201, 168, 76, 0.12)',
+                  border: '1px solid var(--gold)',
+                  color: 'var(--gold)',
+                  fontSize: '0.82rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}>
+                  <FiUploadCloud size={16} /> Upload Multiple Images from Computer
                   <input 
                     type="file" 
+                    multiple 
                     accept="image/*" 
-                    onChange={(e) => { setImageFile(e.target.files[0]); setImageUrlInput(''); }} 
-                    disabled={!!imageUrlInput}
-                    style={{ 
-                      padding: '14px', 
-                      border: '2px dashed var(--border-medium)', 
-                      borderRadius: '8px', 
-                      width: '100%', 
-                      cursor: 'pointer',
-                      background: 'var(--bg-primary)',
-                      color: 'var(--text-primary)',
-                      transition: 'all 0.2s ease',
-                      outline: 'none'
-                    }} 
+                    style={{ display: 'none' }} 
+                    onChange={handleMultipleGalleryFiles}
                   />
-                  {imageFile && (
-                    <p style={{ fontSize: '0.8rem', color: 'var(--gold)', marginTop: '6px', marginBottom: 0, fontWeight: '500' }}>✓ File selected: {imageFile.name}</p>
-                  )}
-                </div>
+                </label>
               </div>
-            </div>
 
-            {/* Hover Image Section */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <label style={{ fontWeight: '600', fontSize: '0.95rem' }}>Hover Image (Optional - Shown on Card Hover)</label>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', background: 'var(--bg-elevated)', padding: '20px', borderRadius: '10px', border: '1px solid var(--border-medium)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>Option 1: Paste Hover Image URL</label>
-                  <input 
-                    type="url" 
-                    value={imageUrlInput2} 
-                    onChange={(e) => { setImageUrlInput2(e.target.value); setImageFile2(null); }} 
-                    className="form-input" 
-                    placeholder="https://example.com/hover.jpg" 
-                    disabled={!!imageFile2}
-                  />
-                  {imageUrlInput2 && (
-                    <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Hover Preview:</span>
-                      <img src={imageUrlInput2} alt="Hover Preview" style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border-medium)' }} onError={(e) => e.target.style.display = 'none'} />
+              {/* Gallery Items List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {galleryItems.map((item, idx) => (
+                  <div key={item.id || idx} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px',
+                    background: 'var(--bg-elevated)',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    border: idx === 0 ? '1.5px solid var(--gold)' : '1px solid var(--border-medium)',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
+                  }}>
+                    {/* Index & Order Buttons */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', minWidth: '45px' }}>
+                      <span style={{
+                        fontSize: '0.7rem',
+                        fontWeight: '700',
+                        textTransform: 'uppercase',
+                        padding: '3px 7px',
+                        borderRadius: '4px',
+                        background: idx === 0 ? 'var(--gold)' : 'var(--bg-primary)',
+                        color: idx === 0 ? '#000000' : 'var(--text-secondary)',
+                        letterSpacing: '0.04em'
+                      }}>
+                        {idx === 0 ? 'Cover' : `#${idx + 1}`}
+                      </span>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        <button 
+                          type="button" 
+                          disabled={idx === 0}
+                          onClick={() => handleMoveGalleryItem(idx, -1)}
+                          style={{ background: 'none', border: 'none', color: idx === 0 ? 'var(--text-muted)' : 'var(--text-secondary)', cursor: idx === 0 ? 'default' : 'pointer', padding: '2px' }}
+                          title="Move Up"
+                        >
+                          <FiArrowUp size={13} />
+                        </button>
+                        <button 
+                          type="button" 
+                          disabled={idx === galleryItems.length - 1}
+                          onClick={() => handleMoveGalleryItem(idx, 1)}
+                          style={{ background: 'none', border: 'none', color: idx === galleryItems.length - 1 ? 'var(--text-muted)' : 'var(--text-secondary)', cursor: idx === galleryItems.length - 1 ? 'default' : 'pointer', padding: '2px' }}
+                          title="Move Down"
+                        >
+                          <FiArrowDown size={13} />
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <hr style={{ flex: 1, borderTop: '1px solid var(--border-medium)', margin: 0 }} />
-                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>OR</span>
-                  <hr style={{ flex: 1, borderTop: '1px solid var(--border-medium)', margin: 0 }} />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '8px', display: 'block', fontWeight: '500' }}>Option 2: Upload Hover Image File</label>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={(e) => { setImageFile2(e.target.files[0]); setImageUrlInput2(''); }} 
-                    disabled={!!imageUrlInput2}
-                    style={{ 
-                      padding: '14px', 
-                      border: '2px dashed var(--border-medium)', 
-                      borderRadius: '8px', 
-                      width: '100%', 
-                      cursor: 'pointer',
+                    {/* Live Preview Thumbnail */}
+                    <div style={{
+                      width: '58px',
+                      height: '58px',
+                      borderRadius: '6px',
                       background: 'var(--bg-primary)',
-                      color: 'var(--text-primary)',
-                      transition: 'all 0.2s ease',
-                      outline: 'none'
-                    }} 
-                  />
-                  {imageFile2 && (
-                    <p style={{ fontSize: '0.8rem', color: 'var(--gold)', marginTop: '6px', marginBottom: 0, fontWeight: '500' }}>✓ File selected: {imageFile2.name}</p>
-                  )}
-                </div>
+                      border: '1px solid var(--border-light)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      flexShrink: 0
+                    }}>
+                      {item.preview || item.url ? (
+                        <img 
+                          src={item.preview || item.url} 
+                          alt={`Gallery item ${idx + 1}`} 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <FiImage size={20} color="var(--text-muted)" />
+                      )}
+                    </div>
+
+                    {/* Image Inputs */}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <input 
+                          type="url"
+                          className="form-input"
+                          style={{ fontSize: '0.82rem', padding: '8px 12px' }}
+                          placeholder={item.file ? `File attached: ${item.file.name}` : "Option 1: Paste Image URL (https://...)"}
+                          value={item.url || ''}
+                          disabled={!!item.file}
+                          onChange={(e) => handleUpdateGalleryUrl(idx, e.target.value)}
+                        />
+                        <label style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '7px 12px',
+                          borderRadius: '6px',
+                          background: 'var(--bg-primary)',
+                          border: '1px dashed var(--border-medium)',
+                          fontSize: '0.78rem',
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          color: 'var(--text-secondary)'
+                        }}>
+                          Choose File
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            style={{ display: 'none' }} 
+                            onChange={(e) => handleUpdateGalleryFile(idx, e.target.files[0])}
+                          />
+                        </label>
+                      </div>
+                      {item.file && (
+                        <span style={{ fontSize: '0.72rem', color: 'var(--gold)' }}>
+                          ✓ Selected: {item.file.name}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Delete item button */}
+                    {galleryItems.length > 1 && (
+                      <button 
+                        type="button" 
+                        onClick={() => handleRemoveGalleryItem(idx)}
+                        style={{ background: 'none', border: 'none', color: 'var(--red)', cursor: 'pointer', padding: '8px' }}
+                        title="Remove image"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
+
+              {/* Add Single Slot Button */}
+              <button 
+                type="button" 
+                onClick={handleAddGallerySlot}
+                className="btn-outline"
+                style={{ alignSelf: 'flex-start', padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '6px' }}
+              >
+                <FiPlus /> Add Single Image Slot
+              </button>
             </div>
 
             <button type="submit" className="btn-primary" disabled={uploading} style={{ marginTop: '12px', padding: '14px', width: '100%', fontSize: '1rem' }}>
-              {uploading ? 'Uploading & Saving...' : 'Add Product to Store'}
+              {uploading ? 'Uploading & Saving to Store...' : (editingId ? 'Update Product' : 'Add Product to Store')}
             </button>
           </form>
         )}

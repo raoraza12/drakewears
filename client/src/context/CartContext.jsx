@@ -16,13 +16,30 @@ export function CartProvider({ children }) {
   }, [items]);
 
   const addToCart = (product, size, color, quantity = 1) => {
-    const key = `${product.id || product._id}-${size}-${color?.name || ''}`;
+    if (product.stock !== undefined && product.stock <= 0) {
+      toast.error(`Sorry, ${product.name} is currently out of stock!`);
+      return;
+    }
+
+    const sizeVal = size || '';
+    const colorName = typeof color === 'string' ? color : (color?.name || '');
+    const colorObj = colorName ? (typeof color === 'object' && color.hex ? color : { name: colorName }) : null;
+    const key = `${product.id || product._id}-${sizeVal}-${colorName}`;
+
     setItems(prev => {
       const existing = prev.find(i => i.key === key);
-      if (existing) {
-        return prev.map(i => i.key === key ? { ...i, quantity: i.quantity + quantity } : i);
+      const currentQty = existing ? existing.quantity : 0;
+      const targetQty = currentQty + quantity;
+
+      if (product.stock !== undefined && targetQty > product.stock) {
+        toast.error(`Only ${product.stock} units available in stock!`);
+        return prev;
       }
-      return [...prev, { key, product, size, color, quantity }];
+
+      if (existing) {
+        return prev.map(i => i.key === key ? { ...i, quantity: targetQty } : i);
+      }
+      return [...prev, { key, product, size: sizeVal, color: colorObj, quantity }];
     });
     setIsOpen(true);
     toast.success(`${product.name} added to cart!`);
@@ -34,7 +51,16 @@ export function CartProvider({ children }) {
 
   const updateQty = (key, qty) => {
     if (qty <= 0) return removeFromCart(key);
-    setItems(prev => prev.map(i => i.key === key ? { ...i, quantity: qty } : i));
+    setItems(prev => prev.map(i => {
+      if (i.key === key) {
+        if (i.product.stock !== undefined && qty > i.product.stock) {
+          toast.error(`Maximum available stock is ${i.product.stock}`);
+          return i;
+        }
+        return { ...i, quantity: qty };
+      }
+      return i;
+    }));
   };
 
   const clearCart = () => setItems([]);

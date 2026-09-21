@@ -10,8 +10,8 @@ const ThemeSettings = () => {
     storeName: 'drakewears',
     currency: 'RS',
     shippingFee: 150,
-    contactEmail: 'contact@drakewearsbrand.com',
-    contactPhone: '0300-0000000'
+    contactEmail: 'info@drakewears.com',
+    contactPhone: '+92 321 8254922'
   });
 
   useEffect(() => {

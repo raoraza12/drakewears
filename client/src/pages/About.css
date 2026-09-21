@@ -1,3 +1,9 @@
+/* ==========================================================
+   DRAKEWEARS — ABOUT US 3D LUXURY STYLES
+   Option 1 (Default): White Major / Black Minor
+   Option 2 ([data-theme="dark"]): Black Major / White Minor
+   ========================================================== */
+
 /* Initial state for scroll animations */
 .animate-on-scroll {
   opacity: 0;
@@ -10,21 +16,41 @@
   transform: translateY(0);
 }
 
+.about-3d-page {
+  background: var(--bg-primary, #FFFFFF);
+  color: var(--text-primary, #0E0E10);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 /* 1. Hero Section */
 .about-hero-section {
   position: relative;
-  height: 90vh;
-  min-height: 600px;
+  height: 85vh;
+  min-height: 550px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  /* Demo placeholder image - can be replaced later */
   background-image: url('https://images.unsplash.com/photo-1618331835717-801e976710b2?q=80&w=2000&auto=format&fit=crop');
   background-size: cover;
-  background-position: center;
+  background-position: center 20%;
   background-attachment: fixed;
-  color: #fff; /* Ensure text is light on dark overlay */
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.about-kicker-badge {
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  font-weight: 800;
+  color: #e4e4e7;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 6px 16px;
+  border-radius: 30px;
+  margin-bottom: 20px;
+  display: inline-block;
 }
 
 .hero-overlay {
@@ -33,45 +59,152 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6); /* Dark overlay */
+  background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.88) 100%);
   z-index: 1;
 }
 
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 800px;
+  max-width: 850px;
   padding: 0 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.hero-logo {
-  width: 300px;
-  max-width: 80vw;
-  height: auto;
-  margin-bottom: 24px;
-  /* If the SVG is black, we invert it to white for the dark background */
-  filter: invert(1);
-}
-
-.about-hero-section .h1 {
-  color: #fff;
-  margin-bottom: 16px;
-  font-size: clamp(2rem, 5vw, 4rem);
-}
-
 .hero-subtext {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.9);
-  max-width: 600px;
+  font-size: 1.15rem;
+  color: #e4e4e7;
+  max-width: 650px;
+  line-height: 1.6;
+  margin-top: 14px;
 }
 
-/* 2. Craftsmanship Section */
+/* 2. Interactive 3D Brand Pillars */
+.about-pillars-section {
+  padding: 100px 0 120px;
+  background: #F7F7FA;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  transition: background 0.3s ease;
+}
+
+.about-pillars-section .section-main-title {
+  color: #0E0E10;
+}
+
+.about-pillars-section .section-subtext {
+  color: #52525B;
+}
+
+.about-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-top: 54px;
+}
+
+.about-pillar-3d-card {
+  position: relative;
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  padding: 38px 28px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, border-color 0.25s ease, box-shadow 0.25s ease, background 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.about-pillar-3d-card:hover {
+  border-color: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.1);
+}
+
+.pillar-card-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.35) 0%, transparent 60%);
+  opacity: var(--glare-op, 0);
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.25s ease;
+}
+
+.pillar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.pillar-num {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #71717A;
+}
+
+.pillar-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #000000;
+  border: 1px solid #000000;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pillar-sub {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  font-weight: 800;
+  color: #71717A;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.pillar-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: #0E0E10;
+  margin: 0 0 14px;
+}
+
+.pillar-desc {
+  font-size: 0.9rem;
+  color: #52525B;
+  line-height: 1.65;
+  margin: 0 0 28px;
+  flex-grow: 1;
+}
+
+.pillar-bottom-bar {
+  height: 2px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 2px;
+  transition: background 0.3s ease;
+}
+
+.about-pillar-3d-card:hover .pillar-bottom-bar {
+  background: #000000;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* 3. Craftsmanship Section */
 .craftsmanship-section {
   padding: 120px 0;
-  background: var(--bg-primary);
+  background: #FFFFFF;
+  transition: background 0.3s ease;
 }
 
 .craftsmanship-grid {
@@ -82,135 +215,242 @@
 }
 
 .craft-image-container {
+  position: relative;
   width: 100%;
-  height: 600px;
+  height: 520px;
+  border-radius: 20px;
   overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
 }
 
 .craft-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 1s ease;
+  transition: transform 0.8s ease;
 }
 
 .craft-image-container:hover .craft-image {
-  transform: scale(1.05);
+  transform: scale(1.04);
+}
+
+.craft-floating-badge {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  background: rgba(12, 12, 16, 0.85);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: #FFFFFF;
 }
 
 .craft-text-container {
   padding: 24px 0;
 }
 
-/* 3. Philosophy Grid */
-.philosophy-section {
-  padding: 80px 0;
-  background: var(--bg-secondary);
+.craft-text-container .h2 {
+  color: #0E0E10;
 }
 
-.about-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
+.craft-text-container .text-body {
+  color: #52525B;
 }
 
-.about-text {
-  padding: 40px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.craft-specs-mini-row strong {
+  color: #0E0E10;
 }
 
-.about-text:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+.craft-specs-mini-row span {
+  color: #71717A;
 }
 
 /* 4. Founder's Note */
 .founder-section {
-  padding: 120px 0;
-  background: var(--bg-primary);
+  padding: 100px 0;
+  background: #F7F7FA;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  transition: background 0.3s ease;
+}
+
+.founder-3d-box {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 48px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05);
+}
+
+.founder-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  font-weight: 800;
+  color: #71717A;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 20px;
 }
 
 .founder-quote {
-  font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
-  font-style: italic;
-  font-weight: 300;
-  line-height: 1.4;
-  color: var(--text-primary);
-  max-width: 800px;
-  margin: 0 auto 32px auto;
+  font-family: var(--font-sans);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 900;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: #0E0E10;
+  margin: 0 0 24px;
 }
 
 .founder-signature {
-  font-size: 4rem;
-  margin-top: -20px;
-  color: var(--text-secondary);
+  font-size: 3.5rem;
+  color: #0E0E10;
+  margin: 0;
 }
 
-/* 5. Fabric Care Section */
-.care-section {
-  padding: 80px 0 120px 0;
-  background: var(--bg-primary);
-}
-
-.care-container {
-  max-width: 800px;
-  margin: 0 auto;
+/* 5. Bottom CTA Banner */
+.about-cta-section {
+  padding: 100px 0;
+  background: #0E0E10;
+  color: #FFFFFF;
   text-align: center;
-  padding: 40px;
-  background: var(--bg-elevated);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
 }
 
-/* 6. CTA Section */
-.cta-section {
-  padding: 120px 0;
-  background: var(--bg-dark);
-  color: #fff;
+.about-cta-content {
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.cta-section .h2 {
-  color: #fff;
+.about-cta-content .h2 {
+  color: #FFFFFF;
+  margin-bottom: 16px;
 }
 
-.btn-large {
-  padding: 16px 40px;
-  font-size: 1.1rem;
+.about-cta-content p {
+  color: #A1A1AA;
+  margin-bottom: 32px;
 }
 
+/* ==========================================================
+   BLACK THEME (DARK MODE) OVERRIDES FOR ABOUT PAGE
+   Option 2: Black Major / White Minor
+   ========================================================== */
+[data-theme="dark"] .about-3d-page {
+  background: #070709 !important;
+  color: #FFFFFF !important;
+}
 
-/* Responsive Adjustments */
-@media (max-width: 992px) {
-  .craftsmanship-grid {
-    gap: 40px;
+[data-theme="dark"] .about-pillars-section {
+  background: radial-gradient(circle at 50% 30%, #121216 0%, #060608 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .about-pillars-section .section-main-title {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .about-pillars-section .section-subtext {
+  color: #A1A1AA !important;
+}
+
+[data-theme="dark"] .about-pillar-3d-card {
+  background: #0D0D10 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] .about-pillar-3d-card:hover {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .pillar-icon {
+  background: #18181C !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .pillar-title {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .pillar-desc {
+  color: #A1A1AA !important;
+}
+
+[data-theme="dark"] .pillar-bottom-bar {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .about-pillar-3d-card:hover .pillar-bottom-bar {
+  background: #FFFFFF !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6) !important;
+}
+
+[data-theme="dark"] .craftsmanship-section {
+  background: #09090C !important;
+}
+
+[data-theme="dark"] .craft-image-container {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7) !important;
+}
+
+[data-theme="dark"] .craft-text-container .h2 {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .craft-text-container .text-body {
+  color: #A1A1AA !important;
+}
+
+[data-theme="dark"] .craft-specs-mini-row strong {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .founder-section {
+  background: radial-gradient(circle at 50% 50%, #121216 0%, #060608 100%) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .founder-3d-box {
+  background: #0E0E12 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-theme="dark"] .founder-quote {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .founder-signature {
+  color: #FFFFFF !important;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .about-pillars-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
-  .about-grid {
-    gap: 40px;
+  .craftsmanship-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .craft-image-container {
+    height: 400px;
   }
 }
 
 @media (max-width: 768px) {
-  .craftsmanship-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .craft-image-container {
-    height: 400px;
-  }
-
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
-  .about-text {
-    padding: 24px;
-  }
-
-  .founder-quote {
-    font-size: 1.5rem;
+  .founder-3d-box {
+    padding: 32px 20px;
   }
 }

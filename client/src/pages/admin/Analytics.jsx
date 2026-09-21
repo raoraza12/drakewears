@@ -29,7 +29,7 @@ const Analytics = () => {
   }, []);
 
   const stats = [
-    { title: 'Total Revenue', value: `$${data.totalRevenue.toLocaleString()}`, trend: '+12.5%', icon: <FiDollarSign /> },
+    { title: 'Total Revenue', value: `Rs. ${data.totalRevenue.toLocaleString()}`, trend: '+12.5%', icon: <FiDollarSign /> },
     { title: 'Active Users', value: data.usersCount.toString(), trend: '+5.2%', icon: <FiUsers /> },
     { title: 'Total Sales', value: data.ordersCount.toString(), trend: '+18.1%', icon: <FiShoppingBag /> },
     { title: 'Total Products', value: data.productsCount.toString(), trend: '+2.1%', icon: <FiActivity /> }

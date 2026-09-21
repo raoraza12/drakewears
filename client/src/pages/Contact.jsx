@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiMail, FiPhone, FiMessageCircle, FiClock, FiMapPin } from 'react-icons/fi';
+import { FiMail, FiPhone, FiMessageCircle, FiClock, FiMapPin, FiInstagram } from 'react-icons/fi';
 import './Contact.css';
 
 const Contact = () => {
@@ -28,32 +28,51 @@ const Contact = () => {
             <div className="contact-info">
               <h1 className="h1" style={{ marginBottom: '16px' }}>Get in Touch</h1>
               <p className="text-body" style={{ marginBottom: '32px', color: 'var(--text-secondary)' }}>
-                Have a question about our oversized drop shoulder tees or baggy trousers? Reach out directly via WhatsApp, email, or fill out the form.
+                Have a question about our oversized drop shoulder tees or baggy trousers? Reach out directly via WhatsApp, email, or follow our official Instagram.
               </p>
               
               <div className="info-block" style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#000000', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--text-primary)', color: 'var(--text-inverse)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <FiMail size={18} />
                   </div>
                   <h3 className="h3" style={{ fontSize: '1.1rem', margin: 0 }}>Official Email</h3>
                 </div>
-                <p className="text-body" style={{ fontWeight: 500, paddingLeft: '50px' }}>raoraza5417@gmail.com</p>
+                <p className="text-body" style={{ fontWeight: 500, paddingLeft: '50px' }}>info@drakewears.com</p>
               </div>
 
               <div className="info-block" style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#000000', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--text-primary)', color: 'var(--text-inverse)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <FiPhone size={18} />
                   </div>
                   <h3 className="h3" style={{ fontSize: '1.1rem', margin: 0 }}>Contact & Support</h3>
                 </div>
-                <p className="text-body" style={{ fontWeight: 500, paddingLeft: '50px' }}>0345 8999091</p>
+                <p className="text-body" style={{ fontWeight: 500, paddingLeft: '50px' }}>+92 321 8254922</p>
+              </div>
+
+              <div className="info-block" style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--text-primary)', color: 'var(--text-inverse)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <FiInstagram size={18} />
+                  </div>
+                  <h3 className="h3" style={{ fontSize: '1.1rem', margin: 0 }}>Official Instagram</h3>
+                </div>
+                <p className="text-body" style={{ fontWeight: 500, paddingLeft: '50px' }}>
+                  <a 
+                    href="https://www.instagram.com/drakewears_official" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    style={{ textDecoration: 'underline', color: 'inherit' }}
+                  >
+                    @drakewears_official ↗
+                  </a>
+                </p>
               </div>
 
               <div className="info-block" style={{ marginBottom: '32px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#000000', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--text-primary)', color: 'var(--text-inverse)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <FiClock size={18} />
                   </div>
                   <h3 className="h3" style={{ fontSize: '1.1rem', margin: 0 }}>Working Hours</h3>
@@ -61,22 +80,34 @@ const Contact = () => {
                 <p className="text-body" style={{ paddingLeft: '50px' }}>24/7 Online Support Available (Always Open)</p>
               </div>
 
-              <a 
-                href="https://api.whatsapp.com/send?phone=923458999091" 
-                onClick={(e) => {
-                  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                  if (isMobile) {
-                    e.preventDefault();
-                    window.location.href = "whatsapp://send?phone=923458999091";
-                  }
-                }}
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="btn-primary" 
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '14px 24px', textDecoration: 'none' }}
-              >
-                <FiMessageCircle size={20} /> Chat on WhatsApp
-              </a>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <a 
+                  href="https://api.whatsapp.com/send?phone=923218254922" 
+                  onClick={(e) => {
+                    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                    if (isMobile) {
+                      e.preventDefault();
+                      window.location.href = "whatsapp://send?phone=923218254922";
+                    }
+                  }}
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="btn-primary" 
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '14px 24px', textDecoration: 'none' }}
+                >
+                  <FiMessageCircle size={20} /> Chat on WhatsApp
+                </a>
+
+                <a 
+                  href="https://www.instagram.com/drakewears_official" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="btn-outline" 
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '14px 22px', textDecoration: 'none' }}
+                >
+                  <FiInstagram size={18} /> Visit Instagram
+                </a>
+              </div>
             </div>
             
             <div className="contact-form-wrapper">

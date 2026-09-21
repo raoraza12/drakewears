@@ -1,11 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiInstagram, FiTwitter, FiFacebook } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import { useSettings } from '../context/SettingsContext';
 import './Footer.css';
 
 const Footer = () => {
   const { settings } = useSettings();
+  const [email, setEmail] = useState('');
+
+  const handleNewsletterSubmit = (e) => {
+    e.preventDefault();
+    if (!email || !email.includes('@')) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+    toast.success('Thank you for subscribing to DRAKEWEARS drops! ⚡');
+    setEmail('');
+  };
   
   return (
     <footer className="footer">
@@ -33,9 +45,16 @@ const Footer = () => {
           
           <div className="footer-newsletter">
             <h3 className="footer-heading">Newsletter</h3>
-            <p className="text-caption">Subscribe to receive updates, access to exclusive deals, and more.</p>
-            <form className="newsletter-form">
-              <input type="email" placeholder="Enter your email address" className="form-input" />
+            <p className="text-caption">Subscribe to receive updates, access to exclusive drops, and private deals.</p>
+            <form className="newsletter-form" onSubmit={handleNewsletterSubmit}>
+              <input 
+                type="email" 
+                placeholder="Enter your email address" 
+                className="form-input" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
               <button type="submit" className="btn-primary">Subscribe</button>
             </form>
           </div>
@@ -46,9 +65,24 @@ const Footer = () => {
         <div className="container footer-bottom-container">
           <p className="text-caption">© {new Date().getFullYear()} drakewears. All rights reserved.</p>
           <div className="footer-socials">
-            <a href="#" className="social-link"><FiInstagram size={18} /></a>
-            <a href="#" className="social-link"><FiTwitter size={18} /></a>
-            <a href="#" className="social-link"><FiFacebook size={18} /></a>
+            <a 
+              href="https://www.instagram.com/drakewears_official" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="social-link" 
+              title="Follow us on Instagram"
+            >
+              <FiInstagram size={18} />
+            </a>
+            <a 
+              href="https://facebook.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="social-link" 
+              title="Facebook"
+            >
+              <FiFacebook size={18} />
+            </a>
           </div>
           <div className="footer-legals">
             <Link to="/privacy" className="text-caption">Privacy Policy</Link>

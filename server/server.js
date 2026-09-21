@@ -1,18 +1,78 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const prisma = require('./lib/prisma');
 
 const app = express();
 
-// Middleware
+// Trust reverse proxy (Vercel / Cloudflare / Nginx) for accurate client IP detection
+app.set('trust proxy', 1);
+
+// Z+ Security: Helmet HTTP Headers protection (allowing Cloudinary images)
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: false // Disabled so frontend can load Cloudinary & Google Fonts seamlessly
+}));
+
+// Global Rate Limiter
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1' || req.ip?.includes('127.0.0.1'),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many requests from this IP, please try again after 15 minutes.' }
+});
+app.use('/api', globalLimiter);
+
+// Auth Limiter: Skip localhost so developers/testers don't get locked out
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1' || req.ip?.includes('127.0.0.1'),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Security alert: Too many login/register attempts. Please wait 15 minutes.' }
+});
+
+// Production-Ready Strict CORS Configuration
+const allowedOrigins = [
+  'https://drakewears.com',
+  'https://www.drakewears.com',
+  'https://drakewears.vercel.app',
+  process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: true, // Allow all origins for now to fix connection issues
+  origin: (origin, callback) => {
+    // Allow non-browser requests (Postman, curl, server-to-server, or same-origin serverless)
+    if (!origin) return callback(null, true);
+
+    // In local development, permit localhost ports
+    if (process.env.NODE_ENV !== 'production') {
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        return callback(null, true);
+      }
+    }
+
+    // In production, permit exact allowed domains or vercel subdomains
+    const isAllowed = allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      origin.endsWith('.drakewears.com');
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS Error: Origin ${origin} not permitted by DRAKEWEARS policy.`));
+    }
+  },
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
 
 // Attach Prisma to Req so routes can use it without importing everywhere
@@ -28,7 +88,7 @@ const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', authLimiter, require('./routes/auth'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/users', require('./routes/users'));

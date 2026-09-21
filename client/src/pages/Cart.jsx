@@ -1,14 +1,28 @@
-import { Link } from 'react-router-dom';
-import { FiMinus, FiPlus, FiTrash2, FiShoppingBag } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiArrowRight } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import './Cart.css';
 
 export default function Cart() {
   const { items, updateQty, removeFromCart, total, clearCart } = useCart();
+  const { user } = useAuth();
   const { settings } = useSettings();
+  const navigate = useNavigate();
+
   const defaultShipping = settings?.shippingFee || 150;
   const shippingFee = total >= 5000 ? 0 : defaultShipping;
+
+  const handleCheckoutClick = () => {
+    if (!user) {
+      toast('Please login or register to continue to checkout', { icon: '🔒' });
+      navigate('/login?redirect=/checkout');
+    } else {
+      navigate('/checkout');
+    }
+  };
 
   if (items.length === 0) return (
     <div className="page-wrapper empty-page">
@@ -39,7 +53,7 @@ export default function Cart() {
                     <Link to={`/shop/${item.product.slug}`} className="cart-page-name">{item.product.name}</Link>
                     <div className="cart-page-meta">
                       {item.size && <span>Size: {item.size}</span>}
-                      {item.color && <span>{item.color.name}</span>}
+                      {item.color && <span>Color: {typeof item.color === 'object' ? item.color.name : item.color}</span>}
                     </div>
                   </div>
                   <button className="cart-page-remove" onClick={() => removeFromCart(item.key)}><FiTrash2 size={16} /></button>
@@ -64,7 +78,14 @@ export default function Cart() {
             {shippingFee > 0 && <p style={{fontSize:'0.75rem', color:'var(--text-muted)'}}>Add Rs. {(5000 - total).toLocaleString()} more for free delivery</p>}
             <div className="cart-summary-row total"><span>Total</span><span style={{color:'var(--gold)'}}>Rs. {(total + shippingFee).toLocaleString()}</span></div>
           </div>
-          <Link to="/checkout" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '15px' }}>Proceed to Checkout</Link>
+          <button 
+            type="button" 
+            onClick={handleCheckoutClick} 
+            className="btn-primary" 
+            style={{ width: '100%', justifyContent: 'center', padding: '15px', gap: 8 }}
+          >
+            Proceed to Checkout <FiArrowRight size={16} />
+          </button>
           <Link to="/shop" className="btn-outline" style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: 12 }}>Continue Shopping</Link>
         </div>
       </div>

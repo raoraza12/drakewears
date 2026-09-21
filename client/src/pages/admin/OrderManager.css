@@ -1,0 +1,539 @@
+/* OrderManager.css - DrakeWears Luxury Responsive Order Hub */
+
+.order-manager-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Top Stats Summary */
+.orders-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.order-stat-pill {
+  background: var(--bg-primary, #141418);
+  border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.1));
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.order-stat-pill:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.order-stat-pill .label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary, #888);
+  font-weight: 600;
+}
+
+.order-stat-pill .value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary, #fff);
+  line-height: 1.2;
+}
+
+.order-stat-pill.pill-pending {
+  border-color: rgba(230, 162, 60, 0.45);
+  background: rgba(230, 162, 60, 0.08);
+}
+.order-stat-pill.pill-pending .value {
+  color: #e6a23c;
+}
+
+.order-stat-pill.pill-processing {
+  border-color: rgba(159, 122, 234, 0.45);
+  background: rgba(159, 122, 234, 0.08);
+}
+.order-stat-pill.pill-processing .value {
+  color: #9f7aea;
+}
+
+.order-stat-pill.pill-revenue .value {
+  color: var(--gold, #c9a84c);
+  font-size: 1.15rem;
+}
+
+/* Filter & Search Bar */
+.orders-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary, #141418);
+  border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.1));
+  padding: 12px 16px;
+  border-radius: 12px;
+}
+
+.status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.status-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary, #888);
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-tab-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.status-tab-btn.active {
+  background: var(--gold, #c9a84c);
+  color: #000;
+  font-weight: 700;
+}
+
+.tab-badge {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  color: inherit;
+}
+
+.status-tab-btn:not(.active) .tab-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary, #888);
+}
+
+.orders-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-secondary, #0c0c0e);
+  border: 1px solid var(--border-light, rgba(255, 255, 255, 0.12));
+  border-radius: 8px;
+  padding: 7px 12px;
+  flex: 1;
+  max-width: 340px;
+  min-width: 220px;
+}
+
+.orders-search-box input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.82rem;
+  outline: none;
+  width: 100%;
+}
+
+.btn-refresh {
+  background: transparent;
+  border: 1px solid var(--border-light, rgba(255, 255, 255, 0.15));
+  color: var(--text-secondary, #888);
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.btn-refresh:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Action Buttons */
+.btn-approve {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1px solid #22c55e !important;
+  border-radius: 6px !important;
+  padding: 7px 14px !important;
+  font-size: 0.8rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  white-space: nowrap !important;
+  box-shadow: 0 3px 12px rgba(22, 163, 74, 0.35) !important;
+}
+
+.btn-approve:hover {
+  background: #15803d !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.5) !important;
+}
+
+.btn-approve:active {
+  transform: translateY(0) !important;
+}
+
+.btn-ship {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1px solid #38bdf8 !important;
+  border-radius: 6px !important;
+  padding: 7px 12px !important;
+  font-size: 0.8rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-ship:hover {
+  background: #0369a1 !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-deliver {
+  background: #059669 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1px solid #10b981 !important;
+  border-radius: 6px !important;
+  padding: 7px 12px !important;
+  font-size: 0.8rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+
+.btn-cancel-action {
+  background: transparent !important;
+  border: 1px solid rgba(224, 85, 85, 0.4) !important;
+  color: #e05555 !important;
+  border-radius: 6px !important;
+  padding: 7px 10px !important;
+  font-size: 0.8rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-cancel-action:hover {
+  background: rgba(224, 85, 85, 0.15) !important;
+  border-color: #e05555 !important;
+}
+
+.btn-invoice-act {
+  background: transparent !important;
+  border: 1px solid var(--border-light, rgba(255, 255, 255, 0.15)) !important;
+  color: var(--text-primary, #fff) !important;
+  padding: 7px 11px !important;
+  border-radius: 6px !important;
+  font-size: 0.78rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-invoice-act:hover {
+  border-color: var(--gold, #c9a84c) !important;
+  color: var(--gold, #c9a84c) !important;
+  background: rgba(201, 168, 76, 0.08) !important;
+}
+
+/* Contact Badges / Quick Links */
+.contact-actions {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.contact-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.contact-pill.wa {
+  background: rgba(37, 211, 102, 0.15);
+  color: #25d366;
+  border: 1px solid rgba(37, 211, 102, 0.3);
+}
+
+.contact-pill.wa:hover {
+  background: #25d366;
+  color: #000;
+}
+
+.contact-pill.call {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.contact-pill.call:hover {
+  background: #38bdf8;
+  color: #000;
+}
+
+/* =======================================================
+   DESKTOP TABLE VIEW
+   ======================================================= */
+.desktop-orders-table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.desktop-orders-table table {
+  width: 100%;
+  min-width: 900px;
+}
+
+.desktop-orders-table table th {
+  padding: 14px 16px !important;
+  white-space: nowrap !important;
+  font-size: 0.75rem !important;
+  color: var(--text-secondary, #71717a) !important;
+  border-bottom: 1px solid var(--border-light, rgba(255, 255, 255, 0.1)) !important;
+}
+
+.desktop-orders-table table td {
+  padding: 14px 16px !important;
+  white-space: nowrap !important;
+  color: var(--text-primary) !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid var(--border-light, rgba(255, 255, 255, 0.06)) !important;
+}
+
+/* High Contrast Status Selector */
+.order-status-select {
+  background: var(--bg-card, #1c1c22);
+  color: var(--text-primary, #ffffff);
+  border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.25));
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  min-width: 140px;
+}
+
+[data-theme="light"] .order-status-select,
+body:not([data-theme="dark"]) .order-status-select {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #d0d0d5;
+}
+
+.order-status-select option {
+  background: #141418;
+  color: #ffffff;
+}
+
+[data-theme="light"] .order-status-select option,
+body:not([data-theme="dark"]) .order-status-select option {
+  background: #ffffff;
+  color: #111111;
+}
+
+.btn-delete-act {
+  background: transparent !important;
+  border: 1px solid rgba(239, 68, 68, 0.28) !important;
+  color: #ef4444 !important;
+  padding: 7px 10px !important;
+  border-radius: 6px !important;
+  font-size: 0.78rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-delete-act:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: #ef4444 !important;
+}
+
+/* =======================================================
+   MOBILE & TABLET ORDER CARDS VIEW (<= 920px)
+   ======================================================= */
+.mobile-orders-view {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-order-card {
+  background: var(--bg-primary, #141418);
+  border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.1));
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-order-card.pending-border {
+  border-left: 5px solid #e6a23c;
+}
+
+.mobile-order-card.processing-border {
+  border-left: 5px solid #9f7aea;
+}
+
+.mobile-order-card.delivered-border {
+  border-left: 5px solid #55c688;
+}
+
+.mobile-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+
+.mobile-card-id {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-card-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #888);
+  margin-top: 2px;
+}
+
+.mobile-customer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mobile-customer-name {
+  font-weight: 700;
+  color: var(--text-primary, #fff);
+  font-size: 0.92rem;
+}
+
+.mobile-items-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.mobile-item-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.84rem;
+  color: var(--text-primary, #fff);
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+  padding-bottom: 5px;
+}
+
+.mobile-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.mobile-card-total {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--gold, #c9a84c);
+}
+
+.mobile-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.mobile-action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mobile-action-buttons button,
+.mobile-action-buttons select {
+  flex: 1;
+  min-height: 40px;
+}
+
+/* Breakpoint for Mobile Swap */
+@media (max-width: 920px) {
+  .desktop-orders-table {
+    display: none !important;
+  }
+  .mobile-orders-view {
+    display: flex !important;
+  }
+  .orders-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .orders-search-box {
+    max-width: 100%;
+  }
+}
