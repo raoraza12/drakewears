@@ -221,11 +221,11 @@ function App() {
         <ScrollToTop />
         <ScrollRevealManager />
         <Routes>
-          {/* Admin Login (Outside Layout) */}
-          <Route path="/admin/login" element={<AdminLogin />} />
+          {/* Secret Admin Login (Outside Layout) */}
+          <Route path="/drakewearsofficial/login" element={<AdminLogin />} />
 
-          {/* Admin Panel */}
-          <Route path="/admin" element={<AdminLayout />}>
+          {/* Secret Admin Panel */}
+          <Route path="/drakewearsofficial" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="orders-summary" element={<OrdersSummary />} />
             <Route path="whatsapp-orders" element={<WhatsappOrders />} />
@@ -239,6 +239,11 @@ function App() {
             <Route path="reviews" element={<ReviewManager />} />
             <Route path="coupons" element={<CouponManager />} />
           </Route>
+
+          {/* Decoy for old /admin route -> 404 Not Found */}
+          <Route path="/admin/*" element={<NotFound />} />
+          <Route path="/admin" element={<NotFound />} />
+
           
           {/* Auth Pages */}
           <Route path="/login" element={<Login />} />

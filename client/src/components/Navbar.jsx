@@ -202,15 +202,36 @@ const Navbar = () => {
         <div className="outfitters-drawer" onClick={(e) => e.stopPropagation()}>
           <div className="outfitters-drawer-header">
             <span className="outfitters-logo-text" style={{ fontSize: '1.6rem' }}>drakewears</span>
-            <button className="outfitters-drawer-close" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
-              <FiX size={24} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button 
+                className="drawer-theme-btn" 
+                onClick={toggleTheme} 
+                aria-label="Toggle dark/light theme"
+                title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+              >
+                {theme === 'dark' ? <FiSun size={18} /> : <FiMoon size={18} />}
+              </button>
+              <button className="outfitters-drawer-close" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
+                <FiX size={22} />
+              </button>
+            </div>
           </div>
 
           <div className="outfitters-drawer-links">
             <Link to="/" onClick={() => setMobileMenuOpen(false)}>HOME</Link>
-            <Link to="/shop" onClick={() => setMobileMenuOpen(false)}>SHOP</Link>
-            <Link to="/about" onClick={() => setMobileMenuOpen(false)}>ABOUT</Link>
+            <Link to="/shop" onClick={() => setMobileMenuOpen(false)}>SHOP ALL</Link>
+            <div className="drawer-categories-sub">
+              <Link to="/shop?category=baggy-trousers" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
+                ↳ Baggy Trousers
+              </Link>
+              <Link to="/shop?category=drop-shoulder-tees" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
+                ↳ Drop Shoulder Tees
+              </Link>
+              <Link to="/shop?category=hoodies" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
+                ↳ Hoodies & Fleece
+              </Link>
+            </div>
+            <Link to="/about" onClick={() => setMobileMenuOpen(false)}>ABOUT US</Link>
             <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>CONTACT</Link>
           </div>
 

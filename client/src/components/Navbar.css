@@ -529,8 +529,98 @@
     padding: 6px;
   }
   .outfitters-top-strip {
-    font-size: 0.60rem;
-    padding: 5px 10px;
+    font-size: 0.62rem;
+    padding: 5px 12px;
     letter-spacing: 0.08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+}
+
+/* Enhanced Mobile-First Responsive Styles (< 600px) */
+@media (max-width: 600px) {
+  .outfitters-nav-bar {
+    padding: 0 12px;
+    height: 52px;
+  }
+  .outfitters-menu-btn {
+    margin-right: 8px;
+    padding: 4px;
+  }
+  .outfitters-brand-logo {
+    margin-right: 0;
+    padding-right: 0;
+  }
+  .outfitters-logo-text {
+    font-size: 1.45rem;
+  }
+  .outfitters-nav-right {
+    gap: 4px;
+  }
+  .outfitters-icon-btn {
+    padding: 5px;
+  }
+  .outfitters-top-strip {
+    font-size: 0.58rem;
+    padding: 4px 8px;
+    letter-spacing: 0.06em;
+  }
+  .search-overlay {
+    padding-top: 14px;
+  }
+  .search-modal {
+    width: 95vw;
+    border-radius: 12px;
+    max-height: 88dvh;
+  }
+  .search-results-list {
+    max-height: 58vh;
+  }
+}
+
+/* Mobile Drawer Category Sublinks & Theme Button */
+.drawer-theme-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.drawer-theme-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.drawer-categories-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 14px;
+  margin-top: -6px;
+  margin-bottom: 4px;
+}
+
+.drawer-sub-link {
+  font-size: 0.88rem !important;
+  color: #a1a1aa !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
+  transition: color 0.2s;
+}
+
+.drawer-sub-link:hover {
+  color: #ffffff !important;
+}
+
+.outfitters-drawer {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: 100dvh;
 }

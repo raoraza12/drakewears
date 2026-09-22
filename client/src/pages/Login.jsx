@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FiLogIn, FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import GoogleAuthButton from '../components/GoogleAuthButton';
 import './Auth.css';
 
 export default function Login() {
@@ -21,8 +22,9 @@ export default function Login() {
       const userData = await login(form.email, form.password);
       toast.success('Welcome back! ✨');
       if (userData.role === 'admin') {
-        navigate('/admin');
+        navigate('/drakewearsofficial');
       } else {
+
         navigate('/');
       }
     } catch (err) {
@@ -77,6 +79,16 @@ export default function Login() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+
+        <div className="auth-divider">
+          <span className="auth-divider-line"></span>
+          <span className="auth-divider-text">OR SIGN IN WITH</span>
+          <span className="auth-divider-line"></span>
+        </div>
+
+        {/* 1-Click Google Sign In (Device Verified Account) */}
+        <GoogleAuthButton isSignUp={false} onError={(msg) => setError(msg)} />
+
         <p className="auth-switch">
           Don't have an account? <Link to="/register" className="auth-link">Create one &rarr;</Link>
         </p>

@@ -3,7 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FiUserPlus, FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import GoogleAuthButton from '../components/GoogleAuthButton';
 import './Auth.css';
+
+const KNOWN_FAKE_DOMAINS = [
+  'mailinator.com', 'tempmail.com', 'temp-mail.org', '10minutemail.com',
+  'guerrillamail.com', 'throwawaymail.com', 'yopmail.com', 'sharklasers.com',
+  'fake.com', 'test.com', 'example.com', 'trashmail.com', 'fakeinbox.com'
+];
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -15,14 +22,30 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    const emailTrimmed = form.email.trim().toLowerCase();
+
+    // Client-side validation against fake/dummy emails
+    if (!emailTrimmed.includes('@') || !emailTrimmed.includes('.')) {
+      setError('Please provide a valid email format (e.g. name@gmail.com)');
+      return;
+    }
+
+    const domain = emailTrimmed.split('@')[1] || '';
+    if (KNOWN_FAKE_DOMAINS.some(d => domain.includes(d) || domain.startsWith('fake') || domain.startsWith('temp'))) {
+      setError('Temporary and fake emails are not allowed. Please use your real email (e.g. Gmail) or click "Sign up with Google".');
+      return;
+    }
+
     if (form.password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
     }
+
     setLoading(true);
-    setError('');
     try {
-      await register(form.name, form.email, form.password);
+      await register(form.name.trim(), emailTrimmed, form.password);
       toast.success('Account created! Welcome to drakewears ✨');
       navigate('/');
     } catch (err) {
@@ -57,7 +80,7 @@ export default function Register() {
               value={form.name} 
               onChange={e => { setError(''); setForm(p => ({...p, name: e.target.value})); }} 
               required 
-              placeholder="Ahmed Khan" 
+              placeholder="Full Name" 
             />
           </div>
           <div className="form-group">
@@ -85,6 +108,16 @@ export default function Register() {
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
+
+        <div className="auth-divider">
+          <span className="auth-divider-line"></span>
+          <span className="auth-divider-text">OR SIGN UP WITH</span>
+          <span className="auth-divider-line"></span>
+        </div>
+
+        {/* 1-Click Google Sign Up (Device Verified Account) */}
+        <GoogleAuthButton isSignUp={true} onError={(msg) => setError(msg)} />
+
         <p className="auth-switch">
           Already have an account? <Link to="/login" className="auth-link">Sign in &rarr;</Link>
         </p>

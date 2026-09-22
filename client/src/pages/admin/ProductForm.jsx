@@ -50,7 +50,7 @@ const ProductForm = () => {
         await API.post('/admin/products', form);
         toast.success('Product created! ✨');
       }
-      navigate('/admin/products');
+      navigate('/drakewearsofficial/products');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Operation failed');
     }
@@ -74,7 +74,7 @@ const ProductForm = () => {
   return (
     <div className="product-form-wrapper" style={{ maxWidth: '900px', margin: '0 auto', paddingBottom: '100px' }}>
       <div className="flex-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <button onClick={() => navigate('/admin/products')} className="btn-ghost" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <button onClick={() => navigate('/drakewearsofficial/products')} className="btn-ghost" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           <FiArrowLeft /> Back to Archive
         </button>
         <h2 className="section-title" style={{ fontSize: '1.5rem', margin: 0 }}>{isEdit ? 'Refine Product' : 'Registry: New Product'}</h2>

@@ -40,7 +40,7 @@ const UserForm = () => {
         await API.post('/admin/users', form);
         toast.success('Stakeholder registered! ✨');
       }
-      navigate('/admin/users');
+      navigate('/drakewearsofficial/users');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Transaction failed');
     }
@@ -49,7 +49,7 @@ const UserForm = () => {
   return (
     <div className="user-form-wrapper" style={{ maxWidth: '600px', margin: '0 auto' }}>
       <div className="flex-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <button onClick={() => navigate('/admin/users')} className="btn-ghost" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <button onClick={() => navigate('/drakewearsofficial/users')} className="btn-ghost" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           <FiArrowLeft /> Back to Accounts
         </button>
         <h2 className="section-title" style={{ fontSize: '1.5rem' }}>{isEdit ? 'Profile: Update' : 'Account: New'}</h2>

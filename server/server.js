@@ -11,11 +11,14 @@ const app = express();
 // Trust reverse proxy (Vercel / Cloudflare / Nginx) for accurate client IP detection
 app.set('trust proxy', 1);
 
-// Z+ Security: Helmet HTTP Headers protection (allowing Cloudinary images)
+// Z+ Security: Helmet HTTP Headers protection (allowing Cloudinary images & Google Auth popup)
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: false // Disabled so frontend can load Cloudinary & Google Fonts seamlessly
 }));
+
 
 // Global Rate Limiter
 const globalLimiter = rateLimit({

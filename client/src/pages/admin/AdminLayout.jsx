@@ -23,23 +23,24 @@ const AdminLayout = () => {
   }
 
   if (!user || user.role !== 'admin') {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/drakewearsofficial/login" replace />;
   }
 
   const menuItems = [
-    { path: '/admin', icon: <FiHome />, label: 'Dashboard' },
-    { path: '/admin/orders-summary', icon: <FiFileText />, label: 'Orders Summary' },
-    { path: '/admin/orders', icon: <FiShoppingCart />, label: 'Web Orders' },
-    { path: '/admin/whatsapp-orders', icon: <FiMessageCircle />, label: 'WhatsApp Orders' },
-    { path: '/admin/analytics', icon: <FiBarChart2 />, label: 'Analytics' },
-    { path: '/admin/products', icon: <FiBox />, label: 'Products' },
-    { path: '/admin/categories', icon: <FiLayers />, label: 'Categories' },
-    { path: '/admin/coupons', icon: <FiTag />, label: 'Coupons' },
-    { path: '/admin/inventory', icon: <FiAlertTriangle />, label: 'Inventory' },
-    { path: '/admin/reviews', icon: <FiStar />, label: 'Reviews' },
-    { path: '/admin/users', icon: <FiUsers />, label: 'Users' },
-    { path: '/admin/settings', icon: <FiSettings />, label: 'Settings' }
+    { path: '/drakewearsofficial', icon: <FiHome />, label: 'Dashboard' },
+    { path: '/drakewearsofficial/orders-summary', icon: <FiFileText />, label: 'Orders Summary' },
+    { path: '/drakewearsofficial/orders', icon: <FiShoppingCart />, label: 'Web Orders' },
+    { path: '/drakewearsofficial/whatsapp-orders', icon: <FiMessageCircle />, label: 'WhatsApp Orders' },
+    { path: '/drakewearsofficial/analytics', icon: <FiBarChart2 />, label: 'Analytics' },
+    { path: '/drakewearsofficial/products', icon: <FiBox />, label: 'Products' },
+    { path: '/drakewearsofficial/categories', icon: <FiLayers />, label: 'Categories' },
+    { path: '/drakewearsofficial/coupons', icon: <FiTag />, label: 'Coupons' },
+    { path: '/drakewearsofficial/inventory', icon: <FiAlertTriangle />, label: 'Inventory' },
+    { path: '/drakewearsofficial/reviews', icon: <FiStar />, label: 'Reviews' },
+    { path: '/drakewearsofficial/users', icon: <FiUsers />, label: 'Users' },
+    { path: '/drakewearsofficial/settings', icon: <FiSettings />, label: 'Settings' }
   ];
+
 
   return (
     <div className="admin-container">

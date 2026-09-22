@@ -57,6 +57,11 @@ const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
+  // Mobile Touch Swipe Handling
+  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
+  const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0 });
+  const minSwipeDistance = 40;
+
   // Fetch popular products
   useEffect(() => {
     import('../api').then(module => {
@@ -67,12 +72,12 @@ const Home = () => {
     });
   }, []);
 
-  // Auto-Advance Carousel every 3.5s (Pauses on hover)
+  // Auto-Advance Carousel every 3.5s (Pauses on hover / touch active)
   useEffect(() => {
     if (isHovered) return;
     const timer = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-    }, 3500);
+    }, 3800);
     return () => clearInterval(timer);
   }, [isHovered]);
 
@@ -82,6 +87,48 @@ const Home = () => {
 
   const nextSlide = () => {
     setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+  };
+
+  // Touch handlers for fluid mobile swipe
+  const handleTouchStart = (e) => {
+    setIsHovered(true);
+    setTouchEnd({ x: 0, y: 0 });
+    if (e.targetTouches && e.targetTouches[0]) {
+      setTouchStart({
+        x: e.targetTouches[0].clientX,
+        y: e.targetTouches[0].clientY,
+      });
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.targetTouches && e.targetTouches[0]) {
+      setTouchEnd({
+        x: e.targetTouches[0].clientX,
+        y: e.targetTouches[0].clientY,
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsHovered(false);
+    if (!touchStart.x || !touchEnd.x) return;
+    const distanceX = touchStart.x - touchEnd.x;
+    const distanceY = Math.abs(touchStart.y - touchEnd.y);
+    // Ensure it was primarily a horizontal swipe, not vertical page scroll
+    if (Math.abs(distanceX) > minSwipeDistance && distanceY < 100) {
+      if (distanceX > 0) {
+        nextSlide(); // Swiped left -> next
+      } else {
+        prevSlide(); // Swiped right -> prev
+      }
+    }
+  };
+
+  // Keyboard navigation
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowLeft') prevSlide();
+    if (e.key === 'ArrowRight') nextSlide();
   };
 
   return (
@@ -95,6 +142,13 @@ const Home = () => {
           className="hero-otr-carousel"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+          role="region"
+          aria-label="DrakeWears Featured Drops Carousel"
         >
           <div className="otr-carousel-viewport">
             {HERO_SLIDES.map((slide, index) => {
@@ -105,6 +159,7 @@ const Home = () => {
                   to={slide.ctaLink}
                   className={`otr-slide ${isActive ? 'active' : ''}`}
                   aria-label={slide.alt}
+                  tabIndex={isActive ? 0 : -1}
                 >
                   <img 
                     src={slide.image} 
@@ -115,6 +170,7 @@ const Home = () => {
                         e.currentTarget.src = '/home-page-category.jpg';
                       }
                     }}
+                    draggable={false}
                   />
                 </Link>
               );
@@ -128,22 +184,22 @@ const Home = () => {
                 key={slide.id}
                 className={`otr-dot ${i === activeSlide ? 'active' : ''}`}
                 onClick={() => setActiveSlide(i)}
-                aria-label={`Slide ${i + 1}`}
+                aria-label={`Slide ${i + 1} of ${HERO_SLIDES.length}`}
               />
             ))}
           </div>
 
-          {/* Clean Subtle Chevrons */}
+          {/* Clean Subtle Chevrons (Optimized for both desktop & mobile) */}
           <button 
             className="otr-arrow otr-arrow-left" 
-            onClick={prevSlide}
+            onClick={(e) => { e.stopPropagation(); prevSlide(); }}
             aria-label="Previous slide"
           >
             <FiArrowLeft size={18} />
           </button>
           <button 
             className="otr-arrow otr-arrow-right" 
-            onClick={nextSlide}
+            onClick={(e) => { e.stopPropagation(); nextSlide(); }}
             aria-label="Next slide"
           >
             <FiArrowRight size={18} />

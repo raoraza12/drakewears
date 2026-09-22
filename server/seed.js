@@ -67,12 +67,14 @@ async function seed() {
     console.log(`✅ Seeded ${products.length} products`);
 
     // Seed Users (Manually hash passwords)
-    const adminPassword = await bcrypt.hash('huzaifaraza123', 12);
+    const adminPassword = await bcrypt.hash('drakekimaakabhosda', 12);
+
     const userPassword = await bcrypt.hash('test1234', 12);
 
     await prisma.user.create({
-      data: { name: 'Admin User', email: 'raoraza5417@gmail.com', password: adminPassword, role: 'admin' }
+      data: { name: 'Admin User', email: 'drakewearsofficial@gmail.com', password: adminPassword, role: 'admin' }
     });
+
     await prisma.user.create({
       data: { name: 'Test User', email: 'test@drakewears.com', password: userPassword, role: 'user' }
     });

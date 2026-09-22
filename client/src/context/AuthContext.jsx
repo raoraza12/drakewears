@@ -29,10 +29,18 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  const googleLogin = async (payload) => {
+    const body = typeof payload === 'string' ? { credential: payload } : payload;
+    const { data } = await API.post('/auth/google', body);
+    localStorage.setItem('token', data.token);
+    setUser(data);
+    return data;
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
   };
 
-  return <AuthContext.Provider value={{ user, loading, login, register, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, setUser, loading, login, register, googleLogin, logout }}>{children}</AuthContext.Provider>;
 }

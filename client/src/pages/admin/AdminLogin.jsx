@@ -19,8 +19,9 @@ export default function AdminLogin() {
       const userData = await login(form.email, form.password);
       if (userData.role === 'admin') {
         toast.success('Admin access granted.');
-        navigate('/admin');
+        navigate('/drakewearsofficial');
       } else {
+
         toast.error('Unauthorized access. Admin privileges required.');
       }
     } catch (err) {
@@ -47,7 +48,7 @@ export default function AdminLogin() {
               onChange={e => setForm(p => ({...p, email: e.target.value}))} 
               required 
               style={{ padding: '14px', backgroundColor: '#0a0a0a', border: '1px solid #333', color: '#fff', borderRadius: '6px', outline: 'none' }} 
-              placeholder="raoraza5417@gmail.com" 
+              placeholder="Enter your email" 
             />
           </div>
 

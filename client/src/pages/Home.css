@@ -18,12 +18,14 @@
   position: relative;
   width: 100%;
   margin-top: 0;
-  height: 100vh;
+  height: min(100vh, 900px);
   min-height: 560px;
   max-height: 960px;
   background: #0d0d10;
   overflow: hidden;
   user-select: none;
+  touch-action: pan-y; /* Allows smooth vertical scrolling while handling horizontal touch swipes */
+  outline: none;
 }
 
 .otr-carousel-viewport {
@@ -38,7 +40,7 @@
   display: block;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 0.8s;
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 0.7s;
   text-decoration: none;
 }
 
@@ -52,44 +54,56 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 35%;
+  object-position: center 30%;
   display: block;
+  pointer-events: none; /* Prevents image dragging ghost on touch/desktop */
 }
 
-/* Exact Minimalist Circular Dots at Bottom Center (Outfitters Style) */
+/* Minimalist Luxury Pill Indicators (Touch Accessible) */
 .otr-carousel-dots {
   position: absolute;
-  bottom: 28px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   z-index: 10;
 }
 
 .otr-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
+  position: relative;
+  width: 18px;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.38);
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 44px invisible touch target for finger tapping on mobile */
+.otr-dot::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  bottom: -12px;
+  left: -4px;
+  right: -4px;
 }
 
 .otr-dot.active {
+  width: 38px;
   background: #ffffff;
-  transform: scale(1.15);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
 }
 
 .otr-dot:hover:not(.active) {
   background: rgba(255, 255, 255, 0.75);
 }
 
-/* Subtle Chevrons (desktop hover only) */
+/* Subtle Chevrons */
 .otr-arrow {
   position: absolute;
   top: 50%;
@@ -97,8 +111,9 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.38);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
@@ -107,36 +122,78 @@
   cursor: pointer;
   z-index: 10;
   opacity: 0;
-  transition: opacity 0.3s ease, background 0.2s ease;
+  transition: opacity 0.3s ease, background 0.2s ease, transform 0.2s ease;
 }
 
 .hero-otr-carousel:hover .otr-arrow {
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 .otr-arrow:hover {
   opacity: 1;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
+  transform: translateY(-50%) scale(1.06);
 }
 
 .otr-arrow-left {
-  left: 24px;
+  left: 20px;
 }
 
 .otr-arrow-right {
-  right: 24px;
+  right: 20px;
 }
 
 @media (max-width: 768px) {
   .hero-otr-carousel {
-    height: 100vh;
-    min-height: 480px;
+    height: clamp(380px, 66svh, 540px);
+    min-height: 380px;
+    max-height: 560px;
+  }
+  .otr-slide-img {
+    object-position: center center;
   }
   .otr-arrow {
-    display: none;
+    display: flex;
+    opacity: 0.6;
+    width: 34px;
+    height: 34px;
+    background: rgba(0, 0, 0, 0.45);
+  }
+  .otr-arrow-left {
+    left: 10px;
+  }
+  .otr-arrow-right {
+    right: 10px;
   }
   .otr-carousel-dots {
-    bottom: 20px;
+    bottom: 16px;
+    gap: 6px;
+  }
+  .otr-dot {
+    width: 14px;
+    height: 3px;
+  }
+  .otr-dot.active {
+    width: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-otr-carousel {
+    height: clamp(320px, 60svh, 460px);
+    min-height: 320px;
+    max-height: 480px;
+  }
+  .otr-arrow {
+    width: 30px;
+    height: 30px;
+    opacity: 0.5;
+  }
+  .otr-arrow-left {
+    left: 8px;
+  }
+  .otr-arrow-right {
+    right: 8px;
   }
 }
 

@@ -95,12 +95,20 @@ router.put('/users/:id/role', async (req, res) => {
 
 router.delete('/users/:id', async (req, res) => {
   try {
+    const targetUser = await req.prisma.user.findUnique({ where: { id: req.params.id } });
+    if (!targetUser) return res.status(404).json({ message: 'User not found' });
+    
+    if (targetUser.role === 'admin' || targetUser.email === 'drakewearsofficial@gmail.com') {
+      return res.status(400).json({ message: 'Cannot delete an administrator account.' });
+    }
+
     await req.prisma.user.delete({ where: { id: req.params.id } });
     res.json({ message: 'User deleted successfully' });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
+
 
 // --- ORDER / PAYMENT / DELIVERY MANAGEMENT ---
 router.post('/orders/whatsapp', async (req, res) => {

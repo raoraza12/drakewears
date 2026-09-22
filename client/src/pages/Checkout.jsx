@@ -339,7 +339,7 @@ export default function Checkout() {
                     value={form.name} 
                     onChange={handleChange} 
                     required 
-                    placeholder="Ahmed Khan" 
+                    placeholder="Full Name" 
                   />
                   {errors.name && <span className="field-error-text">{errors.name}</span>}
                 </div>
