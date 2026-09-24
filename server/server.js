@@ -1,9 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const dotenv = require('dotenv');
 const prisma = require('./lib/prisma');
 
 const app = express();
@@ -45,6 +45,8 @@ const authLimiter = rateLimit({
 const allowedOrigins = [
   'https://drakewears.com',
   'https://www.drakewears.com',
+  'http://drakewears.com',
+  'http://www.drakewears.com',
   'https://drakewears.vercel.app',
   process.env.CLIENT_URL
 ].filter(Boolean);
@@ -61,15 +63,16 @@ app.use(cors({
       }
     }
 
-    // In production, permit exact allowed domains or vercel subdomains
+    // In production, permit exact allowed domains or subdomains
     const isAllowed = allowedOrigins.includes(origin) ||
+      origin.includes('drakewears.com') ||
       origin.endsWith('.vercel.app') ||
-      origin.endsWith('.drakewears.com');
+      origin.includes('hostinger');
 
     if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error(`CORS Error: Origin ${origin} not permitted by DRAKEWEARS policy.`));
+      callback(null, false);
     }
   },
   credentials: true
@@ -117,11 +120,27 @@ let clientDist = candidatePaths.find(p => fs.existsSync(p));
 
 if (clientDist) {
   console.log(`Serving frontend build from: ${clientDist}`);
-  app.use(express.static(clientDist));
+  
+  // Serve static assets with proper caching (never cache index.html, long cache hashed assets)
+  app.use(express.static(clientDist, {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('index.html')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      } else if (filePath.includes('assets')) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      }
+    }
+  }));
+
+  // SPA Fallback: Never return index.html for missing API or missing static assets
   app.get('*', (req, res) => {
     if (req.originalUrl.startsWith('/api')) {
       return res.status(404).json({ message: 'API route not found' });
     }
+    if (req.originalUrl.startsWith('/assets/') || req.originalUrl.endsWith('.js') || req.originalUrl.endsWith('.css')) {
+      return res.status(404).type('text/plain').send('Asset not found');
+    }
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.sendFile(path.join(clientDist, 'index.html'));
   });
 } else {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowLeft, FiArrowRight, FiLayers, FiShield, FiPackage, FiAward } from 'react-icons/fi';
 import ProductCard from '../components/ProductCard';
+import API from '../api';
 import './Home.css';
 
 const HERO_SLIDES = [
@@ -64,12 +65,9 @@ const Home = () => {
 
   // Fetch popular products
   useEffect(() => {
-    import('../api').then(module => {
-      const API = module.default;
-      API.get('/products?sort=popular&limit=4')
-        .then(res => setPopularProducts(res.data.products || res.data || []))
-        .catch(err => console.error(err));
-    });
+    API.get('/products?sort=popular&limit=4')
+      .then(res => setPopularProducts(res.data.products || res.data || []))
+      .catch(err => console.error(err));
   }, []);
 
   // Auto-Advance Carousel every 3.5s (Pauses on hover / touch active)

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
+import API from '../api';
 import './Shop.css';
 
 const Shop = () => {
@@ -17,15 +18,12 @@ const Shop = () => {
   }, [categoryParam]);
 
   useEffect(() => {
-    import('../api').then(module => {
-      const API = module.default;
-      API.get('/products').then(res => {
-        setProducts(res.data.products || res.data || []);
-        setLoading(false);
-      }).catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
+    API.get('/products').then(res => {
+      setProducts(res.data.products || res.data || []);
+      setLoading(false);
+    }).catch(err => {
+      console.error(err);
+      setLoading(false);
     });
   }, []);
 
