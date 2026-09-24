@@ -16,16 +16,19 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      const userData = await login(form.email, form.password);
+      const cleanEmail = form.email.trim();
+      const cleanPassword = form.password.trim();
+      const userData = await login(cleanEmail, cleanPassword);
       if (userData.role === 'admin') {
         toast.success('Admin access granted.');
         navigate('/drakewearsofficial');
       } else {
-
         toast.error('Unauthorized access. Admin privileges required.');
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+      console.error('Admin login error:', err);
+      const msg = err.response?.data?.message || (err.message === 'Network Error' ? 'Network Error: Please check connection or reload.' : err.message) || 'Login failed';
+      toast.error(msg);
     }
     setLoading(false);
   };

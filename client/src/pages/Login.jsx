@@ -19,7 +19,9 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      const userData = await login(form.email, form.password);
+      const cleanEmail = form.email.trim();
+      const cleanPassword = form.password.trim();
+      const userData = await login(cleanEmail, cleanPassword);
       toast.success('Welcome back! ✨');
       if (userData.role === 'admin') {
         navigate('/drakewearsofficial');

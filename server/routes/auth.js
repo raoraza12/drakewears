@@ -73,7 +73,10 @@ router.post('/login', async (req, res) => {
     
     if (!user) return res.status(401).json({ message: 'Invalid credentials. Please verify your email and password.' });
     
-    const isMatch = await bcrypt.compare(password, user.password);
+    let isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch && typeof password === 'string' && password.trim() !== password) {
+      isMatch = await bcrypt.compare(password.trim(), user.password);
+    }
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials. Please verify your email and password.' });
 
     res.json({
