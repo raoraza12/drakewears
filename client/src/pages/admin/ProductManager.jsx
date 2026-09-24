@@ -307,45 +307,103 @@ const ProductManager = () => {
         {activeTab === 'list' && (
           <div className="panel-body" style={{ padding: '16px' }}>
             {loading ? <p>Loading products...</p> : (
-              <div className="table-responsive">
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Image</th>
-                      <th>Name</th>
-                      <th>Price</th>
-                      <th>Category</th>
-                      <th>Stock</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {products.length === 0 ? (
-                      <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>No products found</td></tr>
-                    ) : products.map(product => (
-                      <tr key={product.id || product._id}>
-                        <td>
-                          <img src={product.images[0] || 'https://via.placeholder.com/50'} alt={product.name} style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '4px' }} />
-                        </td>
-                        <td style={{ fontWeight: 600 }}>{product.name}</td>
-                        <td>Rs. {product.price}</td>
-                        <td>{product.category}</td>
-                        <td>{product.stock || 0}</td>
-                        <td>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }} onClick={() => handleEditClick(product)}>
-                              Edit
-                            </button>
-                            <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--red)', color: 'var(--red)' }} onClick={() => handleDelete(product.id || product._id)}>
-                              <FiTrash2 /> Delete
-                            </button>
-                          </div>
-                        </td>
+              <>
+                {/* Desktop Table View */}
+                <div className="table-responsive desktop-table-view">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Category</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {products.length === 0 ? (
+                        <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>No products found</td></tr>
+                      ) : products.map(product => (
+                        <tr key={product.id || product._id}>
+                          <td>
+                            <img src={product.images[0] || 'https://via.placeholder.com/50'} alt={product.name} style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '4px' }} />
+                          </td>
+                          <td style={{ fontWeight: 600 }}>{product.name}</td>
+                          <td>Rs. {product.price}</td>
+                          <td>{product.category}</td>
+                          <td>{product.stock || 0}</td>
+                          <td>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }} onClick={() => handleEditClick(product)}>
+                                Edit
+                              </button>
+                              <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--red)', color: 'var(--red)' }} onClick={() => handleDelete(product.id || product._id)}>
+                                <FiTrash2 /> Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Cards View (Visible on screens <= 920px) */}
+                <div className="mobile-cards-view admin-mobile-card-list">
+                  {products.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--text-secondary)' }}>
+                      No products found.
+                    </div>
+                  ) : products.map(product => {
+                    const pId = product.id || product._id;
+                    const stock = product.stock || 0;
+                    return (
+                      <div key={pId} className="admin-mobile-card">
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                          <img 
+                            src={product.images[0] || 'https://via.placeholder.com/60'} 
+                            alt={product.name} 
+                            style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0, border: '1px solid var(--border-medium)' }} 
+                          />
+                          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                            <strong style={{ fontSize: '0.92rem', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {product.name}
+                            </strong>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                              <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                                {product.category || 'Uncategorized'}
+                              </span>
+                              <span style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                padding: '2px 8px',
+                                borderRadius: '12px',
+                                background: stock > 5 ? 'rgba(46, 125, 50, 0.12)' : (stock > 0 ? 'rgba(230, 126, 34, 0.12)' : 'rgba(231, 76, 60, 0.12)'),
+                                color: stock > 5 ? '#2e7d32' : (stock > 0 ? '#e67e22' : '#e74c3c')
+                              }}>
+                                {stock > 0 ? `${stock} in stock` : 'Out of stock'}
+                              </span>
+                            </div>
+                            <strong style={{ color: 'var(--gold, #c9a84c)', fontSize: '0.96rem', marginTop: '2px' }}>
+                              Rs. {Number(product.price || 0).toLocaleString()}
+                            </strong>
+                          </div>
+                        </div>
+
+                        <div className="mobile-card-actions-row">
+                          <button className="btn-outline" onClick={() => handleEditClick(product)}>
+                            Edit Product
+                          </button>
+                          <button className="btn-outline" style={{ borderColor: 'var(--red)', color: 'var(--red)' }} onClick={() => handleDelete(pId)}>
+                            <FiTrash2 /> Delete
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
         )}
@@ -399,9 +457,9 @@ const ProductManager = () => {
                   boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
                 }}>
                   {/* Top Bar: Color Name & Color Picker */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-                      <span style={{ fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Color #{idx + 1}:</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 200px' }}>
+                      <span style={{ fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>Color #{idx + 1}:</span>
                       <input 
                         type="text" 
                         placeholder="Color Name (e.g. Cobalt Blue, White, Red)" 
@@ -412,7 +470,7 @@ const ProductManager = () => {
                           setColorItems(newArr);
                         }} 
                         className="form-input" 
-                        style={{ flex: 1, minWidth: '150px' }} 
+                        style={{ flex: 1, minWidth: '130px' }} 
                       />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

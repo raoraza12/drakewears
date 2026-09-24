@@ -79,7 +79,7 @@ const CouponManager = () => {
       </form>
 
       {/* Coupon List */}
-      <div className="table-responsive">
+      <div className="table-responsive desktop-table-view">
         <table className="admin-table" style={{ minWidth: '550px' }}>
           <thead>
             <tr>
@@ -108,6 +108,41 @@ const CouponManager = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Coupon Cards */}
+      <div className="mobile-cards-view admin-mobile-card-list">
+        {coupons.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-secondary)' }}>
+            No active promotional codes found.
+          </div>
+        ) : coupons.map(coupon => (
+          <div key={coupon.id || coupon._id} className="admin-mobile-card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiTag size={16} style={{ color: 'var(--gold, #c9a84c)' }} />
+                <strong style={{ fontSize: '1rem', letterSpacing: '0.08em', color: 'var(--gold, #c9a84c)' }}>
+                  {coupon.code}
+                </strong>
+              </div>
+              <span style={{ fontSize: '0.78rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(201, 168, 76, 0.12)', color: 'var(--gold, #c9a84c)', fontWeight: 700 }}>
+                {coupon.discountValue} {coupon.discountType === 'percentage' ? '%' : 'PKR'} OFF
+              </span>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              Valid until: {new Date(coupon.expirationDate).toLocaleDateString()}
+            </div>
+            <div className="mobile-card-actions-row">
+              <button 
+                className="btn-outline" 
+                style={{ borderColor: 'var(--red)', color: 'var(--red)' }} 
+                onClick={() => handleDelete(coupon.id || coupon._id)}
+              >
+                <FiTrash2 /> Retire Coupon
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

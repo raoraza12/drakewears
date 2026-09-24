@@ -63,69 +63,108 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="dashboard-content-grid" style={{ marginTop: '32px', display: 'grid', gap: '24px' }}>
+      <div className="dashboard-content-grid" style={{ marginTop: '24px', display: 'grid', gap: '20px' }}>
         {/* Recent Orders */}
-        <div className="admin-panel">
-          <div className="panel-header">
-            <h3 className="h3" style={{ fontSize: '1.25rem' }}>Recent Orders</h3>
+        <div className="admin-panel" style={{ minWidth: 0, overflow: 'hidden' }}>
+          <div className="panel-header" style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-light)' }}>
+            <h3 className="h3" style={{ fontSize: '1.15rem', margin: 0 }}>Recent Orders</h3>
           </div>
-          <div className="panel-body" style={{ padding: '16px' }}>
-            <div className="table-responsive">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
+          <div className="panel-body" style={{ padding: '14px' }}>
+            {stats.orders.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--text-secondary)' }}>
+                <FiShoppingBag size={24} style={{ opacity: 0.3, marginBottom: '6px' }} />
+                <p style={{ margin: 0, fontSize: '0.88rem' }}>No orders recorded yet.</p>
+              </div>
+            ) : (
+              <>
+                {/* Desktop Table View */}
+                <div className="table-responsive desktop-orders-table">
+                  <table className="admin-table" style={{ width: '100%', minWidth: '550px' }}>
+                    <thead>
+                      <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stats.orders.slice(0, 5).map(order => (
+                        <tr key={order.id || order._id}>
+                          <td><strong>{order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id || order._id).slice(-6).toUpperCase()}`}</strong></td>
+                          <td>{order.shippingAddress?.name || order.user?.name || 'Unknown'}</td>
+                          <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                          <td>
+                            <span className="status-badge" style={{ 
+                              background: (STATUS_COLORS[order.status] || '#ccc') + '22', 
+                              color: STATUS_COLORS[order.status] || '#ccc',
+                              border: `1px solid ${STATUS_COLORS[order.status] || '#ccc'}44`
+                            }}>
+                              {order.status}
+                            </span>
+                          </td>
+                          <td>Rs. {order.total.toLocaleString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Orders Card View (Visible only on mobile <= 920px) */}
+                <div className="mobile-orders-view" style={{ display: 'none', flexDirection: 'column', gap: '10px' }}>
                   {stats.orders.slice(0, 5).map(order => (
-                    <tr key={order.id || order._id}>
-                      <td><strong>{order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id || order._id).slice(-6).toUpperCase()}`}</strong></td>
-                      <td>{order.shippingAddress?.name || order.user?.name || 'Unknown'}</td>
-                      <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                      <td>
+                    <div key={order.id || order._id} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <strong style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                          {order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id || order._id).slice(-6).toUpperCase()}`}
+                        </strong>
                         <span className="status-badge" style={{ 
                           background: (STATUS_COLORS[order.status] || '#ccc') + '22', 
                           color: STATUS_COLORS[order.status] || '#ccc',
-                          border: `1px solid ${STATUS_COLORS[order.status] || '#ccc'}44`
+                          border: `1px solid ${STATUS_COLORS[order.status] || '#ccc'}44`,
+                          fontSize: '0.72rem',
+                          padding: '2px 8px'
                         }}>
                           {order.status}
                         </span>
-                      </td>
-                      <td>Rs. {order.total.toLocaleString()}</td>
-                    </tr>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                        <span>{order.shippingAddress?.name || order.user?.name || 'Customer'}</span>
+                        <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed var(--border-light)', paddingTop: '6px', marginTop: '2px' }}>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Total:</span>
+                        <strong style={{ color: 'var(--gold, #c9a84c)', fontSize: '0.92rem' }}>Rs. {order.total.toLocaleString()}</strong>
+                      </div>
+                    </div>
                   ))}
-                  {stats.orders.length === 0 && (
-                    <tr><td colSpan="5" style={{ textAlign: 'center' }}>No orders yet.</td></tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
         {/* Low Stock Products */}
-        <div className="admin-panel">
-          <div className="panel-header">
-            <h3 className="h3" style={{ fontSize: '1.25rem' }}>Low Stock Alert</h3>
+        <div className="admin-panel" style={{ minWidth: 0, overflow: 'hidden' }}>
+          <div className="panel-header" style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-light)' }}>
+            <h3 className="h3" style={{ fontSize: '1.15rem', margin: 0 }}>Low Stock Alert</h3>
           </div>
-          <div className="panel-body">
+          <div className="panel-body" style={{ padding: '16px' }}>
             {stats.lowStockProducts && stats.lowStockProducts.length > 0 ? (
               stats.lowStockProducts.map(product => (
-                <div key={product.id || product._id} className="top-product-item" style={{ marginBottom: '16px' }}>
-                  <div className="top-product-info">
-                    <p className="text-body" style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{product.name}</p>
-                    <p className="text-caption" style={{ color: 'var(--red)' }}>{product.stock} left in stock</p>
+                <div key={product.id || product._id} className="top-product-item" style={{ marginBottom: '12px', paddingBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
+                  <div className="top-product-info" style={{ flex: 1, minWidth: 0 }}>
+                    <p className="text-body" style={{ fontWeight: 500, color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.name}</p>
+                    <p className="text-caption" style={{ color: 'var(--red)', margin: '2px 0 0 0', fontSize: '0.75rem' }}>{product.stock} left in stock</p>
                   </div>
-                  <p className="text-body" style={{ fontWeight: 500 }}>Rs. {product.price}</p>
+                  <p className="text-body" style={{ fontWeight: 600, margin: 0, flexShrink: 0 }}>Rs. {product.price}</p>
                 </div>
               ))
             ) : (
-              <p className="text-center" style={{ color: 'var(--text-secondary)' }}>All products have sufficient stock.</p>
+              <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--text-secondary)' }}>
+                <p style={{ margin: 0, fontSize: '0.88rem' }}>All products have sufficient stock.</p>
+              </div>
             )}
           </div>
         </div>

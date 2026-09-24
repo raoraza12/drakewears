@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
 import { FiHome, FiBox, FiShoppingCart, FiMessageCircle, FiUsers, FiSettings, FiLogOut, FiMenu, FiX, FiBarChart2, FiLayers, FiAlertTriangle, FiStar, FiSidebar, FiTag, FiFileText } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
@@ -14,6 +14,13 @@ const AdminLayout = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const location = useLocation();
   const { user, loading, logout } = useAuth();
+
+  // Auto-close sidebar on mobile when navigating
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 992) {
+      setIsSidebarOpen(false);
+    }
+  }, [location.pathname]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebarMobile = () => {
@@ -137,6 +144,54 @@ const AdminLayout = () => {
           <Outlet />
         </div>
       </main>
+
+      {/* App-like Mobile Bottom Navigation Bar (Visible only on mobile <= 768px) */}
+      <nav className="admin-mobile-bottom-bar" aria-label="Mobile Admin Navigation">
+        <Link 
+          to="/drakewearsofficial" 
+          className={`bottom-nav-item ${location.pathname === '/drakewearsofficial' ? 'active' : ''}`}
+        >
+          <FiHome size={19} />
+          <span>Home</span>
+        </Link>
+        <Link 
+          to="/drakewearsofficial/orders-summary" 
+          className={`bottom-nav-item ${location.pathname.includes('/orders-summary') ? 'active' : ''}`}
+        >
+          <FiFileText size={19} />
+          <span>Summary</span>
+        </Link>
+        <Link 
+          to="/drakewearsofficial/orders" 
+          className={`bottom-nav-item ${location.pathname === '/drakewearsofficial/orders' ? 'active' : ''}`}
+        >
+          <FiShoppingCart size={19} />
+          <span>Orders</span>
+        </Link>
+        <Link 
+          to="/drakewearsofficial/whatsapp-orders" 
+          className={`bottom-nav-item ${location.pathname.includes('/whatsapp-orders') ? 'active' : ''}`}
+        >
+          <FiMessageCircle size={19} />
+          <span>WhatsApp</span>
+        </Link>
+        <Link 
+          to="/drakewearsofficial/products" 
+          className={`bottom-nav-item ${location.pathname.includes('/products') ? 'active' : ''}`}
+        >
+          <FiBox size={19} />
+          <span>Products</span>
+        </Link>
+        <button 
+          type="button" 
+          onClick={toggleSidebar} 
+          className={`bottom-nav-item bottom-menu-btn ${isSidebarOpen ? 'active' : ''}`}
+          aria-label="Open Full Admin Menu"
+        >
+          <FiMenu size={19} />
+          <span>More</span>
+        </button>
+      </nav>
     </div>
   );
 };

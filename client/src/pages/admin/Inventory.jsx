@@ -183,7 +183,8 @@ const Inventory = () => {
           <div className="text-caption">Showing {filteredProducts.length} of {products.length} products</div>
         </div>
         
-        <div style={{ overflowX: 'auto' }}>
+        {/* Desktop Table View */}
+        <div className="table-responsive desktop-table-view">
           <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
             <thead>
               <tr style={{ background: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-medium)' }}>
@@ -266,6 +267,79 @@ const Inventory = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Inventory Cards View */}
+        <div className="mobile-cards-view admin-mobile-card-list" style={{ padding: '12px' }}>
+          {loading ? (
+            <div style={{ padding: '30px', textAlign: 'center' }}>Loading inventory...</div>
+          ) : filteredProducts.length === 0 ? (
+            <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-light)' }}>No matching products found</div>
+          ) : (
+            filteredProducts.map((product) => {
+              const pId = product._id || product.id;
+              const isUpdating = updatingId === pId;
+              return (
+                <div key={pId} className="admin-mobile-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <strong style={{ fontSize: '0.94rem', color: 'var(--text-primary)', display: 'block' }}>
+                        {product.name}
+                      </strong>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                        SKU: {product.sku} • <span style={{ color: 'var(--gold, #c9a84c)', fontWeight: 600 }}>Rs. {product.price}</span>
+                      </div>
+                    </div>
+                    <span style={{ 
+                      padding: '3px 10px', 
+                      borderRadius: '20px', 
+                      fontSize: '0.72rem', 
+                      fontWeight: 700,
+                      whiteSpace: 'nowrap',
+                      background: product.status === 'In Stock' ? 'rgba(46, 125, 50, 0.12)' : (product.status === 'Low Stock' ? 'rgba(230, 126, 34, 0.12)' : 'rgba(231, 76, 60, 0.12)'),
+                      color: product.status === 'In Stock' ? '#2e7d32' : (product.status === 'Low Stock' ? '#e67e22' : '#e74c3c')
+                    }}>
+                      {product.status}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed var(--border-light)', paddingTop: '10px', marginTop: '4px' }}>
+                    <span style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                      Stock Quantity:
+                    </span>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid var(--border-medium)', borderRadius: '8px', overflow: 'hidden', background: 'var(--bg-primary)' }}>
+                      <button 
+                        disabled={isUpdating || product.stock <= 0}
+                        onClick={() => handleManualStockSubmit(product, Math.max(0, (product.stock || 0) - 1))}
+                        style={{ width: '42px', height: '38px', background: 'var(--bg-elevated)', border: 'none', borderRight: '1px solid var(--border-medium)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        <FiMinus size={15} />
+                      </button>
+                      <input 
+                        type="number"
+                        min="0"
+                        value={product.stock}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => handleManualStockChange(product, e.target.value)}
+                        onBlur={(e) => handleManualStockSubmit(product, e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') e.target.blur();
+                        }}
+                        style={{ width: '56px', height: '38px', textAlign: 'center', fontWeight: 700, fontSize: '1rem', border: 'none', outline: 'none', background: 'transparent' }} 
+                      />
+                      <button 
+                        disabled={isUpdating}
+                        onClick={() => handleManualStockSubmit(product, (product.stock || 0) + 1)}
+                        style={{ width: '42px', height: '38px', background: 'var(--bg-elevated)', border: 'none', borderLeft: '1px solid var(--border-medium)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        <FiPlus size={15} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

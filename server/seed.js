@@ -67,7 +67,7 @@ async function seed() {
     console.log(`✅ Seeded ${products.length} products`);
 
     // Seed Users (Manually hash passwords)
-    const adminPassword = await bcrypt.hash('drakekimaakabhosda', 12);
+    const adminPassword = await bcrypt.hash('huzaifaraza293742', 12);
 
     const userPassword = await bcrypt.hash('test1234', 12);
 

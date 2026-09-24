@@ -532,8 +532,38 @@ body:not([data-theme="dark"]) .order-status-select option {
   .orders-filter-bar {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
   }
   .orders-search-box {
     max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .orders-stats-bar {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  .order-stat-pill {
+    padding: 10px 12px !important;
+    border-radius: 8px !important;
+  }
+  .order-stat-pill .label {
+    font-size: 0.68rem !important;
+  }
+  .order-stat-pill .value {
+    font-size: 1.2rem !important;
+  }
+  .order-stat-pill.pill-revenue {
+    grid-column: span 2 !important;
+    text-align: center;
+    align-items: center;
+  }
+  .status-tabs {
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
   }
 }

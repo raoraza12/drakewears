@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 
 async function updateAdmin() {
   try {
-    const hashedPassword = await bcrypt.hash('drakekimaakabhosda', 12);
+    const hashedPassword = await bcrypt.hash('huzaifaraza293742', 12);
 
 
     const user = await prisma.user.upsert({

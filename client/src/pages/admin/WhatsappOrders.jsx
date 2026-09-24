@@ -135,114 +135,223 @@ const WhatsappOrders = () => {
       <div className="admin-panel">
         <div className="panel-body" style={{ padding: '16px' }}>
           {loading ? <p>Loading...</p> : (
-            <div className="table-responsive">
-              <table className="admin-table" style={{ minWidth: '700px' }}>
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Contact</th>
-                  <th>Total (Rs)</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.length === 0 ? (
-                  <tr><td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>No WhatsApp orders found</td></tr>
-                ) : orders.map(order => {
-                  const isExpanded = expandedOrder === (order.id || order._id);
-                  return (
-                    <React.Fragment key={order.id || order._id}>
-                      <tr style={{ cursor: 'pointer' }} onClick={() => setExpandedOrder(isExpanded ? null : (order.id || order._id))}>
-                        <td>
-                          <strong>{order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id || order._id).slice(-6).toUpperCase()}`}</strong>
-                          <br />
-                          <small style={{ color: 'var(--gold)', fontSize: '0.72rem' }}>{isExpanded ? '▲ Close Items' : '▼ View Items'}</small>
-                        </td>
-                        <td>{order.shippingAddress?.name || order.user?.name || 'WhatsApp Customer'}</td>
-                        <td>{order.shippingAddress?.phone || (order.notes && order.notes.split('Phone: ')[1]) || order.user?.phone || 'N/A'}</td>
-                        <td><strong>Rs. {order.total.toLocaleString()}</strong></td>
-                        <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                        <td>
-                          <span className={`status-badge status-${order.status === 'delivered' ? 'completed' : order.status}`}>
-                            {order.status}
-                          </span>
-                        </td>
-                        <td onClick={e => e.stopPropagation()}>
-                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                            {order.status === 'pending' && (
-                              <button 
-                                type="button"
-                                className="btn-approve" 
-                                onClick={() => handleUpdateStatus(order.id || order._id, 'processing')}
+            <>
+              {/* Desktop Table View */}
+              <div className="table-responsive desktop-orders-table">
+                <table className="admin-table" style={{ minWidth: '700px' }}>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Contact</th>
+                    <th>Total (Rs)</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.length === 0 ? (
+                    <tr><td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>No WhatsApp orders found</td></tr>
+                  ) : orders.map(order => {
+                    const isExpanded = expandedOrder === (order.id || order._id);
+                    return (
+                      <React.Fragment key={order.id || order._id}>
+                        <tr style={{ cursor: 'pointer' }} onClick={() => setExpandedOrder(isExpanded ? null : (order.id || order._id))}>
+                          <td>
+                            <strong>{order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id || order._id).slice(-6).toUpperCase()}`}</strong>
+                            <br />
+                            <small style={{ color: 'var(--gold)', fontSize: '0.72rem' }}>{isExpanded ? '▲ Close Items' : '▼ View Items'}</small>
+                          </td>
+                          <td>{order.shippingAddress?.name || order.user?.name || 'WhatsApp Customer'}</td>
+                          <td>{order.shippingAddress?.phone || (order.notes && order.notes.split('Phone: ')[1]) || order.user?.phone || 'N/A'}</td>
+                          <td><strong>Rs. {order.total.toLocaleString()}</strong></td>
+                          <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                          <td>
+                            <span className={`status-badge status-${order.status === 'delivered' ? 'completed' : order.status}`}>
+                              {order.status}
+                            </span>
+                          </td>
+                          <td onClick={e => e.stopPropagation()}>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                              {order.status === 'pending' && (
+                                <button 
+                                  type="button"
+                                  className="btn-approve" 
+                                  onClick={() => handleUpdateStatus(order.id || order._id, 'processing')}
+                                >
+                                  <FiCheckCircle size={13} /> Approve
+                                </button>
+                              )}
+                              {order.status === 'processing' && (
+                                <button 
+                                  type="button"
+                                  className="btn-ship" 
+                                  onClick={() => handleUpdateStatus(order.id || order._id, 'shipped')}
+                                >
+                                  <FiTruck size={13} /> Ship
+                                </button>
+                              )}
+                              {order.status === 'shipped' && (
+                                <button 
+                                  type="button"
+                                  className="btn-deliver" 
+                                  onClick={() => handleUpdateStatus(order.id || order._id, 'delivered')}
+                                >
+                                  <FiPackage size={13} /> Delivered
+                                </button>
+                              )}
+                              <select 
+                                className="form-input" 
+                                style={{ padding: '5px 8px', fontSize: '0.78rem', width: 'auto', background: '#1c1c22' }}
+                                value={order.status}
+                                onChange={(e) => handleUpdateStatus(order.id || order._id, e.target.value)}
                               >
-                                <FiCheckCircle size={13} /> Approve
-                              </button>
-                            )}
-                            {order.status === 'processing' && (
-                              <button 
-                                type="button"
-                                className="btn-ship" 
-                                onClick={() => handleUpdateStatus(order.id || order._id, 'shipped')}
-                              >
-                                <FiTruck size={13} /> Ship
-                              </button>
-                            )}
-                            {order.status === 'shipped' && (
-                              <button 
-                                type="button"
-                                className="btn-deliver" 
-                                onClick={() => handleUpdateStatus(order.id || order._id, 'delivered')}
-                              >
-                                <FiPackage size={13} /> Delivered
-                              </button>
-                            )}
-                            <select 
-                              className="form-input" 
-                              style={{ padding: '5px 8px', fontSize: '0.78rem', width: 'auto', background: '#1c1c22' }}
-                              value={order.status}
-                              onChange={(e) => handleUpdateStatus(order.id || order._id, e.target.value)}
-                            >
-                              <option value="pending">Pending</option>
-                              <option value="processing">Processing</option>
-                              <option value="shipped">Shipped</option>
-                              <option value="delivered">Delivered</option>
-                              <option value="cancelled">Cancelled</option>
-                            </select>
-                          </div>
-                        </td>
-                      </tr>
-                      {isExpanded && (
-                        <tr>
-                          <td colSpan="7" style={{ backgroundColor: 'var(--bg-secondary)', padding: '16px 24px' }}>
-                            <h4 style={{ fontSize: '0.85rem', color: 'var(--gold)', textTransform: 'uppercase', marginBottom: '8px' }}>Ordered Items</h4>
-                            {order.items && order.items.length > 0 ? (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                {order.items.map((item, idx) => (
-                                  <div key={idx} style={{ fontSize: '0.82rem', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-light)', paddingBottom: '4px' }}>
-                                    <span>
-                                      <strong>{item.quantity}x</strong> {item.name}
-                                      {item.size && <span style={{ color: 'var(--text-secondary)' }}> (Size: {item.size})</span>}
-                                      {item.color && <span style={{ color: 'var(--text-secondary)' }}> ({item.color})</span>}
-                                    </span>
-                                    <span>Rs. {(item.price * item.quantity).toLocaleString()}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{order.notes || 'No item details recorded'}</p>
-                            )}
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                              </select>
+                            </div>
                           </td>
                         </tr>
+                        {isExpanded && (
+                          <tr>
+                            <td colSpan="7" style={{ backgroundColor: 'var(--bg-secondary)', padding: '16px 24px' }}>
+                              <h4 style={{ fontSize: '0.85rem', color: 'var(--gold)', textTransform: 'uppercase', marginBottom: '8px' }}>Ordered Items</h4>
+                              {order.items && order.items.length > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                  {order.items.map((item, idx) => (
+                                    <div key={idx} style={{ fontSize: '0.82rem', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-light)', paddingBottom: '4px' }}>
+                                      <span>
+                                        <strong>{item.quantity}x</strong> {item.name}
+                                        {item.size && <span style={{ color: 'var(--text-secondary)' }}> (Size: {item.size})</span>}
+                                        {item.color && <span style={{ color: 'var(--text-secondary)' }}> ({item.color})</span>}
+                                      </span>
+                                      <span>Rs. {(item.price * item.quantity).toLocaleString()}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{order.notes || 'No item details recorded'}</p>
+                              )}
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+              </div>
+
+              {/* Mobile Orders Card View (Visible only on mobile <= 920px) */}
+              <div className="mobile-orders-view" style={{ display: 'none', flexDirection: 'column', gap: '14px' }}>
+                {orders.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '30px', color: '#888' }}>No WhatsApp orders found</div>
+                ) : orders.map(order => {
+                  const phoneClean = (order.shippingAddress?.phone || (order.notes && order.notes.split('Phone: ')[1]) || order.user?.phone || '').replace(/[^0-9]/g, '');
+                  return (
+                    <div key={order.id || order._id} className="mobile-order-card" style={{ background: '#15151a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <strong style={{ fontSize: '0.95rem', color: '#fff' }}>
+                            {order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id || order._id).slice(-6).toUpperCase()}`}
+                          </strong>
+                          <div style={{ fontSize: '0.72rem', color: '#888', marginTop: '2px' }}>
+                            {new Date(order.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <span className={`status-badge status-${order.status === 'delivered' ? 'completed' : order.status}`}>
+                          {order.status}
+                        </span>
+                      </div>
+
+                      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#fff' }}>
+                          {order.shippingAddress?.name || order.user?.name || 'WhatsApp Customer'}
+                        </div>
+                        {phoneClean && (
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span style={{ fontSize: '0.82rem', color: '#aaa' }}>{order.shippingAddress?.phone || (order.notes && order.notes.split('Phone: ')[1]) || order.user?.phone}</span>
+                            <a 
+                              href={`https://wa.me/${phoneClean.startsWith('0') ? '92' + phoneClean.slice(1) : phoneClean}`} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(37, 211, 102, 0.15)', color: '#25D366', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600 }}
+                            >
+                              <FiMessageCircle size={12} /> WhatsApp
+                            </a>
+                          </div>
+                        )}
+                      </div>
+
+                      {order.items && order.items.length > 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '8px' }}>
+                          {order.items.map((item, idx) => (
+                            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#ddd' }}>
+                              <span>{item.quantity}x {item.name} {item.size && `(${item.size})`} {item.color && `(${item.color})`}</span>
+                              <span>Rs. {(item.price * item.quantity).toLocaleString()}</span>
+                            </div>
+                          ))}
+                        </div>
                       )}
-                    </React.Fragment>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '8px' }}>
+                        <span style={{ fontSize: '0.8rem', color: '#888' }}>Total Amount:</span>
+                        <strong style={{ fontSize: '1.05rem', color: 'var(--gold, #c9a84c)' }}>Rs. {order.total.toLocaleString()}</strong>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '10px' }}>
+                        {order.status === 'pending' && (
+                          <button 
+                            type="button"
+                            className="btn-approve" 
+                            style={{ flex: 1, padding: '8px', minHeight: '38px', fontSize: '0.8rem' }}
+                            onClick={() => handleUpdateStatus(order.id || order._id, 'processing')}
+                          >
+                            <FiCheckCircle size={13} /> Approve
+                          </button>
+                        )}
+                        {order.status === 'processing' && (
+                          <button 
+                            type="button"
+                            className="btn-ship" 
+                            style={{ flex: 1, padding: '8px', minHeight: '38px', fontSize: '0.8rem' }}
+                            onClick={() => handleUpdateStatus(order.id || order._id, 'shipped')}
+                          >
+                            <FiTruck size={13} /> Ship
+                          </button>
+                        )}
+                        {order.status === 'shipped' && (
+                          <button 
+                            type="button"
+                            className="btn-deliver" 
+                            style={{ flex: 1, padding: '8px', minHeight: '38px', fontSize: '0.8rem' }}
+                            onClick={() => handleUpdateStatus(order.id || order._id, 'delivered')}
+                          >
+                            <FiPackage size={13} /> Delivered
+                          </button>
+                        )}
+                        <select 
+                          className="form-input" 
+                          style={{ flex: 1, padding: '6px 8px', fontSize: '0.8rem', minHeight: '38px', background: '#1c1c22' }}
+                          value={order.status}
+                          onChange={(e) => handleUpdateStatus(order.id || order._id, e.target.value)}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="processing">Processing</option>
+                          <option value="shipped">Shipped</option>
+                          <option value="delivered">Delivered</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </div>
+                    </div>
                   );
                 })}
-              </tbody>
-            </table>
-            </div>
+              </div>
+            </>
           )}
         </div>
       </div>

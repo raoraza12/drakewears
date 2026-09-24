@@ -383,6 +383,24 @@
 }
 
 @media (max-width: 992px) {
+  .admin-container,
+  .admin-main,
+  .admin-content,
+  .dashboard-container,
+  .dashboard-content-grid,
+  .admin-panel,
+  .stats-grid,
+  .stat-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .dashboard-content-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 16px !important;
+  }
+
   .admin-sidebar {
     position: fixed;
     top: 0;
@@ -471,6 +489,114 @@
   }
 }
 
+/* =======================================================
+   MOBILE APP-LIKE BOTTOM NAVIGATION BAR (Screens <= 768px)
+   ======================================================= */
+.admin-mobile-bottom-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .admin-mobile-bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 62px;
+    background: var(--bg-primary, #ffffff);
+    border-top: 1px solid var(--border-medium, rgba(0, 0, 0, 0.1));
+    z-index: 990;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 4px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  [data-theme="dark"] .admin-mobile-bottom-bar {
+    background: rgba(18, 18, 23, 0.96);
+    border-top-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.6);
+  }
+
+  .admin-mobile-bottom-bar .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: var(--text-secondary, #666);
+    text-decoration: none;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    flex: 1;
+    height: 100%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 4px 0;
+  }
+
+  .admin-mobile-bottom-bar .bottom-nav-item:hover,
+  .admin-mobile-bottom-bar .bottom-nav-item.active {
+    color: var(--gold, #c9a84c) !important;
+  }
+
+  .admin-mobile-bottom-bar .bottom-nav-item.active svg {
+    color: var(--gold, #c9a84c) !important;
+    transform: scale(1.12);
+  }
+
+  .admin-content {
+    padding-bottom: 84px !important;
+  }
+}
+
+@media (max-width: 992px) {
+  /* Sticky Header on mobile so menu toggle is always reachable */
+  .admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    background: rgba(14, 14, 18, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .sidebar-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  /* Make sidebar vertically scrollable on all mobile devices */
+  .admin-sidebar {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .sidebar-nav {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Responsive Orders Table Swap */
+  .desktop-orders-table {
+    display: none !important;
+  }
+
+  .mobile-orders-view {
+    display: flex !important;
+  }
+}
+
 @media (max-width: 540px) {
   .admin-header {
     padding: 0 12px;
@@ -482,7 +608,7 @@
   }
 
   .admin-content {
-    padding: 14px 10px 40px !important;
+    padding: 14px 10px 90px !important;
   }
 
   .panel-body {
@@ -494,11 +620,11 @@
   }
 
   .h2 {
-    font-size: 1.4rem !important;
+    font-size: 1.35rem !important;
   }
 
   .h3 {
-    font-size: 1.15rem !important;
+    font-size: 1.1rem !important;
   }
 
   .btn-primary, 
@@ -506,6 +632,78 @@
   .admin-header-flex button,
   .panel-header button {
     font-size: 0.85rem !important;
+    min-height: 40px !important;
+  }
+
+  /* Mobile Form inputs */
+  .form-input, input, select, textarea {
+    font-size: 16px !important; /* Prevents auto zoom on mobile */
+  }
+}
+
+/* =======================================================
+   UNIVERSAL MOBILE CARDS DESIGN SYSTEM FOR ADMIN
+   ======================================================= */
+.mobile-cards-view {
+  display: none;
+}
+
+.desktop-table-view {
+  display: block;
+}
+
+.admin-mobile-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-mobile-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.mobile-card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.mobile-card-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-light);
+}
+
+.mobile-card-actions-row button,
+.mobile-card-actions-row a {
+  flex: 1;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+@media (max-width: 920px) {
+  .desktop-table-view {
+    display: none !important;
+  }
+  .mobile-cards-view {
+    display: flex !important;
   }
 }
 

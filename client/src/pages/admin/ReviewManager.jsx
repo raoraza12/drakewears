@@ -64,61 +64,114 @@ const ReviewManager = () => {
         ) : reviews.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>No customer reviews recorded yet.</div>
         ) : (
-          <div className="table-responsive">
-            <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
-              <thead>
-                <tr style={{ background: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-medium)' }}>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 500, color: 'var(--text-secondary)' }}>Customer</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 500, color: 'var(--text-secondary)' }}>Product</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 500, color: 'var(--text-secondary)' }}>Rating</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 500, color: 'var(--text-secondary)' }}>Status</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'right', fontWeight: 500, color: 'var(--text-secondary)' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reviews.map((review) => (
-                  <tr key={review.id} style={{ borderBottom: '1px solid var(--border-light)', transition: 'background 0.2s' }} className="table-row-hover">
-                    <td style={{ padding: '16px 20px' }}>
-                      <div style={{ fontWeight: 500 }}>{review.customer}</div>
-                      <div className="text-caption" style={{ marginTop: '4px' }}>{review.date}</div>
-                    </td>
-                    <td style={{ padding: '16px 20px' }}>
-                      <div style={{ fontWeight: 500 }}>{review.product}</div>
-                      <div className="text-body" style={{ marginTop: '4px', fontSize: '0.875rem' }}>"{review.comment}"</div>
-                    </td>
-                    <td style={{ padding: '16px 20px' }}>
-                      <div style={{ display: 'flex', color: '#f1c40f' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <FiStar key={i} fill={i < review.rating ? '#f1c40f' : 'none'} style={{ marginRight: '2px' }} />
-                        ))}
-                      </div>
-                    </td>
-                    <td style={{ padding: '16px 20px' }}>
-                      <span style={{ 
-                        padding: '4px 12px', 
-                        borderRadius: '20px', 
-                        fontSize: '0.75rem', 
-                        fontWeight: 600,
-                        background: review.status === 'Approved' ? '#e8f5e9' : (review.status === 'Hidden' ? '#ffebee' : '#fff3e0'),
-                        color: review.status === 'Approved' ? '#2e7d32' : (review.status === 'Hidden' ? '#c0392b' : '#e67e22')
-                      }}>
-                        {review.status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '16px 20px', textAlign: 'right' }}>
-                      {review.status !== 'Approved' && (
-                        <button className="btn-icon" onClick={() => handleAction(review.id, 'Approved')} style={{ color: '#2ecc71', marginRight: '8px' }} title="Approve"><FiCheck size={18} /></button>
-                      )}
-                      {review.status !== 'Hidden' && (
-                        <button className="btn-icon" onClick={() => handleAction(review.id, 'Hidden')} style={{ color: '#e67e22', marginRight: '8px' }} title="Hide"><FiX size={18} /></button>
-                      )}
-                      <button className="btn-icon" onClick={() => handleDelete(review.id)} style={{ color: '#e74c3c' }} title="Delete"><FiTrash2 size={16} /></button>
-                    </td>
+          <>
+            {/* Desktop Table View */}
+            <div className="table-responsive desktop-table-view">
+              <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+                <thead>
+                  <tr style={{ background: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-medium)' }}>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 500, color: 'var(--text-secondary)' }}>Customer</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 500, color: 'var(--text-secondary)' }}>Product</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 500, color: 'var(--text-secondary)' }}>Rating</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 500, color: 'var(--text-secondary)' }}>Status</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'right', fontWeight: 500, color: 'var(--text-secondary)' }}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {reviews.map((review) => (
+                    <tr key={review.id} style={{ borderBottom: '1px solid var(--border-light)', transition: 'background 0.2s' }} className="table-row-hover">
+                      <td style={{ padding: '16px 20px' }}>
+                        <div style={{ fontWeight: 500 }}>{review.customer}</div>
+                        <div className="text-caption" style={{ marginTop: '4px' }}>{review.date}</div>
+                      </td>
+                      <td style={{ padding: '16px 20px' }}>
+                        <div style={{ fontWeight: 500 }}>{review.product}</div>
+                        <div className="text-body" style={{ marginTop: '4px', fontSize: '0.875rem' }}>"{review.comment}"</div>
+                      </td>
+                      <td style={{ padding: '16px 20px' }}>
+                        <div style={{ display: 'flex', color: '#f1c40f' }}>
+                          {[...Array(5)].map((_, i) => (
+                            <FiStar key={i} fill={i < review.rating ? '#f1c40f' : 'none'} style={{ marginRight: '2px' }} />
+                          ))}
+                        </div>
+                      </td>
+                      <td style={{ padding: '16px 20px' }}>
+                        <span style={{ 
+                          padding: '4px 12px', 
+                          borderRadius: '20px', 
+                          fontSize: '0.75rem', 
+                          fontWeight: 600,
+                          background: review.status === 'Approved' ? '#e8f5e9' : (review.status === 'Hidden' ? '#ffebee' : '#fff3e0'),
+                          color: review.status === 'Approved' ? '#2e7d32' : (review.status === 'Hidden' ? '#c0392b' : '#e67e22')
+                        }}>
+                          {review.status}
+                        </span>
+                      </td>
+                      <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                        {review.status !== 'Approved' && (
+                          <button className="btn-icon" onClick={() => handleAction(review.id, 'Approved')} style={{ color: '#2ecc71', marginRight: '8px' }} title="Approve"><FiCheck size={18} /></button>
+                        )}
+                        {review.status !== 'Hidden' && (
+                          <button className="btn-icon" onClick={() => handleAction(review.id, 'Hidden')} style={{ color: '#e67e22', marginRight: '8px' }} title="Hide"><FiX size={18} /></button>
+                        )}
+                        <button className="btn-icon" onClick={() => handleDelete(review.id)} style={{ color: '#e74c3c' }} title="Delete"><FiTrash2 size={16} /></button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Review Cards View */}
+            <div className="mobile-cards-view admin-mobile-card-list" style={{ padding: '12px' }}>
+              {reviews.map((review) => (
+                <div key={review.id} className="admin-mobile-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <strong style={{ fontSize: '0.92rem', color: 'var(--text-primary)' }}>{review.customer}</strong>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>{review.product} • {review.date}</div>
+                    </div>
+                    <span style={{ 
+                      padding: '3px 8px', 
+                      borderRadius: '12px', 
+                      fontSize: '0.72rem', 
+                      fontWeight: 700,
+                      background: review.status === 'Approved' ? 'rgba(46, 125, 50, 0.12)' : (review.status === 'Hidden' ? 'rgba(231, 76, 60, 0.12)' : 'rgba(230, 126, 34, 0.12)'),
+                      color: review.status === 'Approved' ? '#2e7d32' : (review.status === 'Hidden' ? '#c0392b' : '#e67e22')
+                    }}>
+                      {review.status}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', color: '#f1c40f', margin: '2px 0' }}>
+                    {[...Array(5)].map((_, i) => (
+                      <FiStar key={i} fill={i < review.rating ? '#f1c40f' : 'none'} size={15} style={{ marginRight: '2px' }} />
+                    ))}
+                  </div>
+
+                  <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-primary)', fontStyle: 'italic', background: 'var(--bg-secondary)', padding: '8px 10px', borderRadius: '6px' }}>
+                    "{review.comment}"
+                  </p>
+
+                  <div className="mobile-card-actions-row">
+                    {review.status !== 'Approved' && (
+                      <button className="btn-outline" onClick={() => handleAction(review.id, 'Approved')} style={{ color: '#2e7d32', borderColor: '#2e7d32' }}>
+                        <FiCheck /> Approve
+                      </button>
+                    )}
+                    {review.status !== 'Hidden' && (
+                      <button className="btn-outline" onClick={() => handleAction(review.id, 'Hidden')} style={{ color: '#e67e22', borderColor: '#e67e22' }}>
+                        <FiX /> Hide
+                      </button>
+                    )}
+                    <button className="btn-outline" onClick={() => handleDelete(review.id)} style={{ color: '#e74c3c', borderColor: '#e74c3c' }}>
+                      <FiTrash2 /> Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

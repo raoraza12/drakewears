@@ -118,7 +118,8 @@ const CategoryManager = () => {
           <div className="text-caption">Showing {filteredCategories.length} of {categories.length} categories</div>
         </div>
         
-        <div className="table-responsive">
+        {/* Desktop Table View */}
+        <div className="table-responsive desktop-table-view">
           <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', minWidth: '550px' }}>
             <thead>
               <tr style={{ background: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-medium)' }}>
@@ -161,6 +162,46 @@ const CategoryManager = () => {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Cards View */}
+        <div className="mobile-cards-view admin-mobile-card-list" style={{ padding: '12px' }}>
+          {filteredCategories.map((cat) => (
+            <div key={cat.id} className="admin-mobile-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gold, #c9a84c)' }}>
+                    <FiLayers size={18} />
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: '0.94rem', color: 'var(--text-primary)', display: 'block' }}>{cat.name}</strong>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                      {getItemCount(cat.name)} {getItemCount(cat.name) === 1 ? 'live product' : 'live products'}
+                    </span>
+                  </div>
+                </div>
+                <span style={{ 
+                  padding: '3px 10px', 
+                  borderRadius: '20px', 
+                  fontSize: '0.72rem', 
+                  fontWeight: 700,
+                  background: cat.status === 'Active' ? 'rgba(46, 125, 50, 0.12)' : 'rgba(0, 0, 0, 0.06)',
+                  color: cat.status === 'Active' ? '#2e7d32' : '#616161'
+                }}>
+                  {cat.status}
+                </span>
+              </div>
+              <div className="mobile-card-actions-row">
+                <button 
+                  className="btn-outline" 
+                  style={{ borderColor: 'var(--red)', color: 'var(--red)' }} 
+                  onClick={() => handleDelete(cat.id)}
+                >
+                  <FiTrash2 /> Remove Category
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
         
         {filteredCategories.length === 0 && (

@@ -729,7 +729,8 @@ const OrdersSummary = () => {
           </div>
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
+        {/* Desktop Ledger Table */}
+        <div className="table-responsive desktop-table-view" style={{ overflowX: 'auto' }}>
           <table className="ledger-table">
             <thead>
               <tr>
@@ -860,6 +861,83 @@ const OrdersSummary = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Ledger Cards View */}
+        <div className="mobile-cards-view admin-mobile-card-list" style={{ padding: '12px' }}>
+          {filteredOrders.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
+              No orders recorded for this filter.
+            </div>
+          ) : (
+            filteredOrders.map(order => {
+              const orderId = order.id || order._id;
+              const isWA = isWhatsAppOrder(order);
+              const orderNum = order.orderNumber ? `#${order.orderNumber}` : `#${String(orderId).slice(-6).toUpperCase()}`;
+              const customerName = order.shippingAddress?.name || order.user?.name || 'Customer';
+              const phone = order.shippingAddress?.phone || order.user?.phone || '';
+              const city = order.shippingAddress?.city || 'Pakistan';
+              const statusKey = (order.status || 'pending').toLowerCase();
+
+              return (
+                <div key={orderId} className="admin-mobile-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <strong style={{ color: 'var(--gold, #c9a84c)', fontSize: '0.94rem' }}>{orderNum}</strong>
+                      {isWA ? (
+                        <span className="channel-pill whatsapp" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>
+                          <FiMessageCircle size={10} /> WA
+                        </span>
+                      ) : (
+                        <span className="channel-pill site" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>
+                          <FiGlobe size={10} /> Web
+                        </span>
+                      )}
+                    </div>
+                    <span style={{
+                      padding: '2px 8px',
+                      borderRadius: '12px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      background: statusKey === 'delivered' ? 'rgba(34, 197, 94, 0.15)' : (statusKey === 'cancelled' ? 'rgba(239, 68, 68, 0.15)' : (statusKey === 'shipped' ? 'rgba(168, 85, 247, 0.15)' : 'rgba(234, 179, 8, 0.15)')),
+                      color: statusKey === 'delivered' ? '#22c55e' : (statusKey === 'cancelled' ? '#ef4444' : (statusKey === 'shipped' ? '#c084fc' : '#eab308')),
+                    }}>
+                      {order.status}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                    <span><strong style={{ color: '#fff' }}>{customerName}</strong> ({city})</span>
+                    <span>{new Date(order.createdAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'short' })}</span>
+                  </div>
+
+                  {phone && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '6px' }}>
+                      <span style={{ fontSize: '0.8rem', color: '#aaa' }}>{phone}</span>
+                      <a 
+                        href={`https://wa.me/${cleanPhone(phone)}?text=Hi%20${encodeURIComponent(customerName)},%20this%20is%20DRAKEWEARS%20regarding%20Order%20${orderNum}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: '#25d366', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem', textDecoration: 'none', fontWeight: 600 }}
+                      >
+                        <FiMessageCircle size={13} /> Chat WhatsApp
+                      </a>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '8px', marginTop: '2px' }}>
+                    <span style={{ fontSize: '0.74rem', color: '#55c688', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <FiTruck size={12} /> SLA: 2–4 Days
+                    </span>
+                    <strong style={{ color: 'var(--gold, #c9a84c)', fontSize: '1rem' }}>
+                      Rs. {Number(order.total || 0).toLocaleString()}
+                    </strong>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>
