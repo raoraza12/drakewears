@@ -240,9 +240,10 @@ function App() {
             <Route path="coupons" element={<CouponManager />} />
           </Route>
 
-          {/* Decoy for old /admin route -> 404 Not Found */}
-          <Route path="/admin/*" element={<NotFound />} />
-          <Route path="/admin" element={<NotFound />} />
+          {/* Admin Redirection: Support both /admin and /drakewearsofficial */}
+          <Route path="/admin/login" element={<Navigate to="/drakewearsofficial/login" replace />} />
+          <Route path="/admin/*" element={<Navigate to="/drakewearsofficial" replace />} />
+          <Route path="/admin" element={<Navigate to="/drakewearsofficial" replace />} />
 
           
           {/* Auth Pages */}

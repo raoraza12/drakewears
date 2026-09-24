@@ -21,7 +21,7 @@ export default function AdminLogin() {
       const userData = await login(cleanEmail, cleanPassword);
       if (userData.role === 'admin') {
         toast.success('Admin access granted.');
-        navigate('/drakewearsofficial');
+        window.location.href = '/drakewearsofficial';
       } else {
         toast.error('Unauthorized access. Admin privileges required.');
       }

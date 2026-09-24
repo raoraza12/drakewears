@@ -168,7 +168,7 @@ const Navbar = () => {
                         <Link to="/orders">My Orders</Link>
                         <Link to="/wishlist">Saved Wishlist {wishlistCount > 0 && `(${wishlistCount})`}</Link>
                         {user.role === 'admin' && (
-                          <Link to="/admin" style={{ color: '#2563eb', fontWeight: '700' }}>Admin Dashboard</Link>
+                          <Link to="/drakewearsofficial" style={{ color: '#2563eb', fontWeight: '700' }}>Admin Dashboard</Link>
                         )}
                         <button onClick={logout} className="logout-btn">Logout</button>
                       </div>
@@ -244,7 +244,7 @@ const Navbar = () => {
               <>
                 <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>MY ACCOUNT ({user.name})</Link>
                 {user.role === 'admin' && (
-                  <Link to="/admin" onClick={() => setMobileMenuOpen(false)} style={{ color: '#3b82f6', fontWeight: 700 }}>
+                  <Link to="/drakewearsofficial" onClick={() => setMobileMenuOpen(false)} style={{ color: '#3b82f6', fontWeight: 700 }}>
                     ADMIN PANEL →
                   </Link>
                 )}
