@@ -72,7 +72,7 @@ const Analytics = () => {
       </div>
 
       {/* Placeholder for Charts */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginTop: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginTop: '32px' }}>
         <div className="card-premium" style={{ padding: '24px', height: '400px', display: 'flex', flexDirection: 'column' }}>
           <h3 className="text-body" style={{ fontWeight: 600, marginBottom: '24px' }}>Revenue Trends</h3>
           <div style={{ flex: 1, border: '1px dashed var(--border-medium)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-light)' }}>

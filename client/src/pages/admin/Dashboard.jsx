@@ -63,46 +63,48 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="dashboard-content-grid" style={{ marginTop: '40px', display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '32px' }}>
+      <div className="dashboard-content-grid" style={{ marginTop: '32px', display: 'grid', gap: '24px' }}>
         {/* Recent Orders */}
         <div className="admin-panel">
           <div className="panel-header">
             <h3 className="h3" style={{ fontSize: '1.25rem' }}>Recent Orders</h3>
           </div>
-          <div className="panel-body">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stats.orders.slice(0, 5).map(order => (
-                  <tr key={order.id || order._id}>
-                    <td><strong>{order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id || order._id).slice(-6).toUpperCase()}`}</strong></td>
-                    <td>{order.shippingAddress?.name || order.user?.name || 'Unknown'}</td>
-                    <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                    <td>
-                      <span className="status-badge" style={{ 
-                        background: (STATUS_COLORS[order.status] || '#ccc') + '22', 
-                        color: STATUS_COLORS[order.status] || '#ccc',
-                        border: `1px solid ${STATUS_COLORS[order.status] || '#ccc'}44`
-                      }}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td>Rs. {order.total.toLocaleString()}</td>
+          <div className="panel-body" style={{ padding: '16px' }}>
+            <div className="table-responsive">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Total</th>
                   </tr>
-                ))}
-                {stats.orders.length === 0 && (
-                  <tr><td colSpan="5" style={{ textAlign: 'center' }}>No orders yet.</td></tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {stats.orders.slice(0, 5).map(order => (
+                    <tr key={order.id || order._id}>
+                      <td><strong>{order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id || order._id).slice(-6).toUpperCase()}`}</strong></td>
+                      <td>{order.shippingAddress?.name || order.user?.name || 'Unknown'}</td>
+                      <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                      <td>
+                        <span className="status-badge" style={{ 
+                          background: (STATUS_COLORS[order.status] || '#ccc') + '22', 
+                          color: STATUS_COLORS[order.status] || '#ccc',
+                          border: `1px solid ${STATUS_COLORS[order.status] || '#ccc'}44`
+                        }}>
+                          {order.status}
+                        </span>
+                      </td>
+                      <td>Rs. {order.total.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                  {stats.orders.length === 0 && (
+                    <tr><td colSpan="5" style={{ textAlign: 'center' }}>No orders yet.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 

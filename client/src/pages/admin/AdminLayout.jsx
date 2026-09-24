@@ -5,12 +5,22 @@ import { useAuth } from '../../context/AuthContext';
 import './Admin.css';
 
 const AdminLayout = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth > 992;
+    }
+    return true;
+  });
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const location = useLocation();
   const { user, loading, logout } = useAuth();
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const closeSidebarMobile = () => {
+    if (window.innerWidth <= 992) {
+      setIsSidebarOpen(false);
+    }
+  };
   const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
 
   if (loading) {
@@ -41,21 +51,31 @@ const AdminLayout = () => {
     { path: '/drakewearsofficial/settings', icon: <FiSettings />, label: 'Settings' }
   ];
 
-
   return (
     <div className="admin-container">
+      {/* Mobile Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="admin-sidebar-backdrop" 
+          onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Sidebar */}
       <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link to="/" className="admin-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', padding: '4px 0' }}>
-            <img src="/drakewears-logo.png?v=4" alt="drakewears" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
+          <Link to="/" className="admin-logo" onClick={closeSidebarMobile} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', padding: '4px 0' }}>
+            <img src="/drakewears-logo.png?v=4" alt="drakewears" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
           </Link>
           <button 
             onClick={toggleSidebar} 
-            title="Toggle Sidebar" 
-            style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px' }}
+            title="Close / Toggle Sidebar" 
+            className="sidebar-close-btn"
+            style={{ background: 'rgba(255, 255, 255, 0.08)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', borderRadius: '6px' }}
           >
-            <FiSidebar size={18} />
+            <span className="desktop-toggle-icon"><FiSidebar size={18} /></span>
+            <span className="mobile-close-icon"><FiX size={18} /></span>
           </button>
         </div>
 
@@ -64,6 +84,7 @@ const AdminLayout = () => {
             <Link 
               key={item.path} 
               to={item.path} 
+              onClick={closeSidebarMobile}
               className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
             >
               <span className="nav-icon">{item.icon}</span>
@@ -83,25 +104,28 @@ const AdminLayout = () => {
       {/* Main Content */}
       <main className={`admin-main ${isSidebarOpen ? '' : 'expanded'}`}>
         <header className="admin-header">
-          <button className="sidebar-toggle" onClick={toggleSidebar}>
-            <FiMenu size={24} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button className="sidebar-toggle" onClick={toggleSidebar} aria-label="Toggle navigation menu">
+              <FiMenu size={22} />
+            </button>
+            <span className="admin-page-badge">Admin Suite</span>
+          </div>
           
           <div className="admin-profile-container">
             <div className="admin-profile" onClick={toggleProfile}>
               <div className="avatar">{user.name ? user.name[0].toUpperCase() : 'A'}</div>
-              <span className="admin-name">{user.name || 'Admin User'}</span>
+              <span className="admin-name">{user.name || 'Admin'}</span>
             </div>
             
             {isProfileOpen && (
               <div className="profile-dropdown animate-slide-up">
                 <div className="profile-dropdown-header">
-                  <p className="text-body" style={{ fontWeight: 600 }}>{user.name}</p>
+                  <p className="text-body" style={{ fontWeight: 600, color: '#fff' }}>{user.name}</p>
                   <p className="text-caption">{user.email}</p>
                 </div>
                 <div className="profile-dropdown-links">
-                  <Link to="/admin/settings" onClick={() => setIsProfileOpen(false)}>Profile Settings</Link>
-                  <Link to="/" onClick={() => setIsProfileOpen(false)}>Go to Website</Link>
+                  <Link to="/drakewearsofficial/settings" onClick={() => { setIsProfileOpen(false); closeSidebarMobile(); }}>Settings</Link>
+                  <Link to="/" onClick={() => { setIsProfileOpen(false); closeSidebarMobile(); }}>Storefront</Link>
                   <button onClick={logout} className="text-danger" style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '12px 16px', cursor: 'pointer', fontSize: '0.875rem' }}>Logout</button>
                 </div>
               </div>

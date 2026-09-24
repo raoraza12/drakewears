@@ -92,6 +92,7 @@ html.lenis, html.lenis body {
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {

@@ -194,3 +194,36 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+@media (max-width: 600px) {
+  .orders-page {
+    padding: 24px 0 60px;
+  }
+  .orders-title {
+    font-size: 1.55rem;
+    margin-bottom: 20px;
+  }
+  .order-card-header {
+    padding: 14px 16px;
+  }
+  .order-item-preview {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  .order-card-footer {
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .order-actions-container {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .cancel-modal-content {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 14px;
+    margin: 12px;
+  }
+}

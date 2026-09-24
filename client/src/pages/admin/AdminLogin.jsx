@@ -31,8 +31,8 @@ export default function AdminLogin() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0a0a0a', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: '100%', maxWidth: '400px', padding: '40px', backgroundColor: '#141414', borderRadius: '12px', border: '1px solid #333', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0a0a0a', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <div style={{ width: '100%', maxWidth: '420px', padding: 'clamp(24px, 6vw, 40px)', backgroundColor: '#141414', borderRadius: '14px', border: '1px solid #333', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
         
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <h1 className="text-script" style={{ fontSize: '3rem', color: '#fff', margin: 0, lineHeight: 1 }}>drakewears</h1>

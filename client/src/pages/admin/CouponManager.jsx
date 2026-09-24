@@ -53,34 +53,34 @@ const CouponManager = () => {
       <h2 className="section-title" style={{ fontSize: '1.5rem', marginBottom: '30px' }}>Marketing: Coupons</h2>
       
       {/* Create Coupon Form */}
-      <form onSubmit={handleCreate} className="admin-form-card" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'end', marginBottom: '40px', padding: '24px' }}>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label className="form-label text-xs uppercase font-bold" style={{ marginBottom: '8px' }}>Promo Code</label>
+      <form onSubmit={handleCreate} className="admin-form-card card-premium" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'end', marginBottom: '32px', padding: '20px' }}>
+        <div style={{ flex: 1, minWidth: '140px' }}>
+          <label className="form-label text-xs uppercase font-bold" style={{ marginBottom: '8px', display: 'block' }}>Promo Code</label>
           <input required type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value.toUpperCase()})} className="form-input" placeholder="e.g. DRAKEWEARS50" />
         </div>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label className="form-label text-xs uppercase font-bold" style={{ marginBottom: '8px' }}>Benefit Type</label>
+        <div style={{ flex: 1, minWidth: '140px' }}>
+          <label className="form-label text-xs uppercase font-bold" style={{ marginBottom: '8px', display: 'block' }}>Benefit Type</label>
           <select required value={formData.discountType} onChange={e => setFormData({...formData, discountType: e.target.value})} className="form-input">
             <option value="percentage">Percentage Off</option>
             <option value="fixed">Fixed Currency Off</option>
           </select>
         </div>
-        <div style={{ flex: 1, minWidth: '120px' }}>
-          <label className="form-label text-xs uppercase font-bold" style={{ marginBottom: '8px' }}>Magnitude</label>
+        <div style={{ flex: 1, minWidth: '110px' }}>
+          <label className="form-label text-xs uppercase font-bold" style={{ marginBottom: '8px', display: 'block' }}>Magnitude</label>
           <input required type="number" min="1" value={formData.discountValue} onChange={e => setFormData({...formData, discountValue: e.target.value})} className="form-input" placeholder="e.g. 20" />
         </div>
-        <div style={{ flex: 1, minWidth: '180px' }}>
-          <label className="form-label text-xs uppercase font-bold" style={{ marginBottom: '8px' }}>Expiry Threshold</label>
+        <div style={{ flex: 1, minWidth: '150px' }}>
+          <label className="form-label text-xs uppercase font-bold" style={{ marginBottom: '8px', display: 'block' }}>Expiry Threshold</label>
           <input required type="date" value={formData.expirationDate} onChange={e => setFormData({...formData, expirationDate: e.target.value})} className="form-input" />
         </div>
-        <button type="submit" className="btn-primary" style={{ padding: '12px 24px' }}>
+        <button type="submit" className="btn-primary" style={{ padding: '12px 24px', minWidth: '120px' }}>
           <FiPlus /> Deploy
         </button>
       </form>
 
       {/* Coupon List */}
-      <div className="admin-table-container">
-        <table className="admin-table">
+      <div className="table-responsive">
+        <table className="admin-table" style={{ minWidth: '550px' }}>
           <thead>
             <tr>
               <th>Identifier</th>

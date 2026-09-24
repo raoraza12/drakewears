@@ -51,55 +51,57 @@ const UserManager = () => {
       </div>
 
       <div className="admin-panel">
-        <div className="panel-body">
+        <div className="panel-body" style={{ padding: '16px' }}>
           {loading ? <p>Loading users...</p> : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Joined</th>
-                  <th>Role</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.length === 0 ? (
-                  <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>No users found</td></tr>
-                ) : users.map(user => (
-                  <tr key={user.id || user._id}>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                          {user.name.charAt(0).toUpperCase()}
-                        </div>
-                        {user.name}
-                      </div>
-                    </td>
-                    <td>{user.email}</td>
-                    <td>{user.phone || 'N/A'}</td>
-                    <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td>
-                      <select 
-                        className="form-input" 
-                        style={{ padding: '4px 8px', fontSize: '0.8rem', width: 'auto', background: user.role === 'admin' ? '#fff3cd' : 'var(--bg-primary)' }}
-                        value={user.role}
-                        onChange={(e) => handleUpdateRole(user.id || user._id, e.target.value)}
-                      >
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </td>
-                    <td>
-                      <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--red)', color: 'var(--red)' }} onClick={() => handleDeleteUser(user.id || user._id)}>
-                        Delete
-                      </button>
-                    </td>
+            <div className="table-responsive">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Joined</th>
+                    <th>Role</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {users.length === 0 ? (
+                    <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>No users found</td></tr>
+                  ) : users.map(user => (
+                    <tr key={user.id || user._id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                            {user.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span style={{ fontWeight: 600 }}>{user.name}</span>
+                        </div>
+                      </td>
+                      <td>{user.email}</td>
+                      <td>{user.phone || 'N/A'}</td>
+                      <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                      <td>
+                        <select 
+                          className="form-input" 
+                          style={{ padding: '4px 8px', fontSize: '0.8rem', width: 'auto', background: user.role === 'admin' ? '#fff3cd' : 'var(--bg-primary)' }}
+                          value={user.role}
+                          onChange={(e) => handleUpdateRole(user.id || user._id, e.target.value)}
+                        >
+                          <option value="user">User</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </td>
+                      <td>
+                        <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--red)', color: 'var(--red)' }} onClick={() => handleDeleteUser(user.id || user._id)}>
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>

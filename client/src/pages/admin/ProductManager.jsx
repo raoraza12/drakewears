@@ -305,45 +305,47 @@ const ProductManager = () => {
 
       <div className="admin-panel">
         {activeTab === 'list' && (
-          <div className="panel-body">
+          <div className="panel-body" style={{ padding: '16px' }}>
             {loading ? <p>Loading products...</p> : (
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Category</th>
-                    <th>Stock</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.length === 0 ? (
-                    <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>No products found</td></tr>
-                  ) : products.map(product => (
-                    <tr key={product.id || product._id}>
-                      <td>
-                        <img src={product.images[0] || 'https://via.placeholder.com/50'} alt={product.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
-                      </td>
-                      <td>{product.name}</td>
-                      <td>Rs. {product.price}</td>
-                      <td>{product.category}</td>
-                      <td>{product.stock || 0}</td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }} onClick={() => handleEditClick(product)}>
-                            Edit
-                          </button>
-                          <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--red)', color: 'var(--red)' }} onClick={() => handleDelete(product.id || product._id)}>
-                            <FiTrash2 /> Delete
-                          </button>
-                        </div>
-                      </td>
+              <div className="table-responsive">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Image</th>
+                      <th>Name</th>
+                      <th>Price</th>
+                      <th>Category</th>
+                      <th>Stock</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {products.length === 0 ? (
+                      <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>No products found</td></tr>
+                    ) : products.map(product => (
+                      <tr key={product.id || product._id}>
+                        <td>
+                          <img src={product.images[0] || 'https://via.placeholder.com/50'} alt={product.name} style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '4px' }} />
+                        </td>
+                        <td style={{ fontWeight: 600 }}>{product.name}</td>
+                        <td>Rs. {product.price}</td>
+                        <td>{product.category}</td>
+                        <td>{product.stock || 0}</td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }} onClick={() => handleEditClick(product)}>
+                              Edit
+                            </button>
+                            <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--red)', color: 'var(--red)' }} onClick={() => handleDelete(product.id || product._id)}>
+                              <FiTrash2 /> Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         )}
@@ -563,9 +565,10 @@ const ProductManager = () => {
                   <div key={item.id || idx} style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '14px',
+                    flexWrap: 'wrap',
+                    gap: '12px',
                     background: 'var(--bg-elevated)',
-                    padding: '12px 16px',
+                    padding: '12px 14px',
                     borderRadius: '8px',
                     border: idx === 0 ? '1.5px solid var(--gold)' : '1px solid var(--border-medium)',
                     boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
@@ -608,8 +611,8 @@ const ProductManager = () => {
 
                     {/* Live Preview Thumbnail */}
                     <div style={{
-                      width: '58px',
-                      height: '58px',
+                      width: '54px',
+                      height: '54px',
                       borderRadius: '6px',
                       background: 'var(--bg-primary)',
                       border: '1px solid var(--border-light)',
@@ -632,8 +635,8 @@ const ProductManager = () => {
                     </div>
 
                     {/* Image Inputs */}
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <div style={{ flex: 1, minWidth: '200px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                         <input 
                           type="url"
                           className="form-input"

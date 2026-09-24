@@ -145,9 +145,10 @@
 
 @media (max-width: 768px) {
   .hero-otr-carousel {
-    height: clamp(380px, 66svh, 540px);
-    min-height: 380px;
-    max-height: 560px;
+    margin-top: 74px;
+    height: clamp(280px, 58vw, 420px);
+    min-height: 260px;
+    max-height: 440px;
   }
   .otr-slide-img {
     object-position: center center;
@@ -166,7 +167,7 @@
     right: 10px;
   }
   .otr-carousel-dots {
-    bottom: 16px;
+    bottom: 14px;
     gap: 6px;
   }
   .otr-dot {
@@ -180,9 +181,10 @@
 
 @media (max-width: 480px) {
   .hero-otr-carousel {
-    height: clamp(320px, 60svh, 460px);
-    min-height: 320px;
-    max-height: 480px;
+    margin-top: 70px;
+    height: clamp(230px, 56.25vw, 320px);
+    min-height: 220px;
+    max-height: 340px;
   }
   .otr-arrow {
     width: 30px;

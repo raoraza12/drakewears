@@ -478,6 +478,88 @@
   border: 1px solid rgba(37, 211, 102, 0.25);
 }
 
+/* =======================================================
+   RESPONSIVE STYLES FOR ORDERS SUMMARY (MOBILE & TABLET)
+   ======================================================= */
+@media (max-width: 900px) {
+  .summary-analytics-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .sla-performance-banner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .sla-stats-group {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  .sla-stat-item {
+    text-align: left !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .summary-header-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    margin-bottom: 20px !important;
+  }
+  .summary-header-title h1 {
+    font-size: 1.4rem !important;
+  }
+  .summary-actions-wrap {
+    width: 100% !important;
+  }
+  .summary-btn {
+    flex: 1 1 calc(50% - 6px) !important;
+    justify-content: center !important;
+    padding: 9px 12px !important;
+    font-size: 0.8rem !important;
+  }
+  .source-tabs-nav {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 4px !important;
+    gap: 6px !important;
+  }
+  .source-tab-btn {
+    min-width: 135px !important;
+    padding: 8px 12px !important;
+    font-size: 0.8rem !important;
+  }
+  .summary-kpi-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 20px !important;
+  }
+  .summary-kpi-card {
+    padding: 14px !important;
+  }
+  .kpi-val {
+    font-size: 1.35rem !important;
+  }
+  .ledger-table {
+    min-width: 720px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .summary-btn {
+    flex: 1 1 100% !important;
+  }
+  .sla-stats-group {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+}
+
 /* Print Stylesheet for Official Reports */
 @media print {
   body * {

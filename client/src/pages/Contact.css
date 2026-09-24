@@ -77,3 +77,15 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 480px) {
+  .contact-layout {
+    padding: 40px 0;
+    gap: 36px;
+  }
+  
+  .contact-form-wrapper {
+    padding: 24px 16px;
+    border-radius: 12px;
+  }
+}

@@ -538,6 +538,15 @@
   }
 }
 
+@media (max-width: 768px) {
+  .outfitters-header.on-home {
+    background: rgba(9, 9, 12, 0.96);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
 /* Enhanced Mobile-First Responsive Styles (< 600px) */
 @media (max-width: 600px) {
   .outfitters-nav-bar {

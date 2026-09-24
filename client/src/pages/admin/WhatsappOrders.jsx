@@ -86,7 +86,7 @@ const WhatsappOrders = () => {
 
       {showForm && (
         <div className="admin-panel" style={{ marginBottom: '24px' }}>
-          <form className="panel-body" onSubmit={handleCreateOrder} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <form className="panel-body" onSubmit={handleCreateOrder} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
             <div>
               <label className="form-label">Customer Name</label>
               <input required className="form-input" value={form.customerName} onChange={e => setForm({...form, customerName: e.target.value})} placeholder="Ali Khan" />
@@ -126,16 +126,17 @@ const WhatsappOrders = () => {
               <input className="form-input" value={form.color} onChange={e => setForm({...form, color: e.target.value})} placeholder="Black, Navy, etc." />
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
-              <button type="submit" className="btn-primary">Save Order</button>
+              <button type="submit" className="btn-primary" style={{ padding: '12px 24px', width: '100%', maxWidth: '240px' }}>Save Order</button>
             </div>
           </form>
         </div>
       )}
 
       <div className="admin-panel">
-        <div className="panel-body" style={{ overflowX: 'auto' }}>
+        <div className="panel-body" style={{ padding: '16px' }}>
           {loading ? <p>Loading...</p> : (
-            <table className="admin-table">
+            <div className="table-responsive">
+              <table className="admin-table" style={{ minWidth: '700px' }}>
               <thead>
                 <tr>
                   <th>Order ID</th>
@@ -241,6 +242,7 @@ const WhatsappOrders = () => {
                 })}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>

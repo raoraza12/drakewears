@@ -140,8 +140,8 @@ const Inventory = () => {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '32px' }}>
-        <div className="card-premium" style={{ padding: '24px', borderLeft: '4px solid #2ecc71' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div className="card-premium" style={{ padding: '20px', borderLeft: '4px solid #2ecc71' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
             <FiCheckCircle style={{ color: '#2ecc71', marginRight: '8px' }} size={20} />
             <span className="text-body" style={{ fontWeight: 500 }}>Healthy Stock</span>
@@ -149,7 +149,7 @@ const Inventory = () => {
           <h2 className="h2" style={{ margin: 0 }}>{healthyCount}</h2>
           <p className="text-caption" style={{ marginTop: '4px' }}>Products well stocked</p>
         </div>
-        <div className="card-premium" style={{ padding: '24px', borderLeft: '4px solid #f39c12' }}>
+        <div className="card-premium" style={{ padding: '20px', borderLeft: '4px solid #f39c12' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
             <FiAlertTriangle style={{ color: '#f39c12', marginRight: '8px' }} size={20} />
             <span className="text-body" style={{ fontWeight: 500 }}>Low Stock</span>
@@ -157,7 +157,7 @@ const Inventory = () => {
           <h2 className="h2" style={{ margin: 0 }}>{lowCount}</h2>
           <p className="text-caption" style={{ marginTop: '4px' }}>Less than 5 items left</p>
         </div>
-        <div className="card-premium" style={{ padding: '24px', borderLeft: '4px solid #e74c3c' }}>
+        <div className="card-premium" style={{ padding: '20px', borderLeft: '4px solid #e74c3c' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
             <FiPackage style={{ color: '#e74c3c', marginRight: '8px' }} size={20} />
             <span className="text-body" style={{ fontWeight: 500 }}>Out of Stock</span>
@@ -168,14 +168,14 @@ const Inventory = () => {
       </div>
 
       <div className="card-premium">
-        <div style={{ padding: '20px', borderBottom: '1px solid var(--border-medium)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ position: 'relative', width: '300px' }}>
+        <div style={{ padding: '16px', borderBottom: '1px solid var(--border-medium)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: '340px' }}>
             <FiSearch style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
             <input 
               type="text" 
               placeholder="Search by SKU or name..." 
               className="form-input"
-              style={{ paddingLeft: '40px', paddingRight: '16px', paddingTop: '12px', paddingBottom: '12px', borderRadius: '8px' }}
+              style={{ paddingLeft: '40px', paddingRight: '16px', paddingTop: '10px', paddingBottom: '10px', borderRadius: '8px', width: '100%' }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
