@@ -7,21 +7,21 @@ import './Home.css';
 const HERO_SLIDES = [
   {
     id: 0,
-    image: '/carousel-1.jpg',
+    image: '/carousel-gymwears.jpg',
     ctaLink: '/shop',
-    alt: 'DrakeWears Atelier Drops',
+    alt: 'Gymwears - DrakeWears Performance Drop',
   },
   {
     id: 1,
-    image: '/carousel-2.jpg',
+    image: '/carousel-casualwears.jpg',
     ctaLink: '/shop?category=baggy-trousers',
-    alt: 'DrakeWears Baggy Trousers & Hoodies',
+    alt: 'Casual Wears - DrakeWears Streetwear Collection',
   },
   {
     id: 2,
-    image: 'https://res.cloudinary.com/rwmcd7gk/image/upload/v1787585429/drakewears_products/yborgrh3ixe2tt0ycxrp.jpg',
-    ctaLink: '/shop?category=drop-shoulder-tees',
-    alt: 'Drop Shoulder Oversized Tees',
+    image: '/carousel-comingsoon.jpg',
+    ctaLink: '/shop',
+    alt: 'Coming Soon - Limited Atelier Vault Drop',
   },
 ];
 

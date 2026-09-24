@@ -270,7 +270,7 @@ export default function OrderTracking() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
               {order.items?.map((item, idx) => (
                 <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px', background: 'var(--bg-secondary)', borderRadius: '10px' }}>
-                  <img src={item.image || '/carousel-1.jpg'} alt={item.name} style={{ width: '56px', height: '56px', borderRadius: '8px', objectFit: 'cover' }} />
+                  <img src={item.image || '/carousel-casualwears.jpg'} alt={item.name} style={{ width: '56px', height: '56px', borderRadius: '8px', objectFit: 'cover' }} />
                   <div style={{ flex: 1 }}>
                     <h4 style={{ margin: '0 0 4px', fontSize: '0.92rem' }}>{item.name}</h4>
                     <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-secondary)' }}>

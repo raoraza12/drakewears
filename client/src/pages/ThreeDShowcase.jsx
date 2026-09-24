@@ -226,7 +226,7 @@ export default function ThreeDShowcase() {
                 <div className="cube-face face-front">
                   <div className="cube-face-inner">
                     <span className="face-kicker">01 // SS26 DROP</span>
-                    <img src="/carousel-1.jpg" alt="Drake Hoodie" className="cube-face-img" />
+                    <img src="/carousel-gymwears.jpg" alt="Drake Hoodie" className="cube-face-img" />
                     <div className="cube-face-info">
                       <h4>OVERSIZED HEAVY HOODIE</h4>
                       <p>450 GSM French Terry</p>
@@ -265,7 +265,7 @@ export default function ThreeDShowcase() {
                 <div className="cube-face face-left">
                   <div className="cube-face-inner">
                     <span className="face-kicker">04 // VAULT DROP</span>
-                    <img src="/carousel-1.jpg" alt="Vault Drop" className="cube-face-img" />
+                    <img src="/carousel-casualwears.jpg" alt="Vault Drop" className="cube-face-img" />
                     <div className="cube-face-info">
                       <h4>ATELIER ZIP HOODIE</h4>
                       <p>Limited 50 Pieces Worldwide</p>
@@ -336,10 +336,10 @@ export default function ThreeDShowcase() {
               >
                 {/* 5 Cards positioned in progressive 3D depth */}
                 {[
-                  { z: -400, title: 'VAULT EDITION PUFFER', sub: 'WINTER DROP', img: '/carousel-1.jpg', price: 'Rs. 7,499' },
+                  { z: -400, title: 'VAULT EDITION PUFFER', sub: 'WINTER DROP', img: '/carousel-comingsoon.jpg', price: 'Rs. 7,499' },
                   { z: -200, title: 'RAW ACID WASH TEE', sub: '280 GSM', img: '/home-page-category.jpg', price: 'Rs. 2,499' },
                   { z: 0, title: 'SIGNATURE BAGGY BOTTOM', sub: '14 OZ RAW FINISH', img: '/home-category-baggy.jfif', price: 'Rs. 3,899' },
-                  { z: 200, title: '450 GSM HEAVY HOODIE', sub: 'FRENCH TERRY', img: '/carousel-1.jpg', price: 'Rs. 4,499' },
+                  { z: 200, title: '450 GSM HEAVY HOODIE', sub: 'FRENCH TERRY', img: '/carousel-gymwears.jpg', price: 'Rs. 4,499' },
                   { z: 400, title: 'ATELIER CARGO TROUSER', sub: 'RELAXED SILHOUETTE', img: '/home-category-baggy.jfif', price: 'Rs. 4,199' },
                 ].map((item, idx) => {
                   const currentZ = item.z + tunnelOffset;
@@ -407,7 +407,7 @@ export default function ThreeDShowcase() {
                   </div>
 
                   <div className="chrome-product-stage">
-                    <img src="/carousel-1.jpg" alt="Drake Chrome Hoodie" className="chrome-product-img" />
+                    <img src="/carousel-casualwears.jpg" alt="Drake Chrome Hoodie" className="chrome-product-img" />
                     <div className="chrome-embossed-watermark">DRAKEWEARS</div>
                   </div>
 
