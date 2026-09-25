@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { FiLogIn, FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -13,6 +13,8 @@ export default function Login() {
   const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get('redirect') || '/';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,8 +28,7 @@ export default function Login() {
       if (userData.role === 'admin') {
         navigate('/drakewearsofficial');
       } else {
-
-        navigate('/');
+        navigate(redirect);
       }
     } catch (err) {
       const msg = err.response?.data?.message || 'Invalid email or password. Please check your credentials and try again.';
@@ -89,10 +90,10 @@ export default function Login() {
         </div>
 
         {/* 1-Click Google Sign In (Device Verified Account) */}
-        <GoogleAuthButton isSignUp={false} onError={(msg) => setError(msg)} />
+        <GoogleAuthButton redirect={redirect} isSignUp={false} onError={(msg) => setError(msg)} />
 
         <p className="auth-switch">
-          Don't have an account? <Link to="/register" className="auth-link">Create one &rarr;</Link>
+          Don't have an account? <Link to={redirect !== '/' ? `/register?redirect=${encodeURIComponent(redirect)}` : '/register'} className="auth-link">Create one &rarr;</Link>
         </p>
 
       </div>

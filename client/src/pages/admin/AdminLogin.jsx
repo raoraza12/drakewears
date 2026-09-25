@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import toast from 'react-hot-toast';
@@ -9,8 +9,14 @@ export default function AdminLogin() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      navigate('/drakewearsofficial', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +27,7 @@ export default function AdminLogin() {
       const userData = await login(cleanEmail, cleanPassword);
       if (userData.role === 'admin') {
         toast.success('Admin access granted.');
-        window.location.href = '/drakewearsofficial';
+        navigate('/drakewearsofficial');
       } else {
         toast.error('Unauthorized access. Admin privileges required.');
       }

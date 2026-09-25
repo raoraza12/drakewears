@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { FiUserPlus, FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -19,6 +19,8 @@ export default function Register() {
   const [error, setError] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get('redirect') || '/';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,7 +49,7 @@ export default function Register() {
     try {
       await register(form.name.trim(), emailTrimmed, form.password);
       toast.success('Account created! Welcome to drakewears ✨');
-      navigate('/');
+      navigate(redirect);
     } catch (err) {
       const msg = err.response?.data?.message || 'Registration failed. Please check your details and try again.';
       setError(msg);
@@ -116,10 +118,10 @@ export default function Register() {
         </div>
 
         {/* 1-Click Google Sign Up (Device Verified Account) */}
-        <GoogleAuthButton isSignUp={true} onError={(msg) => setError(msg)} />
+        <GoogleAuthButton redirect={redirect} isSignUp={true} onError={(msg) => setError(msg)} />
 
         <p className="auth-switch">
-          Already have an account? <Link to="/login" className="auth-link">Sign in &rarr;</Link>
+          Already have an account? <Link to={redirect !== '/' ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login'} className="auth-link">Sign in &rarr;</Link>
         </p>
       </div>
     </div>

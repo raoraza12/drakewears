@@ -121,6 +121,7 @@ export default function OrderTracking() {
   const isCancellable = ['pending', 'confirmed', 'processing'].includes(statusKey);
   const isShippedOrDelivered = ['shipped', 'delivered'].includes(statusKey);
   const isCancelled = statusKey === 'cancelled';
+  const shortId = (order?.id || order?._id || '').slice(-6).toUpperCase();
   const orderNumDisplay = order?.orderNumber ? `#${order.orderNumber}` : `#${shortId}`;
   const waSupportUrl = `https://wa.me/923218254922?text=Hello%20DRAKEWEARS,%20I%20need%20assistance%20cancelling%20Order%20${encodeURIComponent(orderNumDisplay)}.`;
 

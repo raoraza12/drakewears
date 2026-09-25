@@ -338,7 +338,7 @@ const Home = () => {
               {popularProducts.length === 0 ? (
                 <p style={{ color: '#71717a' }}>Loading popular products...</p>
               ) : (
-                popularProducts.map((product, pIdx) => (
+                popularProducts.map((product) => (
                   <ProductCard key={product.id || product._id} product={product} />
                 ))
               )}

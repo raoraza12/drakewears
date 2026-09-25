@@ -49,7 +49,7 @@ const OrdersSummary = () => {
       const res = await API.get('/admin/orders');
       setOrders(Array.isArray(res.data) ? res.data : []);
       if (isManual) toast.success('Orders summary refreshed!');
-    } catch (err) {
+    } catch (_err) {
       toast.error('Failed to load orders summary');
     } finally {
       setLoading(false);
@@ -397,6 +397,13 @@ const OrdersSummary = () => {
           </button>
         </div>
       </div>
+
+      {loading && (
+        <div style={{ padding: '30px', textAlign: 'center', color: 'var(--gold, #c9a84c)' }}>
+          <FiRefreshCw className="animate-spin" size={24} style={{ display: 'inline-block' }} />
+          <p style={{ marginTop: '8px', fontSize: '0.9rem' }}>Loading live orders data...</p>
+        </div>
+      )}
 
       {/* 1. CHANNEL SOURCE TABS (Website vs WhatsApp vs All) */}
       <div className="source-tabs-nav no-print">

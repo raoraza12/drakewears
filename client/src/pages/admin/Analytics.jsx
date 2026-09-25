@@ -19,7 +19,8 @@ const Analytics = () => {
       try {
         const res = await API.get('/admin/stats');
         setData(res.data);
-      } catch (error) {
+      } catch (err) {
+        console.error('Failed to load analytics:', err);
         toast.error('Failed to load analytics');
       } finally {
         setLoading(false);
@@ -27,6 +28,14 @@ const Analytics = () => {
     };
     fetchStats();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="admin-page animate-fade-in" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+        <p className="text-body" style={{ color: 'var(--text-muted)' }}>Loading analytics metrics...</p>
+      </div>
+    );
+  }
 
   const stats = [
     { title: 'Total Revenue', value: `Rs. ${data.totalRevenue.toLocaleString()}`, trend: '+12.5%', icon: <FiDollarSign /> },

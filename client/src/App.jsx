@@ -12,6 +12,7 @@ import CartDrawer from './components/CartDrawer';
 import ScrollToTop from './components/ScrollToTop';
 import SiteIntroPreloader from './components/SiteIntroPreloader';
 import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
 import Home from './pages/Home';
@@ -71,11 +72,11 @@ const StorefrontLayout = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/orders" element={<Orders />} />
+          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="/orders/track" element={<OrderTracking />} />
           <Route path="/track" element={<OrderTracking />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="*" element={<NotFound />} />

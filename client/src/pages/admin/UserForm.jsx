@@ -21,7 +21,7 @@ const UserForm = () => {
     if (isEdit) {
       API.get('/admin/users')
       .then(res => {
-        const user = res.data.find(u => u._id === id);
+        const user = res.data.find(u => u.id === id || u._id === id);
         if (user) {
           setForm({ name: user.name, email: user.email, role: user.role, password: '' });
         }

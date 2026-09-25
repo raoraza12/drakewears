@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   FiCheckCircle, 
@@ -108,17 +108,17 @@ const ProductDetail = () => {
     setActiveImageIndex(0);
   }, [slug, product?.id, product?._id]);
 
-  const handlePrevImage = (e) => {
+  const handlePrevImage = useCallback((e) => {
     if (e) { e.preventDefault(); e.stopPropagation(); }
     if (galleryImages.length <= 1) return;
     setActiveImageIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
-  };
+  }, [galleryImages.length]);
 
-  const handleNextImage = (e) => {
+  const handleNextImage = useCallback((e) => {
     if (e) { e.preventDefault(); e.stopPropagation(); }
     if (galleryImages.length <= 1) return;
     setActiveImageIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
-  };
+  }, [galleryImages.length]);
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
@@ -143,7 +143,7 @@ const ProductDetail = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [galleryImages.length]);
+  }, [handlePrevImage, handleNextImage]);
 
   const handleWhatsappOrder = async (e) => {
     e.preventDefault();

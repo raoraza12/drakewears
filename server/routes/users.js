@@ -20,6 +20,8 @@ router.get('/profile', verifyToken, async (req, res) => {
   }
 });
 
+const bcrypt = require('bcryptjs');
+
 // Update profile
 router.put('/profile', verifyToken, async (req, res) => {
   try {
@@ -30,6 +32,45 @@ router.put('/profile', verifyToken, async (req, res) => {
       select: { id: true, name: true, email: true, role: true, avatar: true, phone: true }
     });
     res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Change / Update password
+router.put('/change-password', verifyToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters long.' });
+    }
+
+    const user = await req.prisma.user.findUnique({
+      where: { id: req.user.id }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // If user already has a password, verify current password
+    if (user.password) {
+      if (!currentPassword) {
+        return res.status(400).json({ message: 'Current password is required to change password.' });
+      }
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Current password is incorrect. Please try again.' });
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    await req.prisma.user.update({
+      where: { id: req.user.id },
+      data: { password: hashedPassword }
+    });
+
+    res.json({ message: 'Password updated successfully! Your device can now save the new password.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

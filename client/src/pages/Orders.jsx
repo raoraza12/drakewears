@@ -68,7 +68,7 @@ export default function Orders() {
     setSubmittingCancel(true);
 
     try {
-      const res = await API.patch(`/orders/${orderId}/cancel`, {
+      await API.patch(`/orders/${orderId}/cancel`, {
         reason: finalReason
       });
 

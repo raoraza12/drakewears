@@ -15,7 +15,11 @@ router.get('/', async (req, res) => {
     if (bestseller === 'true') where.bestseller = true;
     
     if (search) {
-      where.name = { contains: search, mode: 'insensitive' };
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { category: { contains: search, mode: 'insensitive' } }
+      ];
     }
     
     if (minPrice || maxPrice) {

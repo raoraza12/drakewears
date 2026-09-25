@@ -292,9 +292,8 @@ const ProductManager = () => {
               setActiveTab('add');
               setEditingId(null);
               setFormData({ name: '', price: '', category: '', colors: '' });
-              setColorItems([{ name: '', hex: '#000000', image: '' }]);
-              setImageUrlInput('');
-              setImageUrlInput2('');
+              setColorItems([{ name: '', hex: '#000000', image: '', file: null, preview: '' }]);
+              setGalleryItems([{ id: 'img-1', url: '', file: null, preview: '' }]);
             }}
             style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}
           >

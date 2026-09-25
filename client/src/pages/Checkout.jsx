@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { FiShoppingBag, FiCheckCircle, FiTag, FiX, FiMessageSquare, FiAlertCircle, FiEdit2 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
@@ -9,10 +9,9 @@ import API from '../api';
 import './Checkout.css';
 
 export default function Checkout() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const { items, total, clearCart } = useCart();
   const { settings } = useSettings();
-  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ 
@@ -83,7 +82,7 @@ export default function Checkout() {
       errs.name = 'Name can only contain alphabetic letters, spaces, hyphens, apostrophes, and parentheses.';
     }
 
-    const cleanPhoneDigits = form.phone.replace(/[\s\-\(\)]/g, '').replace(/^0092/, '+92');
+    const cleanPhoneDigits = form.phone.replace(/[\s\-()]/g, '').replace(/^0092/, '+92');
     if (!cleanPhoneDigits) {
       errs.phone = 'Phone number is required.';
     } else if (!/^((\+92)?(0)?3[0-9]{9})$/.test(cleanPhoneDigits)) {
@@ -169,7 +168,7 @@ export default function Checkout() {
 
     try {
       const cleanName = form.name.trim();
-      const rawPhone = form.phone.replace(/[\s\-\(\)]/g, '');
+      const rawPhone = form.phone.replace(/[\s\-()]/g, '');
       let normalizedPhone = rawPhone;
       if (normalizedPhone.startsWith('+92')) {
         normalizedPhone = '0' + normalizedPhone.slice(3);
@@ -255,7 +254,7 @@ export default function Checkout() {
             <FiCheckCircle size={54} color="var(--green, #55c688)" />
           </div>
           <h1 className="success-title">Order Confirmed!</h1>
-          <p className="success-subtitle">Thank you, <strong>{placedOrder.shippingAddress.name}</strong>. Your order has been placed.</p>
+          <p className="success-subtitle">Thank you, <strong>{placedOrder.shippingAddress.name}</strong>. Your order has been placed. VIP Helpline: {displayPhone}</p>
           
           <div className="order-details-box">
             <div className="detail-row">
@@ -549,6 +548,87 @@ export default function Checkout() {
           </div>
         </div>
       </div>
+
+      {/* Pre-Order Confirmation Review Modal */}
+      {showReviewModal && (
+        <div className="checkout-modal-overlay" onClick={() => !loading && setShowReviewModal(false)}>
+          <div className="checkout-review-card" onClick={e => e.stopPropagation()}>
+            <h3 className="checkout-review-title">Review & Confirm Your Order</h3>
+            <p className="checkout-review-subtitle">Please double-check your shipping details before finalizing.</p>
+            
+            {/* Delivery Information */}
+            <div className="review-info-section">
+              <h4 className="review-info-heading">Delivery Information</h4>
+              <div className="review-row">
+                <span className="review-label">Recipient:</span>
+                <span className="review-value">{form.name}</span>
+              </div>
+              <div className="review-row">
+                <span className="review-label">Phone:</span>
+                <span className="review-value">{form.phone}</span>
+              </div>
+              {form.email && (
+                <div className="review-row">
+                  <span className="review-label">Email:</span>
+                  <span className="review-value">{form.email}</span>
+                </div>
+              )}
+              <div className="review-row">
+                <span className="review-label">Delivery Address:</span>
+                <span className="review-value">{form.street}, {form.city}, {form.state} {form.zip}</span>
+              </div>
+              <div className="review-row">
+                <span className="review-label">Payment Mode:</span>
+                <span className="review-value">{form.paymentMethod}</span>
+              </div>
+            </div>
+
+            {/* Pricing Summary */}
+            <div className="review-info-section">
+              <h4 className="review-info-heading">Order Total</h4>
+              <div className="review-row">
+                <span className="review-label">Items ({items.reduce((acc, i) => acc + i.quantity, 0)}):</span>
+                <span className="review-value">Rs. {total.toLocaleString()}</span>
+              </div>
+              {discountAmount > 0 && (
+                <div className="review-row" style={{ color: 'var(--green, #55c688)' }}>
+                  <span className="review-label">Discount ({appliedCoupon?.code}):</span>
+                  <span className="review-value">- Rs. {discountAmount.toLocaleString()}</span>
+                </div>
+              )}
+              <div className="review-row">
+                <span className="review-label">Delivery Shipping:</span>
+                <span className="review-value">{shippingFee === 0 ? 'FREE' : `Rs. ${shippingFee.toLocaleString()}`}</span>
+              </div>
+              <div className="review-row" style={{ borderTop: '1px solid var(--border-light)', paddingTop: '10px', marginTop: '6px' }}>
+                <span className="review-label" style={{ fontWeight: 700, color: 'var(--cream)' }}>Total Payable:</span>
+                <span className="review-value" style={{ color: 'var(--gold)', fontSize: '1.1rem', fontWeight: 800 }}>Rs. {grandTotal.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="review-modal-actions">
+              <button 
+                type="button" 
+                className="btn-outline" 
+                style={{ flex: 1, padding: '14px' }}
+                onClick={() => setShowReviewModal(false)}
+                disabled={loading}
+              >
+                Edit Details
+              </button>
+              <button 
+                type="button" 
+                className="btn-primary" 
+                style={{ flex: 2, padding: '14px', justifyContent: 'center' }}
+                onClick={handleFinalSubmit}
+                disabled={loading}
+              >
+                {loading ? 'Confirming Order...' : 'Confirm & Place Order'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

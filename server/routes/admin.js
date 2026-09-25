@@ -2,7 +2,11 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { verifyToken, isAdmin } = require('../middleware/auth');
-const { sendOrderNotification } = require('../lib/mailer');
+const { 
+  sendOrderNotification, 
+  sendCustomerOrderCancellation, 
+  sendAdminCancellationNotification 
+} = require('../lib/mailer');
 
 // Protect all admin routes
 router.use(verifyToken, isAdmin);
@@ -10,9 +14,66 @@ router.use(verifyToken, isAdmin);
 // --- PRODUCT MANAGEMENT ---
 router.post('/products', async (req, res) => {
   try {
-    const product = await req.prisma.product.create({ data: req.body });
+    const {
+      name,
+      slug,
+      description = '',
+      price,
+      comparePrice = 0,
+      category,
+      subcategory = '',
+      images = [],
+      sizes = [],
+      colors = [],
+      stock = 0,
+      tags = [],
+      featured = false,
+      newArrival = false,
+      bestseller = false,
+      material = '',
+      care = ''
+    } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Product name is required' });
+    }
+    if (price === undefined || isNaN(Number(price))) {
+      return res.status(400).json({ message: 'Valid price is required' });
+    }
+
+    let productSlug = slug ? slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') : name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    if (!productSlug) productSlug = 'product-' + Date.now();
+
+    // Check slug uniqueness
+    const existingSlug = await req.prisma.product.findUnique({ where: { slug: productSlug } });
+    if (existingSlug) {
+      productSlug = `${productSlug}-${Math.floor(1000 + Math.random() * 9000)}`;
+    }
+
+    const product = await req.prisma.product.create({
+      data: {
+        name: name.trim(),
+        slug: productSlug,
+        description: description.trim() || `${name.trim()} - Premium quality apparel.`,
+        price: parseFloat(price) || 0,
+        comparePrice: parseFloat(comparePrice) || 0,
+        category: category || 'Drop Shoulder Tees',
+        subcategory: subcategory || '',
+        images: Array.isArray(images) ? images.filter(Boolean) : (images ? [images] : []),
+        sizes: Array.isArray(sizes) ? sizes : [],
+        colors: Array.isArray(colors) ? colors : (typeof colors === 'object' ? colors : []),
+        stock: parseInt(stock, 10) || 0,
+        tags: Array.isArray(tags) ? tags : [],
+        featured: Boolean(featured),
+        newArrival: Boolean(newArrival),
+        bestseller: Boolean(bestseller),
+        material: material || '',
+        care: care || ''
+      }
+    });
     res.status(201).json(product);
   } catch (err) {
+    console.error('Create product error:', err);
     res.status(400).json({ message: err.message });
   }
 });
@@ -20,14 +81,23 @@ router.post('/products', async (req, res) => {
 router.put('/products/:id', async (req, res) => {
   try {
     const updateData = {};
-    if (req.body.stock !== undefined) updateData.stock = parseInt(req.body.stock);
-    if (req.body.name !== undefined) updateData.name = req.body.name;
-    if (req.body.price !== undefined) updateData.price = parseFloat(req.body.price);
+    if (req.body.name !== undefined) updateData.name = req.body.name.trim();
+    if (req.body.slug !== undefined) updateData.slug = req.body.slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    if (req.body.stock !== undefined) updateData.stock = parseInt(req.body.stock, 10) || 0;
+    if (req.body.price !== undefined) updateData.price = parseFloat(req.body.price) || 0;
+    if (req.body.comparePrice !== undefined) updateData.comparePrice = parseFloat(req.body.comparePrice) || 0;
     if (req.body.description !== undefined) updateData.description = req.body.description;
     if (req.body.category !== undefined) updateData.category = req.body.category;
-    if (req.body.images !== undefined) updateData.images = req.body.images;
-    if (req.body.colors !== undefined) updateData.colors = req.body.colors;
-    if (req.body.sizes !== undefined) updateData.sizes = req.body.sizes;
+    if (req.body.subcategory !== undefined) updateData.subcategory = req.body.subcategory;
+    if (req.body.images !== undefined) updateData.images = Array.isArray(req.body.images) ? req.body.images.filter(Boolean) : [req.body.images];
+    if (req.body.colors !== undefined) updateData.colors = Array.isArray(req.body.colors) ? req.body.colors : [];
+    if (req.body.sizes !== undefined) updateData.sizes = Array.isArray(req.body.sizes) ? req.body.sizes : [];
+    if (req.body.tags !== undefined) updateData.tags = Array.isArray(req.body.tags) ? req.body.tags : [];
+    if (req.body.featured !== undefined) updateData.featured = Boolean(req.body.featured);
+    if (req.body.newArrival !== undefined) updateData.newArrival = Boolean(req.body.newArrival);
+    if (req.body.bestseller !== undefined) updateData.bestseller = Boolean(req.body.bestseller);
+    if (req.body.material !== undefined) updateData.material = req.body.material;
+    if (req.body.care !== undefined) updateData.care = req.body.care;
 
     const product = await req.prisma.product.update({
       where: { id: req.params.id },
@@ -186,16 +256,41 @@ router.get('/orders', async (req, res) => {
 
 router.put('/orders/:id', async (req, res) => {
   try {
-    const { status, paymentStatus, refundedAmount } = req.body;
+    const { status, paymentStatus, refundedAmount, trackingNumber, notes } = req.body;
     
+    const currentOrder = await req.prisma.order.findUnique({
+      where: { id: req.params.id },
+      include: { items: true, user: true }
+    });
+
+    if (!currentOrder) return res.status(404).json({ message: 'Order not found' });
+
     const updateData = {};
     if (status !== undefined) updateData.status = status;
     if (paymentStatus !== undefined) updateData.paymentStatus = paymentStatus;
     if (refundedAmount !== undefined) updateData.refundedAmount = Number(refundedAmount);
+    if (trackingNumber !== undefined) updateData.trackingNumber = String(trackingNumber).trim();
+    if (notes !== undefined) updateData.notes = String(notes).trim();
+
+    // If order is now being cancelled, restore product stock
+    if (status === 'cancelled' && currentOrder.status !== 'cancelled') {
+      for (const item of currentOrder.items) {
+        if (item.productId) {
+          await req.prisma.product.update({
+            where: { id: item.productId },
+            data: { stock: { increment: Math.max(1, item.quantity) } }
+          }).catch(e => console.warn('[Admin Orders] Stock restoration warning:', e.message));
+        }
+      }
+
+      sendCustomerOrderCancellation(currentOrder, currentOrder.items, 'Cancelled by Admin').catch(() => {});
+      sendAdminCancellationNotification(currentOrder, 'Cancelled by Admin', 'Admin').catch(() => {});
+    }
 
     const order = await req.prisma.order.update({
       where: { id: req.params.id },
-      data: updateData
+      data: updateData,
+      include: { items: true, user: true }
     });
     res.json(order);
   } catch (err) {

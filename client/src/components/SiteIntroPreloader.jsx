@@ -5,6 +5,14 @@ export default function SiteIntroPreloader() {
   const [shouldRender, setShouldRender] = useState(true);
   const [stage, setStage] = useState('active'); // 'active' -> 'dissolve' -> 'done'
 
+  const handleSkip = () => {
+    setStage('dissolve');
+    setTimeout(() => {
+      setStage('done');
+      setShouldRender(false);
+    }, 300);
+  };
+
   useEffect(() => {
     // Stage 1: Frosted Glass Veil over live site with brand name reveal (1.4s)
     const t1 = setTimeout(() => {
@@ -29,14 +37,6 @@ export default function SiteIntroPreloader() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
-
-  const handleSkip = () => {
-    setStage('dissolve');
-    setTimeout(() => {
-      setStage('done');
-      setShouldRender(false);
-    }, 300);
-  };
 
   if (!shouldRender || stage === 'done') return null;
 

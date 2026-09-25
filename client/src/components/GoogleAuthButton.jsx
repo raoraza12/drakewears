@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
-export default function GoogleAuthButton({ isSignUp = false, onError }) {
+export default function GoogleAuthButton({ isSignUp = false, onError, redirect = '/' }) {
   const googleBtnRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [gisReady, setGisReady] = useState(false);
@@ -27,8 +27,7 @@ export default function GoogleAuthButton({ isSignUp = false, onError }) {
       if (userData.role === 'admin') {
         navigate('/drakewearsofficial');
       } else {
-
-        navigate('/');
+        navigate(redirect);
       }
     } catch (err) {
       console.error('Google Auth Error:', err);

@@ -10,7 +10,9 @@ const CategoryManager = () => {
     if (saved) {
       try {
         return JSON.parse(saved);
-      } catch (e) {}
+      } catch {
+        /* ignore invalid storage */
+      }
     }
     return [
       { id: '1', name: 'Drop Shoulder Tees', status: 'Active' },
@@ -22,14 +24,6 @@ const CategoryManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [newCatName, setNewCatName] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem('drakewears_admin_categories', JSON.stringify(categories));
-  }, [categories]);
-
-  useEffect(() => {
-    fetchLiveProducts();
-  }, []);
 
   const fetchLiveProducts = async () => {
     try {
@@ -57,6 +51,14 @@ const CategoryManager = () => {
       console.error('Failed to fetch products:', error);
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem('drakewears_admin_categories', JSON.stringify(categories));
+  }, [categories]);
+
+  useEffect(() => {
+    fetchLiveProducts();
+  }, []);
 
   const getItemCount = (catName) => {
     const searchTarget = catName.toLowerCase().trim();
