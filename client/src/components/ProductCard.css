@@ -92,6 +92,18 @@
   color: #000000;
 }
 
+.badge-vault {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #000000 !important;
+  font-size: 0.62rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.45);
+}
+
 .wishlist-btn {
   position: absolute; top: 12px; right: 12px; z-index: 2;
   width: 34px; height: 34px; border-radius: 50%;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowLeft, FiArrowRight, FiLayers, FiShield, FiPackage, FiAward } from 'react-icons/fi';
+import { FiLayers, FiShield, FiPackage, FiAward, FiUnlock, FiArrowRight } from 'react-icons/fi';
 import ProductCard from '../components/ProductCard';
 import API from '../api';
 import './Home.css';
@@ -187,21 +187,6 @@ const Home = () => {
             ))}
           </div>
 
-          {/* Clean Subtle Chevrons (Optimized for both desktop & mobile) */}
-          <button 
-            className="otr-arrow otr-arrow-left" 
-            onClick={(e) => { e.stopPropagation(); prevSlide(); }}
-            aria-label="Previous slide"
-          >
-            <FiArrowLeft size={18} />
-          </button>
-          <button 
-            className="otr-arrow otr-arrow-right" 
-            onClick={(e) => { e.stopPropagation(); nextSlide(); }}
-            aria-label="Next slide"
-          >
-            <FiArrowRight size={18} />
-          </button>
         </section>
 
         {/* ==========================================================
@@ -275,8 +260,9 @@ const Home = () => {
               >
                 <div className="cat-card-img-box">
                   <img 
-                    src="https://res.cloudinary.com/rwmcd7gk/image/upload/v1787585429/drakewears_products/yborgrh3ixe2tt0ycxrp.jpg" 
+                    src="/home-category-tees.png" 
                     alt="Drop Shoulder Tees" 
+                    style={{ objectPosition: 'center 15%' }}
                   />
                   <div className="cat-card-glass-glow"></div>
                 </div>
@@ -289,6 +275,87 @@ const Home = () => {
                   </div>
                 </div>
               </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ==========================================================
+            3.5. THE DRAKE VAULT: 1-OF-1 CURATED ARCHIVE SPOTLIGHT
+            ========================================================== */}
+        <section className="home-vault-spotlight scroll-reveal">
+          <div className="container">
+            <div className="home-vault-card">
+              <div className="home-vault-ambient-glow"></div>
+              
+              <div className="home-vault-content">
+                <div className="home-vault-badge-row">
+                  <span className="home-vault-live-pill">
+                    <span className="home-vault-live-dot"></span> ARCHIVE DROP
+                  </span>
+                  <span className="home-vault-tag-pill">STRICT 1-OF-1</span>
+                </div>
+
+                <h2 className="home-vault-title">THE DRAKE VAULT</h2>
+                <p className="home-vault-slogan">
+                  1-of-1 Curated Vintage &amp; Archive Pieces
+                </p>
+
+                <p className="home-vault-desc">
+                  Hand-sourced rare vintage grails, 90s archive cuts, and curated pre-loved streetwear. 
+                  Every piece in the Vault is uniquely individual—only 1 piece in stock. Once claimed, the vault seals forever.
+                </p>
+
+                <div className="home-vault-features">
+                  <div className="vault-feat-item">
+                    <span className="vault-feat-icon">⚡</span>
+                    <div>
+                      <strong>Single Piece Only</strong>
+                      <p>1-of-1 exclusivity. Never reproduced.</p>
+                    </div>
+                  </div>
+                  <div className="vault-feat-item">
+                    <span className="vault-feat-icon">✦</span>
+                    <div>
+                      <strong>Flat Inch Measurements</strong>
+                      <p>Pit-to-pit &amp; waist measured for true fit.</p>
+                    </div>
+                  </div>
+                  <div className="vault-feat-item">
+                    <span className="vault-feat-icon">🔒</span>
+                    <div>
+                      <strong>100% Sanitized &amp; Graded</strong>
+                      <p>Professionally washed &amp; steam pressed.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="home-vault-action-row">
+                  <Link to="/vault" className="home-vault-cta-btn">
+                    <FiUnlock size={18} /> ENTER THE VAULT
+                  </Link>
+                  <Link to="/vault" className="home-vault-link-btn">
+                    Explore Drops <FiArrowRight size={15} />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="home-vault-visual">
+                <div className="vault-visual-frame">
+                  <img 
+                    src="/carousel-comingsoon.jpg" 
+                    alt="Drake Vault 1-of-1 Collection" 
+                    className="vault-visual-img"
+                  />
+                  <div className="vault-stamp-tag">
+                    <span>1 OF 1</span>
+                    <small>ARCHIVE DROP</small>
+                  </div>
+                  <div className="vault-visual-caption">
+                    <span className="caption-status">STATUS: UNLOCKED</span>
+                    <span className="caption-text">LIMITED PIECES</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

@@ -10,7 +10,9 @@ import {
   FiEdit3, 
   FiHeart,
   FiChevronLeft,
-  FiChevronRight
+  FiChevronRight,
+  FiX,
+  FiHelpCircle
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
@@ -38,6 +40,10 @@ const ProductDetail = () => {
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const touchStartX = useRef(null);
+
+  // Category-Wise Size Guide Modal State
+  const [showSizeModal, setShowSizeModal] = useState(false);
+  const [sizeModalCategory, setSizeModalCategory] = useState('tees');
 
   // Tabs state
   const [activeTab, setActiveTab] = useState('description');
@@ -83,6 +89,20 @@ const ProductDetail = () => {
       setLoading(false);
     });
   }, [slug, user]);
+
+  const isTrouser = useMemo(() => {
+    if (!product) return false;
+    const cat = (product.category || '').toLowerCase();
+    const sub = (product.subcategory || '').toLowerCase();
+    const name = (product.name || '').toLowerCase();
+    return cat.includes('trouser') || cat.includes('pant') || sub.includes('trouser') || sub.includes('pant') || name.includes('trouser') || name.includes('pant');
+  }, [product]);
+
+  useEffect(() => {
+    if (product) {
+      setSizeModalCategory(isTrouser ? 'trousers' : 'tees');
+    }
+  }, [product, isTrouser]);
 
   const galleryImages = useMemo(() => {
     if (!product) return [];
@@ -438,9 +458,18 @@ const ProductDetail = () => {
                 )}
                 
                 <div className="option-group">
-                  <div className="option-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <div className="option-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                     <span className="text-caption" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Size</span>
-                    <span className="text-caption" style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setActiveTab('specs')}>Size Guide</span>
+                    <button 
+                      type="button" 
+                      className="product-size-guide-btn" 
+                      onClick={() => {
+                        setSizeModalCategory(isTrouser ? 'trousers' : 'tees');
+                        setShowSizeModal(true);
+                      }}
+                    >
+                      <FiHelpCircle size={14} /> Size Guide
+                    </button>
                   </div>
                   <div className="size-selector">
                     {product.sizes?.length > 0 ? product.sizes.map(size => (
@@ -559,6 +588,44 @@ const ProductDetail = () => {
                       <span className="spec-value">{item.value}</span>
                     </div>
                   ))}
+                </div>
+
+                {/* Embedded Size Chart for category */}
+                <div className="specs-size-chart-section">
+                  <div className="specs-size-chart-header">
+                    <div>
+                      <h4 className="specs-chart-title">
+                        📐 Official {isTrouser ? 'Baggy Trouser' : 'Baggy Tee'} Size Chart
+                      </h4>
+                      <p className="specs-chart-sub">Category-specific garment measurements (inches)</p>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setSizeModalCategory(isTrouser ? 'trousers' : 'tees');
+                        setShowSizeModal(true);
+                      }}
+                      className="specs-expand-btn"
+                    >
+                      Open Full Size Guide ↗
+                    </button>
+                  </div>
+
+                  <div 
+                    className="specs-chart-img-frame"
+                    onClick={() => {
+                      setSizeModalCategory(isTrouser ? 'trousers' : 'tees');
+                      setShowSizeModal(true);
+                    }}
+                    title="Click to expand size guide"
+                  >
+                    <img 
+                      src={isTrouser ? '/size-guide-trousers.png' : '/size-guide-tees.png'} 
+                      alt={isTrouser ? 'Baggy Trouser Size Guide' : 'Baggy Tee Size Guide'} 
+                      className="specs-chart-img"
+                    />
+                    <div className="specs-chart-tap-hint">Tap to Expand Chart</div>
+                  </div>
                 </div>
               </div>
             )}
@@ -780,6 +847,69 @@ const ProductDetail = () => {
               </form>
             </div>
           </>
+        )}
+
+        {/* Category-Wise Size Guide Modal */}
+        {showSizeModal && (
+          <div className="size-modal-overlay" onClick={() => setShowSizeModal(false)}>
+            <div className="size-modal-container" onClick={(e) => e.stopPropagation()}>
+              <div className="size-modal-header">
+                <div>
+                  <h3 className="size-modal-title">Size Guide</h3>
+                  <span className="size-modal-subtitle">Official Drake Wears Measurement Chart</span>
+                </div>
+                <button 
+                  type="button" 
+                  className="size-modal-close-btn"
+                  onClick={() => setShowSizeModal(false)}
+                  aria-label="Close size guide"
+                >
+                  <FiX size={22} />
+                </button>
+              </div>
+
+              {/* Category Switcher Tabs inside Modal */}
+              <div className="size-modal-tabs">
+                <button 
+                  type="button"
+                  className={`size-tab-btn ${sizeModalCategory === 'tees' ? 'active' : ''}`}
+                  onClick={() => setSizeModalCategory('tees')}
+                >
+                  👕 Baggy Tees &amp; Tops
+                </button>
+                <button 
+                  type="button"
+                  className={`size-tab-btn ${sizeModalCategory === 'trousers' ? 'active' : ''}`}
+                  onClick={() => setSizeModalCategory('trousers')}
+                >
+                  👖 Baggy Trousers
+                </button>
+              </div>
+
+              {/* Size Chart Image Display */}
+              <div className="size-modal-image-wrap">
+                <img 
+                  src={sizeModalCategory === 'trousers' ? '/size-guide-trousers.png' : '/size-guide-tees.png'} 
+                  alt={sizeModalCategory === 'trousers' ? 'Baggy Trouser Size Guide' : 'Baggy Tee Size Guide'} 
+                  className="size-chart-modal-img"
+                />
+              </div>
+
+              <div className="size-modal-footer">
+                <p className="size-modal-tip">
+                  💡 <em>All measurements in inches. Sized for modern relaxed streetwear fit.</em>
+                </p>
+                <button 
+                  type="button" 
+                  className="btn-primary" 
+                  style={{ width: '100%', padding: '12px', fontSize: '0.9rem' }}
+                  onClick={() => setShowSizeModal(false)}
+                >
+                  Got It — Close
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </main>
     </div>

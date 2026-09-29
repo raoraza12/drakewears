@@ -1,0 +1,188 @@
+/* ==========================================================
+   DRAKE WEARS — THE DRAKE VAULT (COMING SOON MINIMAL)
+   1-of-1 Curated Vintage & Archive Drops
+   ========================================================== */
+
+.vault-page.vault-coming-soon-page {
+  background-color: #09090b;
+  color: #f4f4f5;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px 80px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.vault-hero-ambient {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(700px, 90vw);
+  height: 400px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.16) 0%, transparent 70%);
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.vault-cs-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.vault-cs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #fbbf24;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+
+.vault-cs-title {
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  line-height: 1.1;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+}
+
+.vault-cs-slogan {
+  font-size: clamp(1.05rem, 2vw, 1.4rem);
+  font-weight: 600;
+  color: #fbbf24;
+  font-style: italic;
+  margin: 0 0 32px 0;
+  letter-spacing: 0.03em;
+}
+
+/* COMING SOON HIGHLIGHT */
+.vault-cs-highlight {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.05) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 16px clamp(28px, 6vw, 56px);
+  border-radius: 14px;
+  margin-bottom: 28px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(245, 158, 11, 0.1);
+}
+
+.vault-cs-big-text {
+  font-size: clamp(1.8rem, 4.5vw, 3rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: #ffffff;
+  text-transform: uppercase;
+  text-shadow: 0 0 24px rgba(245, 158, 11, 0.6);
+  display: block;
+}
+
+.vault-cs-desc {
+  font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+  color: #a1a1aa;
+  line-height: 1.6;
+  margin: 0 auto 36px;
+  max-width: 540px;
+}
+
+/* Action Buttons */
+.vault-cs-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.vault-cs-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 13px 26px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.vault-cs-btn-primary:hover {
+  background: #f4f4f5;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+}
+
+.vault-cs-btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #25d366;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 13px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: transform 0.25s ease;
+}
+
+.vault-cs-btn-whatsapp:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+.vault-cs-btn-instagram {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 13px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.vault-cs-btn-instagram:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  .vault-cs-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .vault-cs-actions a {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -25,7 +25,7 @@ const ProductForm = () => {
     care: '',
   });
 
-  const categories = ['Baggy Trousers', 'Drop Shoulder Tees'];
+  const categories = ['Baggy Trousers', 'Drop Shoulder Tees', 'Drake Vault'];
   const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'Free Size'];
 
   useEffect(() => {

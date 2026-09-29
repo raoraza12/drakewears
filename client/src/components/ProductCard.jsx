@@ -20,6 +20,9 @@ export default function ProductCard({ product }) {
   const discount = product.comparePrice ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100) : 0;
 
   const [selectedVariantImg, setSelectedVariantImg] = useState(null);
+  const isVaultProduct = (product.category || '').toLowerCase().includes('vault') || 
+    (product.subcategory || '').toLowerCase().includes('vault') || 
+    (Array.isArray(product.tags) && product.tags.some(t => t.toLowerCase().includes('vault') || t.toLowerCase().includes('1-of-1')));
 
   // 3D Perspective Tilt & Specular Glare (120 FPS GPU Accelerated)
   const handleMouseMove = (e) => {
@@ -85,6 +88,7 @@ export default function ProductCard({ product }) {
           onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_IMG; }}
         />
         <div className="product-badges">
+          {isVaultProduct && <span className="badge-vault">1 OF 1</span>}
           {product.newArrival && <span className="badge-new">New</span>}
           {discount > 0 && <span className="badge-sale">-{discount}%</span>}
           {product.bestseller && <span className="badge-best">Bestseller</span>}

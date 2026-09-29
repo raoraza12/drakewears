@@ -109,6 +109,10 @@ const Navbar = () => {
               <Link to="/shop" className={`outfitters-nav-link ${location.pathname === '/shop' ? 'active' : ''}`}>
                 SHOP
               </Link>
+              <Link to="/vault" className={`outfitters-nav-link vault-nav-link ${location.pathname === '/vault' || location.pathname === '/drake-vault' ? 'active' : ''}`}>
+                DRAKE VAULT
+                <span className="vault-nav-tag">1-OF-1</span>
+              </Link>
               <Link to="/about" className={`outfitters-nav-link ${location.pathname === '/about' ? 'active' : ''}`}>
                 ABOUT
               </Link>
@@ -220,6 +224,10 @@ const Navbar = () => {
           <div className="outfitters-drawer-links">
             <Link to="/" onClick={() => setMobileMenuOpen(false)}>HOME</Link>
             <Link to="/shop" onClick={() => setMobileMenuOpen(false)}>SHOP ALL</Link>
+            <Link to="/vault" onClick={() => setMobileMenuOpen(false)} className="drawer-vault-item">
+              <span>⚡ DRAKE VAULT</span>
+              <span className="drawer-vault-badge">1 OF 1</span>
+            </Link>
             <div className="drawer-categories-sub">
               <Link to="/shop?category=baggy-trousers" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
                 ↳ Baggy Trousers

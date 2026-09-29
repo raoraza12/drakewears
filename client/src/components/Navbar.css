@@ -147,6 +147,62 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
+/* Drake Vault Nav Special Styling */
+.vault-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fbbf24 !important;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+}
+
+.vault-nav-tag {
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #000000;
+  line-height: 1;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+  animation: vaultPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes vaultPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.9);
+  }
+}
+
+.drawer-vault-item {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  color: #fbbf24 !important;
+  background: rgba(245, 158, 11, 0.08);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  margin: 4px 0;
+}
+
+.drawer-vault-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #f59e0b;
+  color: #000000;
+  line-height: 1;
+}
+
 /* Right Group: Search box with line + Account + Bag */
 .outfitters-nav-right {
   display: flex;

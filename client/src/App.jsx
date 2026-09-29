@@ -17,6 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 // Pages
 import Home from './pages/Home';
 import Shop from './pages/Shop';
+import Vault from './pages/Vault';
 import ProductDetail from './pages/ProductDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -67,6 +68,8 @@ const StorefrontLayout = () => {
         <Routes location={location}>
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/vault" element={<Vault />} />
+          <Route path="/drake-vault" element={<Vault />} />
           <Route path="/shop/:slug" element={<ProductDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
