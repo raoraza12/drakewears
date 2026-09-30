@@ -1,8 +1,27 @@
+# DRAKEWEARS Robots.txt
 User-agent: *
 Allow: /
+Allow: /shop
+Allow: /shop/*
+Allow: /about
+Allow: /contact
+Allow: /terms
+Allow: /privacy
+
+# Disallow private user & administrative pages
 Disallow: /admin
 Disallow: /admin/*
 Disallow: /checkout
 Disallow: /orders
+Disallow: /orders/*
+Disallow: /profile
+Disallow: /api/
+Disallow: /cart
 
+# Google Image Bot
+User-agent: Googlebot-Image
+Allow: /
+Allow: /uploads/
+
+# Dynamic XML Sitemap
 Sitemap: https://drakewears.com/sitemap.xml
