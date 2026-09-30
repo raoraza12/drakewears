@@ -58,9 +58,27 @@ export default class ErrorBoundary extends React.Component {
             <h1 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Unexpected State Encountered
             </h1>
-            <p style={{ color: '#a1a1aa', fontSize: '0.92rem', lineHeight: 1.6, marginBottom: '28px' }}>
+            <p style={{ color: '#a1a1aa', fontSize: '0.92rem', lineHeight: 1.6, marginBottom: '20px' }}>
               A temporary interface issue occurred. Your cart and session data are safe. Please reload the view to continue.
             </p>
+            {this.state.error && (
+              <div style={{
+                marginBottom: '24px',
+                padding: '12px 16px',
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '8px',
+                color: '#f87171',
+                fontSize: '0.8rem',
+                fontFamily: 'monospace',
+                textAlign: 'left',
+                wordBreak: 'break-word',
+                maxHeight: '120px',
+                overflowY: 'auto'
+              }}>
+                <strong>Error:</strong> {this.state.error.message || String(this.state.error)}
+              </div>
+            )}
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button 
                 onClick={this.handleReload}

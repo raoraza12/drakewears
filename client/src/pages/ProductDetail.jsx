@@ -64,11 +64,11 @@ const ProductDetail = () => {
     API.get(`/products/${slug}`).then(res => {
       const prod = res.data;
       setProduct(prod);
-      setReviewsList(prod?.reviews || []);
-      if (prod?.colors?.length > 0) {
-        setSelectedColor(prod.colors[0].name);
+      setReviewsList(Array.isArray(prod?.reviews) ? prod.reviews : []);
+      if (Array.isArray(prod?.colors) && prod.colors.length > 0) {
+        setSelectedColor(prod.colors[0]?.name || (typeof prod.colors[0] === 'string' ? prod.colors[0] : ''));
       }
-      if (prod?.sizes?.length > 0) {
+      if (Array.isArray(prod?.sizes) && prod.sizes.length > 0) {
         setSelectedSize(prod.sizes[0]);
       } else {
         setSelectedSize('M');
@@ -105,8 +105,34 @@ const ProductDetail = () => {
     }
   }, [product, isTrouser]);
 
+  // Safe normalized colors array
+  const safeColors = useMemo(() => {
+    if (!product?.colors) return [];
+    let list = product.colors;
+    if (typeof list === 'string') {
+      try { list = JSON.parse(list); } catch (e) { list = [{ name: product.colors, hex: '#000000' }]; }
+    }
+    if (!Array.isArray(list)) return [];
+    return list.map(c => {
+      if (typeof c === 'string') return { name: c, hex: '#000000' };
+      if (c && typeof c === 'object') return { name: c.name || 'Default', hex: c.hex || '#000000', image: c.image };
+      return null;
+    }).filter(Boolean);
+  }, [product?.colors]);
+
+  // Safe normalized sizes array
+  const safeSizes = useMemo(() => {
+    if (!product?.sizes) return ['S', 'M', 'L', 'XL'];
+    let list = product.sizes;
+    if (typeof list === 'string') {
+      try { list = JSON.parse(list); } catch (e) { list = list.split(',').map(s => s.trim()); }
+    }
+    if (!Array.isArray(list) || list.length === 0) return ['S', 'M', 'L', 'XL'];
+    return list.filter(Boolean);
+  }, [product?.sizes]);
+
   const galleryImages = useMemo(() => {
-    if (!product) return [];
+    if (!product) return ['https://via.placeholder.com/800'];
     const list = [];
     if (Array.isArray(product.images)) {
       product.images.forEach(img => {
@@ -115,15 +141,13 @@ const ProductDetail = () => {
         }
       });
     }
-    if (Array.isArray(product.colors)) {
-      product.colors.forEach(c => {
-        if (c?.image && typeof c.image === 'string' && c.image.trim() && !list.includes(c.image.trim())) {
-          list.push(c.image.trim());
-        }
-      });
-    }
+    safeColors.forEach(c => {
+      if (c?.image && typeof c.image === 'string' && c.image.trim() && !list.includes(c.image.trim())) {
+        list.push(c.image.trim());
+      }
+    });
     return list.length > 0 ? list : ['https://via.placeholder.com/800'];
-  }, [product]);
+  }, [product, safeColors]);
 
   useEffect(() => {
     setActiveImageIndex(0);
@@ -298,8 +322,8 @@ const ProductDetail = () => {
       { label: 'Fabric / Material', value: prod.material || (isTrouser ? '100% Heavyweight Cotton Twill / Terry' : (isTee ? '100% Heavyweight Combed Cotton' : 'Premium Luxury Blend')) },
       { label: 'Fabric Weight', value: isTrouser ? '320 GSM Heavyweight' : (isTee ? '240 GSM Heavyweight' : 'Premium Standard') },
       { label: 'Fit Style', value: isTrouser ? 'Baggy Wide-Leg Relaxed Cut' : (isTee ? 'Oversized Drop Shoulder' : 'Tailored Fit') },
-      { label: 'Sizes Available', value: prod.sizes?.join(', ') || 'S, M, L, XL, XXL' },
-      { label: 'Colors Available', value: prod.colors?.map(c => c.name).join(', ') || 'Black' },
+      { label: 'Sizes Available', value: safeSizes.join(', ') || 'S, M, L, XL, XXL' },
+      { label: 'Colors Available', value: safeColors.map(c => c.name).join(', ') || 'Standard' },
       { label: 'Wash Care', value: prod.care || 'Machine wash cold inside out with like colors. Do not bleach. Hang dry or tumble dry low. Low iron if needed.' },
       { label: 'Origin', value: 'Designed & Crafted by DRAKEWEARS' }
     ];
@@ -322,94 +346,100 @@ const ProductDetail = () => {
   const productSchema = useMemo(() => {
     if (!product) return null;
 
-    const mainImg = product.images?.[0] || 'https://drakewears.vercel.app/carousel-gymwears.jpg';
-    const prodUrl = `https://drakewears.com/shop/${product.slug || slug}`;
-    const cleanDesc = (product.description || `Buy ${product.name} online at DRAKEWEARS Pakistan. Premium luxury streetwear, heavyweight fabrics, modern relaxed cut.`).replace(/<[^>]*>?/gm, '');
+    try {
+      const mainImg = (Array.isArray(product.images) && product.images[0]) || 'https://drakewears.vercel.app/carousel-gymwears.jpg';
+      const prodUrl = `https://drakewears.com/shop/${product.slug || slug || ''}`;
+      const descText = typeof product.description === 'string' ? product.description : '';
+      const cleanDesc = (descText || `Buy ${product.name} online at DRAKEWEARS Pakistan. Premium luxury streetwear, heavyweight fabrics, modern relaxed cut.`).replace(/<[^>]*>?/gm, '');
 
-    const schemaObj = {
-      '@context': 'https://schema.org/',
-      '@graph': [
-        {
-          '@type': 'Product',
-          '@id': `${prodUrl}#product`,
-          'name': product.name,
-          'image': product.images && product.images.length > 0 ? product.images : [mainImg],
-          'description': cleanDesc,
-          'sku': product.id || product._id || product.slug,
-          'mpn': product.slug,
-          'brand': {
-            '@type': 'Brand',
-            'name': 'DRAKEWEARS'
-          },
-          'category': product.category || 'Clothing > Streetwear',
-          'offers': {
-            '@type': 'Offer',
-            'url': prodUrl,
-            'priceCurrency': 'PKR',
-            'price': product.price,
-            'priceValidUntil': '2028-12-31',
-            'itemCondition': 'https://schema.org/NewCondition',
-            'availability': (product.stock > 0 || product.stock === undefined) 
-              ? 'https://schema.org/InStock' 
-              : 'https://schema.org/OutOfStock',
-            'seller': {
-              '@type': 'Organization',
+      const schemaObj = {
+        '@context': 'https://schema.org/',
+        '@graph': [
+          {
+            '@type': 'Product',
+            '@id': `${prodUrl}#product`,
+            'name': String(product.name || 'Streetwear Apparel'),
+            'image': Array.isArray(product.images) && product.images.length > 0 ? product.images : [mainImg],
+            'description': cleanDesc,
+            'sku': String(product.id || product._id || product.slug || 'DW-PROD'),
+            'mpn': String(product.slug || 'DW-PROD'),
+            'brand': {
+              '@type': 'Brand',
               'name': 'DRAKEWEARS'
+            },
+            'category': String(product.category || 'Clothing > Streetwear'),
+            'offers': {
+              '@type': 'Offer',
+              'url': prodUrl,
+              'priceCurrency': 'PKR',
+              'price': Number(product.price) || 0,
+              'priceValidUntil': '2028-12-31',
+              'itemCondition': 'https://schema.org/NewCondition',
+              'availability': (product.stock > 0 || product.stock === undefined) 
+                ? 'https://schema.org/InStock' 
+                : 'https://schema.org/OutOfStock',
+              'seller': {
+                '@type': 'Organization',
+                'name': 'DRAKEWEARS'
+              }
             }
+          },
+          {
+            '@type': 'BreadcrumbList',
+            '@id': `${prodUrl}#breadcrumb`,
+            'itemListElement': [
+              {
+                '@type': 'ListItem',
+                'position': 1,
+                'name': 'Home',
+                'item': 'https://drakewears.com/'
+              },
+              {
+                '@type': 'ListItem',
+                'position': 2,
+                'name': 'Shop',
+                'item': 'https://drakewears.com/shop'
+              },
+              {
+                '@type': 'ListItem',
+                'position': 3,
+                'name': String(product.category || 'Streetwear'),
+                'item': `https://drakewears.com/shop?category=${encodeURIComponent((product.category || '').toLowerCase().replace(/\s+/g, '-'))}`
+              },
+              {
+                '@type': 'ListItem',
+                'position': 4,
+                'name': String(product.name || 'Product'),
+                'item': prodUrl
+              }
+            ]
           }
-        },
-        {
-          '@type': 'BreadcrumbList',
-          '@id': `${prodUrl}#breadcrumb`,
-          'itemListElement': [
-            {
-              '@type': 'ListItem',
-              'position': 1,
-              'name': 'Home',
-              'item': 'https://drakewears.com/'
-            },
-            {
-              '@type': 'ListItem',
-              'position': 2,
-              'name': 'Shop',
-              'item': 'https://drakewears.com/shop'
-            },
-            {
-              '@type': 'ListItem',
-              'position': 3,
-              'name': product.category || 'Streetwear',
-              'item': `https://drakewears.com/shop?category=${encodeURIComponent((product.category || '').toLowerCase().replace(/\s+/g, '-'))}`
-            },
-            {
-              '@type': 'ListItem',
-              'position': 4,
-              'name': product.name,
-              'item': prodUrl
-            }
-          ]
-        }
-      ]
-    };
-
-    if (currentNumReviews > 0) {
-      schemaObj['@graph'][0]['aggregateRating'] = {
-        '@type': 'AggregateRating',
-        'ratingValue': currentRating || 5.0,
-        'reviewCount': currentNumReviews
+        ]
       };
-    }
 
-    return schemaObj;
+      if (currentNumReviews > 0) {
+        schemaObj['@graph'][0]['aggregateRating'] = {
+          '@type': 'AggregateRating',
+          'ratingValue': Number(currentRating) || 5.0,
+          'reviewCount': Number(currentNumReviews) || 1
+        };
+      }
+
+      return schemaObj;
+    } catch (e) {
+      console.warn('Product schema generation error ignored:', e);
+      return null;
+    }
   }, [product, slug, currentRating, currentNumReviews]);
 
   return (
     <div className="page-wrapper">
       <SEOHead
-        title={`${product.name} - Rs. ${Number(product.price).toLocaleString()} | DRAKEWEARS Pakistan`}
-        description={`Buy ${product.name} at DRAKEWEARS Pakistan. ${product.description ? product.description.slice(0, 140) : 'Premium luxury streetwear'} - Rs. ${Number(product.price).toLocaleString()}. Nationwide Cash on Delivery.`}
-        keywords={`${product.name}, ${product.category || 'streetwear'}, streetwear pakistan, buy ${product.name} online, oversized streetwear`}
-        image={product.images?.[0]}
-        url={`https://drakewears.com/shop/${product.slug || slug}`}
+        title={`${product.name || 'Streetwear'} - Rs. ${Number(product.price || 0).toLocaleString()} | DRAKEWEARS Pakistan`}
+        description={`Buy ${product.name || 'Streetwear'} at DRAKEWEARS Pakistan. ${typeof product.description === 'string' ? product.description.slice(0, 140) : 'Premium luxury streetwear'} - Rs. ${Number(product.price || 0).toLocaleString()}. Nationwide Cash on Delivery.`}
+        keywords={`${product.name || 'streetwear'}, ${product.category || 'streetwear'}, streetwear pakistan, buy ${product.name || 'streetwear'} online, oversized streetwear`}
+        image={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : undefined}
+        url={`https://drakewears.com/shop/${product.slug || slug || ''}`}
         type="product"
         schema={productSchema}
       />
@@ -520,33 +550,39 @@ const ProductDetail = () => {
               <div className="product-variants">
                 <div className="product-options">
                 
-                {product.colors && product.colors.length > 0 && (
+                {safeColors.length > 0 && (
                 <div className="option-group" style={{ marginBottom: '24px' }}>
                   <div className="option-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                     <span className="text-caption" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Color: <span style={{ fontWeight: 400 }}>{selectedColor}</span></span>
                   </div>
                   <div className="color-selector" style={{ display: 'flex', gap: '12px' }}>
-                    {product.colors.map(color => (
-                      <button 
-                        key={color.name}
-                        onClick={() => {
-                          setSelectedColor(color.name);
-                          if (color.image) {
-                            const idx = galleryImages.indexOf(color.image);
-                            if (idx !== -1) setActiveImageIndex(idx);
-                          }
-                        }}
-                        style={{
-                          width: '32px', height: '32px', borderRadius: '50%',
-                          backgroundColor: (color.hex === '#000000' && color.name && color.name.toLowerCase() !== 'black') ? color.name.replace(/\s+/g, '').toLowerCase() : color.hex,
-                          border: selectedColor === color.name ? '2px solid var(--border-dark)' : '1px solid var(--border-medium)',
-                          padding: 0, cursor: 'pointer',
-                          boxShadow: selectedColor === color.name ? 'inset 0 0 0 2px white' : 'none',
-                          transition: 'all 0.2s ease'
-                        }}
-                        title={color.name}
-                      />
-                    ))}
+                    {safeColors.map((color, idx) => {
+                      const bg = (color.hex === '#000000' && color.name && color.name.toLowerCase() !== 'black') 
+                        ? color.name.replace(/\s+/g, '').toLowerCase() 
+                        : (color.hex || '#000000');
+                      return (
+                        <button 
+                          key={color.name || idx}
+                          type="button"
+                          onClick={() => {
+                            setSelectedColor(color.name);
+                            if (color.image) {
+                              const imgIdx = galleryImages.indexOf(color.image);
+                              if (imgIdx !== -1) setActiveImageIndex(imgIdx);
+                            }
+                          }}
+                          style={{
+                            width: '32px', height: '32px', borderRadius: '50%',
+                            backgroundColor: bg,
+                            border: selectedColor === color.name ? '2px solid var(--border-dark)' : '1px solid var(--border-medium)',
+                            padding: 0, cursor: 'pointer',
+                            boxShadow: selectedColor === color.name ? 'inset 0 0 0 2px white' : 'none',
+                            transition: 'all 0.2s ease'
+                          }}
+                          title={color.name}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
                 )}
@@ -566,25 +602,16 @@ const ProductDetail = () => {
                     </button>
                   </div>
                   <div className="size-selector">
-                    {product.sizes?.length > 0 ? product.sizes.map(size => (
+                    {safeSizes.map(size => (
                       <button 
                         key={size}
+                        type="button"
                         className={`size-btn ${selectedSize === size ? 'active' : ''}`}
                         onClick={() => setSelectedSize(size)}
                       >
                         {size}
                       </button>
-                    )) : (
-                      ['S', 'M', 'L', 'XL'].map(size => (
-                        <button 
-                          key={size}
-                          className={`size-btn ${selectedSize === size ? 'active' : ''}`}
-                          onClick={() => setSelectedSize(size)}
-                        >
-                          {size}
-                        </button>
-                      ))
-                    )}
+                    ))}
                   </div>
                 </div>
                 </div>

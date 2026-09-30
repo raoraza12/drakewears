@@ -38,57 +38,65 @@ export default function SEOHead({
   const location = useLocation();
 
   useEffect(() => {
-    // 1. Page Title
-    const finalTitle = title ? (title.includes('DRAKEWEARS') ? title : `${title} | DRAKEWEARS`) : DEFAULT_TITLE;
-    document.title = finalTitle;
+    try {
+      // 1. Page Title
+      const finalTitle = title ? (title.includes('DRAKEWEARS') ? title : `${title} | DRAKEWEARS`) : DEFAULT_TITLE;
+      document.title = finalTitle;
 
-    // 2. Meta Description & Keywords
-    const finalDesc = description || DEFAULT_DESC;
-    setMetaTag('meta[name="description"]', 'name', 'description', finalDesc);
-    
-    if (keywords) {
-      setMetaTag('meta[name="keywords"]', 'name', 'keywords', keywords);
-    }
-
-    // 3. Canonical URL
-    const canonicalUrl = url || `${SITE_URL}${location.pathname}`;
-    setCanonical(canonicalUrl);
-
-    // 4. OpenGraph Tags (WhatsApp, Facebook, LinkedIn)
-    const finalImage = image ? (image.startsWith('http') ? image : `${SITE_URL}${image}`) : DEFAULT_IMAGE;
-    setMetaTag('meta[property="og:title"]', 'property', 'og:title', finalTitle);
-    setMetaTag('meta[property="og:description"]', 'property', 'og:description', finalDesc);
-    setMetaTag('meta[property="og:image"]', 'property', 'og:image', finalImage);
-    setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonicalUrl);
-    setMetaTag('meta[property="og:type"]', 'property', 'og:type', type);
-    setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'DRAKEWEARS');
-
-    // 5. Twitter Card Tags
-    setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image');
-    setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', finalTitle);
-    setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', finalDesc);
-    setMetaTag('meta[name="twitter:image"]', 'name', 'twitter:image', finalImage);
-
-    // 6. Schema.org JSON-LD Structured Data
-    const SCRIPT_ID = 'drake-schema-jsonld';
-    let scriptTag = document.getElementById(SCRIPT_ID);
-
-    if (schema) {
-      if (!scriptTag) {
-        scriptTag = document.createElement('script');
-        scriptTag.id = SCRIPT_ID;
-        scriptTag.type = 'application/ld+json';
-        document.head.appendChild(scriptTag);
+      // 2. Meta Description & Keywords
+      const finalDesc = description || DEFAULT_DESC;
+      setMetaTag('meta[name="description"]', 'name', 'description', finalDesc);
+      
+      if (keywords) {
+        setMetaTag('meta[name="keywords"]', 'name', 'keywords', keywords);
       }
-      scriptTag.text = JSON.stringify(schema);
-    } else if (scriptTag) {
-      scriptTag.remove();
+
+      // 3. Canonical URL
+      const canonicalUrl = url || `${SITE_URL}${location.pathname}`;
+      setCanonical(canonicalUrl);
+
+      // 4. OpenGraph Tags (WhatsApp, Facebook, LinkedIn)
+      const finalImage = (image && typeof image === 'string') 
+        ? (image.startsWith('http') ? image : `${SITE_URL}${image}`) 
+        : DEFAULT_IMAGE;
+      setMetaTag('meta[property="og:title"]', 'property', 'og:title', finalTitle);
+      setMetaTag('meta[property="og:description"]', 'property', 'og:description', finalDesc);
+      setMetaTag('meta[property="og:image"]', 'property', 'og:image', finalImage);
+      setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonicalUrl);
+      setMetaTag('meta[property="og:type"]', 'property', 'og:type', type);
+      setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'DRAKEWEARS');
+
+      // 5. Twitter Card Tags
+      setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image');
+      setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', finalTitle);
+      setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', finalDesc);
+      setMetaTag('meta[name="twitter:image"]', 'name', 'twitter:image', finalImage);
+
+      // 6. Schema.org JSON-LD Structured Data
+      const SCRIPT_ID = 'drake-schema-jsonld';
+      let scriptTag = document.getElementById(SCRIPT_ID);
+
+      if (schema) {
+        if (!scriptTag) {
+          scriptTag = document.createElement('script');
+          scriptTag.id = SCRIPT_ID;
+          scriptTag.type = 'application/ld+json';
+          document.head.appendChild(scriptTag);
+        }
+        scriptTag.text = JSON.stringify(schema);
+      } else if (scriptTag) {
+        scriptTag.remove();
+      }
+    } catch (err) {
+      console.warn('[SEOHead] Meta tag error avoided:', err?.message);
     }
 
     // Cleanup when component unmounts
     return () => {
-      const existingScript = document.getElementById(SCRIPT_ID);
-      if (existingScript) existingScript.remove();
+      try {
+        const existingScript = document.getElementById('drake-schema-jsonld');
+        if (existingScript) existingScript.remove();
+      } catch (e) {}
     };
   }, [title, description, keywords, image, url, type, schema, location.pathname]);
 
