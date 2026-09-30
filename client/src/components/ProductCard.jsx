@@ -60,6 +60,7 @@ export default function ProductCard({ product }) {
 
   const handleQuickAdd = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!user) {
       toast.error('Please login or register to add items to your bag');
       navigate('/login');
@@ -70,9 +71,11 @@ export default function ProductCard({ product }) {
     addToCart(product, size, color, 1);
   };
 
+  const productTarget = `/shop/${product.slug || product.id || product._id || ''}`;
+
   return (
     <Link 
-      to={`/shop/${product.slug}`} 
+      to={productTarget} 
       className="product-card scroll-reveal" 
       ref={cardRef}
       onMouseMove={handleMouseMove}
@@ -160,6 +163,7 @@ export default function ProductCard({ product }) {
                   title={color.name}
                   onClick={(e) => { 
                     e.preventDefault(); 
+                    e.stopPropagation();
                     if (color.image) {
                       setSelectedVariantImg(color.image);
                       setCurrentImage(color.image);

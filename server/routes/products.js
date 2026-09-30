@@ -70,9 +70,24 @@ router.get('/', async (req, res) => {
 // GET product by slug
 router.get('/:slug', async (req, res) => {
   try {
-    const product = await req.prisma.product.findUnique({
-      where: { slug: req.params.slug }
+    const param = req.params.slug;
+    let product = await req.prisma.product.findUnique({
+      where: { slug: param }
     });
+    
+    // Fallback: If not matched directly by slug, try by ID or trimmed slug
+    if (!product) {
+      const cleanParam = param.replace(/^-+|-+$/g, '');
+      product = await req.prisma.product.findFirst({
+        where: {
+          OR: [
+            { id: param },
+            { slug: cleanParam },
+            { slug: { startsWith: cleanParam, mode: 'insensitive' } }
+          ]
+        }
+      });
+    }
     
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
