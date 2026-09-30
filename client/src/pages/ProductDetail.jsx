@@ -190,6 +190,99 @@ const ProductDetail = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePrevImage, handleNextImage]);
 
+  const currentRating = product?.rating || 5.0;
+  const currentNumReviews = reviewsList?.length || product?.numReviews || 0;
+
+  // Schema.org Product & BreadcrumbList Rich Snippets
+  const productSchema = useMemo(() => {
+    if (!product) return null;
+
+    try {
+      const mainImg = (Array.isArray(product.images) && product.images[0]) || 'https://drakewears.vercel.app/carousel-gymwears.jpg';
+      const prodUrl = `https://drakewears.com/shop/${product.slug || slug || ''}`;
+      const descText = typeof product.description === 'string' ? product.description : '';
+      const cleanDesc = (descText || `Buy ${product.name} online at DRAKEWEARS Pakistan. Premium luxury streetwear, heavyweight fabrics, modern relaxed cut.`).replace(/<[^>]*>?/gm, '');
+
+      const schemaObj = {
+        '@context': 'https://schema.org/',
+        '@graph': [
+          {
+            '@type': 'Product',
+            '@id': `${prodUrl}#product`,
+            'name': String(product.name || 'Streetwear Apparel'),
+            'image': Array.isArray(product.images) && product.images.length > 0 ? product.images : [mainImg],
+            'description': cleanDesc,
+            'sku': String(product.id || product._id || product.slug || 'DW-PROD'),
+            'mpn': String(product.slug || 'DW-PROD'),
+            'brand': {
+              '@type': 'Brand',
+              'name': 'DRAKEWEARS'
+            },
+            'category': String(product.category || 'Clothing > Streetwear'),
+            'offers': {
+              '@type': 'Offer',
+              'url': prodUrl,
+              'priceCurrency': 'PKR',
+              'price': Number(product.price) || 0,
+              'priceValidUntil': '2028-12-31',
+              'itemCondition': 'https://schema.org/NewCondition',
+              'availability': (product.stock > 0 || product.stock === undefined) 
+                ? 'https://schema.org/InStock' 
+                : 'https://schema.org/OutOfStock',
+              'seller': {
+                '@type': 'Organization',
+                'name': 'DRAKEWEARS'
+              }
+            }
+          },
+          {
+            '@type': 'BreadcrumbList',
+            '@id': `${prodUrl}#breadcrumb`,
+            'itemListElement': [
+              {
+                '@type': 'ListItem',
+                'position': 1,
+                'name': 'Home',
+                'item': 'https://drakewears.com/'
+              },
+              {
+                '@type': 'ListItem',
+                'position': 2,
+                'name': 'Shop',
+                'item': 'https://drakewears.com/shop'
+              },
+              {
+                '@type': 'ListItem',
+                'position': 3,
+                'name': String(product.category || 'Streetwear'),
+                'item': `https://drakewears.com/shop?category=${encodeURIComponent((product.category || '').toLowerCase().replace(/\s+/g, '-'))}`
+              },
+              {
+                '@type': 'ListItem',
+                'position': 4,
+                'name': String(product.name || 'Product'),
+                'item': prodUrl
+              }
+            ]
+          }
+        ]
+      };
+
+      if (currentNumReviews > 0) {
+        schemaObj['@graph'][0]['aggregateRating'] = {
+          '@type': 'AggregateRating',
+          'ratingValue': Number(currentRating) || 5.0,
+          'reviewCount': Number(currentNumReviews) || 1
+        };
+      }
+
+      return schemaObj;
+    } catch (e) {
+      console.warn('Product schema generation error ignored:', e);
+      return null;
+    }
+  }, [product, slug, currentRating, currentNumReviews]);
+
   const handleWhatsappOrder = async (e) => {
     e.preventDefault();
     
@@ -339,98 +432,6 @@ const ProductDetail = () => {
 
   const highlights = getProductHighlights(product);
   const specs = getProductSpecs(product);
-  const currentRating = product.rating || 5.0;
-  const currentNumReviews = reviewsList.length || product.numReviews || 0;
-
-  // Schema.org Product & BreadcrumbList Rich Snippets
-  const productSchema = useMemo(() => {
-    if (!product) return null;
-
-    try {
-      const mainImg = (Array.isArray(product.images) && product.images[0]) || 'https://drakewears.vercel.app/carousel-gymwears.jpg';
-      const prodUrl = `https://drakewears.com/shop/${product.slug || slug || ''}`;
-      const descText = typeof product.description === 'string' ? product.description : '';
-      const cleanDesc = (descText || `Buy ${product.name} online at DRAKEWEARS Pakistan. Premium luxury streetwear, heavyweight fabrics, modern relaxed cut.`).replace(/<[^>]*>?/gm, '');
-
-      const schemaObj = {
-        '@context': 'https://schema.org/',
-        '@graph': [
-          {
-            '@type': 'Product',
-            '@id': `${prodUrl}#product`,
-            'name': String(product.name || 'Streetwear Apparel'),
-            'image': Array.isArray(product.images) && product.images.length > 0 ? product.images : [mainImg],
-            'description': cleanDesc,
-            'sku': String(product.id || product._id || product.slug || 'DW-PROD'),
-            'mpn': String(product.slug || 'DW-PROD'),
-            'brand': {
-              '@type': 'Brand',
-              'name': 'DRAKEWEARS'
-            },
-            'category': String(product.category || 'Clothing > Streetwear'),
-            'offers': {
-              '@type': 'Offer',
-              'url': prodUrl,
-              'priceCurrency': 'PKR',
-              'price': Number(product.price) || 0,
-              'priceValidUntil': '2028-12-31',
-              'itemCondition': 'https://schema.org/NewCondition',
-              'availability': (product.stock > 0 || product.stock === undefined) 
-                ? 'https://schema.org/InStock' 
-                : 'https://schema.org/OutOfStock',
-              'seller': {
-                '@type': 'Organization',
-                'name': 'DRAKEWEARS'
-              }
-            }
-          },
-          {
-            '@type': 'BreadcrumbList',
-            '@id': `${prodUrl}#breadcrumb`,
-            'itemListElement': [
-              {
-                '@type': 'ListItem',
-                'position': 1,
-                'name': 'Home',
-                'item': 'https://drakewears.com/'
-              },
-              {
-                '@type': 'ListItem',
-                'position': 2,
-                'name': 'Shop',
-                'item': 'https://drakewears.com/shop'
-              },
-              {
-                '@type': 'ListItem',
-                'position': 3,
-                'name': String(product.category || 'Streetwear'),
-                'item': `https://drakewears.com/shop?category=${encodeURIComponent((product.category || '').toLowerCase().replace(/\s+/g, '-'))}`
-              },
-              {
-                '@type': 'ListItem',
-                'position': 4,
-                'name': String(product.name || 'Product'),
-                'item': prodUrl
-              }
-            ]
-          }
-        ]
-      };
-
-      if (currentNumReviews > 0) {
-        schemaObj['@graph'][0]['aggregateRating'] = {
-          '@type': 'AggregateRating',
-          'ratingValue': Number(currentRating) || 5.0,
-          'reviewCount': Number(currentNumReviews) || 1
-        };
-      }
-
-      return schemaObj;
-    } catch (e) {
-      console.warn('Product schema generation error ignored:', e);
-      return null;
-    }
-  }, [product, slug, currentRating, currentNumReviews]);
 
   return (
     <div className="page-wrapper">
