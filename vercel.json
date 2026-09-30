@@ -15,6 +15,14 @@
   ],
   "routes": [
     {
+      "src": "/googlecbd639bd70f468f7.html",
+      "dest": "server/server.js"
+    },
+    {
+      "src": "/sitemap.xml",
+      "dest": "server/server.js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "server/server.js"
     },

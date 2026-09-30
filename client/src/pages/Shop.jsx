@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
+import SEOHead from '../components/SEOHead';
 import API from '../api';
 import './Shop.css';
 
@@ -90,8 +91,56 @@ const Shop = () => {
     return result;
   }, [products, activeCategory, searchParam, sortBy]);
 
+  const categoryNameFormatted = activeCategory !== 'all' 
+    ? activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)
+    : 'Streetwear Collection';
+
+  const pageTitle = activeCategory !== 'all'
+    ? `${categoryNameFormatted} - Buy Streetwear in Pakistan | DRAKEWEARS`
+    : 'Shop Luxury Streetwear, Baggy Trousers & Tees | DRAKEWEARS Pakistan';
+
+  const pageDescription = activeCategory !== 'all'
+    ? `Discover premium ${categoryNameFormatted} at DRAKEWEARS Pakistan. Crafted with heavyweight fabrics, relaxed cuts, and luxury streetwear aesthetics. Free delivery over Rs. 5,000.`
+    : 'Explore all DRAKEWEARS drops. Heavyweight drop shoulder tees, baggy cargo trousers, luxury hoodies & athleisure. Fast nationwide delivery with Cash on Delivery.';
+
+  const canonicalUrl = activeCategory !== 'all'
+    ? `https://drakewears.com/shop?category=${encodeURIComponent(categoryParam)}`
+    : 'https://drakewears.com/shop';
+
+  const shopBreadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': 'https://drakewears.com/'
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Shop',
+        'item': 'https://drakewears.com/shop'
+      },
+      ...(activeCategory !== 'all' ? [{
+        '@type': 'ListItem',
+        'position': 3,
+        'name': categoryNameFormatted,
+        'item': canonicalUrl
+      }] : [])
+    ]
+  };
+
   return (
     <div className="page-wrapper">
+      <SEOHead
+        title={pageTitle}
+        description={pageDescription}
+        keywords={`${categoryNameFormatted}, streetwear pakistan, buy ${categoryNameFormatted} online, oversized streetwear, baggy trousers, drop shoulder tees`}
+        url={canonicalUrl}
+        schema={shopBreadcrumbSchema}
+      />
       <main className="main-content">
         <div className="container">
           <div className="shop-header" style={{ marginBottom: '32px' }}>

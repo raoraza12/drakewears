@@ -19,6 +19,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useSettings } from '../context/SettingsContext';
+import SEOHead from '../components/SEOHead';
 import API from '../api';
 import './ProductDetail.css';
 
@@ -317,8 +318,101 @@ const ProductDetail = () => {
   const currentRating = product.rating || 5.0;
   const currentNumReviews = reviewsList.length || product.numReviews || 0;
 
+  // Schema.org Product & BreadcrumbList Rich Snippets
+  const productSchema = useMemo(() => {
+    if (!product) return null;
+
+    const mainImg = product.images?.[0] || 'https://drakewears.vercel.app/carousel-gymwears.jpg';
+    const prodUrl = `https://drakewears.com/shop/${product.slug || slug}`;
+    const cleanDesc = (product.description || `Buy ${product.name} online at DRAKEWEARS Pakistan. Premium luxury streetwear, heavyweight fabrics, modern relaxed cut.`).replace(/<[^>]*>?/gm, '');
+
+    const schemaObj = {
+      '@context': 'https://schema.org/',
+      '@graph': [
+        {
+          '@type': 'Product',
+          '@id': `${prodUrl}#product`,
+          'name': product.name,
+          'image': product.images && product.images.length > 0 ? product.images : [mainImg],
+          'description': cleanDesc,
+          'sku': product.id || product._id || product.slug,
+          'mpn': product.slug,
+          'brand': {
+            '@type': 'Brand',
+            'name': 'DRAKEWEARS'
+          },
+          'category': product.category || 'Clothing > Streetwear',
+          'offers': {
+            '@type': 'Offer',
+            'url': prodUrl,
+            'priceCurrency': 'PKR',
+            'price': product.price,
+            'priceValidUntil': '2028-12-31',
+            'itemCondition': 'https://schema.org/NewCondition',
+            'availability': (product.stock > 0 || product.stock === undefined) 
+              ? 'https://schema.org/InStock' 
+              : 'https://schema.org/OutOfStock',
+            'seller': {
+              '@type': 'Organization',
+              'name': 'DRAKEWEARS'
+            }
+          }
+        },
+        {
+          '@type': 'BreadcrumbList',
+          '@id': `${prodUrl}#breadcrumb`,
+          'itemListElement': [
+            {
+              '@type': 'ListItem',
+              'position': 1,
+              'name': 'Home',
+              'item': 'https://drakewears.com/'
+            },
+            {
+              '@type': 'ListItem',
+              'position': 2,
+              'name': 'Shop',
+              'item': 'https://drakewears.com/shop'
+            },
+            {
+              '@type': 'ListItem',
+              'position': 3,
+              'name': product.category || 'Streetwear',
+              'item': `https://drakewears.com/shop?category=${encodeURIComponent((product.category || '').toLowerCase().replace(/\s+/g, '-'))}`
+            },
+            {
+              '@type': 'ListItem',
+              'position': 4,
+              'name': product.name,
+              'item': prodUrl
+            }
+          ]
+        }
+      ]
+    };
+
+    if (currentNumReviews > 0) {
+      schemaObj['@graph'][0]['aggregateRating'] = {
+        '@type': 'AggregateRating',
+        'ratingValue': currentRating || 5.0,
+        'reviewCount': currentNumReviews
+      };
+    }
+
+    return schemaObj;
+  }, [product, slug, currentRating, currentNumReviews]);
+
   return (
     <div className="page-wrapper">
+      <SEOHead
+        title={`${product.name} - Rs. ${Number(product.price).toLocaleString()} | DRAKEWEARS Pakistan`}
+        description={`Buy ${product.name} at DRAKEWEARS Pakistan. ${product.description ? product.description.slice(0, 140) : 'Premium luxury streetwear'} - Rs. ${Number(product.price).toLocaleString()}. Nationwide Cash on Delivery.`}
+        keywords={`${product.name}, ${product.category || 'streetwear'}, streetwear pakistan, buy ${product.name} online, oversized streetwear`}
+        image={product.images?.[0]}
+        url={`https://drakewears.com/shop/${product.slug || slug}`}
+        type="product"
+        schema={productSchema}
+      />
       <main className="main-content">
         <div className="container">
           <div className="product-detail-layout">

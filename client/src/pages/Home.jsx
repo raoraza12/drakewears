@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiLayers, FiShield, FiPackage, FiAward, FiUnlock, FiArrowRight } from 'react-icons/fi';
 import ProductCard from '../components/ProductCard';
+import SEOHead from '../components/SEOHead';
 import API from '../api';
 import './Home.css';
 
@@ -129,8 +130,56 @@ const Home = () => {
     if (e.key === 'ArrowRight') nextSlide();
   };
 
+  const homeSchema = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': 'https://drakewears.com/#organization',
+        'name': 'DRAKEWEARS',
+        'url': 'https://drakewears.com',
+        'logo': 'https://drakewears.com/drakewears-logo.png',
+        'description': 'Modern Luxury Streetwear, Baggy Trousers, Drop Shoulder Tees & Apparel brand in Pakistan.',
+        'contactPoint': {
+          '@type': 'ContactPoint',
+          'telephone': '+92-321-8254922',
+          'contactType': 'Customer Service',
+          'areaServed': 'PK',
+          'availableLanguage': ['English', 'Urdu']
+        },
+        'sameAs': [
+          'https://instagram.com/drakewears',
+          'https://facebook.com/drakewears'
+        ]
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://drakewears.com/#website',
+        'url': 'https://drakewears.com',
+        'name': 'DRAKEWEARS',
+        'description': 'Modern Luxury Streetwear & Apparel in Pakistan',
+        'publisher': {
+          '@id': 'https://drakewears.com/#organization'
+        },
+        'potentialAction': {
+          '@type': 'SearchAction',
+          'target': 'https://drakewears.com/shop?search={search_term_string}',
+          'query-input': 'required name=search_term_string'
+        }
+      }
+    ]
+  };
+
   return (
     <div className="page-wrapper home-3d-page">
+      <SEOHead
+        title="DRAKEWEARS | Modern Luxury Streetwear & Apparel Pakistan"
+        description="Discover luxury streetwear, oversized drop shoulder tees, baggy cargo trousers, and premium hoodies at DRAKEWEARS Pakistan. Free shipping on orders over Rs. 5,000."
+        keywords="DRAKEWEARS, streetwear pakistan, drop shoulder tees, baggy trousers, oversized t shirts, luxury streetwear, pakistan streetwear brand"
+        url="https://drakewears.com/"
+        schema={homeSchema}
+      />
+      <h1 className="sr-only">DRAKEWEARS | Modern Luxury Streetwear & Apparel Pakistan</h1>
       <main className="main-content" style={{ paddingTop: 0 }}>
         
         {/* ==========================================================

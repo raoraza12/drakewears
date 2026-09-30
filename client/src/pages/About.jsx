@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiLayers, FiShield, FiPackage, FiRefreshCw, FiArrowRight } from 'react-icons/fi';
+import SEOHead from '../components/SEOHead';
 import './About.css';
 
 const About = () => {
@@ -24,6 +25,12 @@ const About = () => {
 
   return (
     <div className="page-wrapper about-3d-page">
+      <SEOHead
+        title="About DRAKEWEARS | Modern Luxury Streetwear & Craftsmanship"
+        description="Learn about DRAKEWEARS atelier, our signature 450 GSM heavyweight fabrics, bespoke streetwear fits, and philosophy of zero compromise in Pakistan."
+        keywords="about drakewears, streetwear brand pakistan, heavyweight fabric, pakistani luxury fashion"
+        url="https://drakewears.com/about"
+      />
       <main className="main-content">
         
         {/* 1. Minimal Clean Hero */}

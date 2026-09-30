@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FiMail, FiPhone, FiMessageCircle, FiClock, FiMapPin, FiInstagram } from 'react-icons/fi';
+import SEOHead from '../components/SEOHead';
 import './Contact.css';
 
 const Contact = () => {
@@ -20,8 +21,28 @@ const Contact = () => {
     }
   ];
 
+  const contactFaqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqs.map(faq => ({
+      '@type': 'Question',
+      'name': faq.q,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': faq.a
+      }
+    }))
+  };
+
   return (
     <div className="page-wrapper">
+      <SEOHead
+        title="Contact & VIP Client Concierge | DRAKEWEARS Pakistan"
+        description="Have questions regarding your order or fit sizing? Contact DRAKEWEARS customer support via WhatsApp or email. 24/7 dedicated assistance across Pakistan."
+        keywords="contact drakewears, customer support, drakewears whatsapp, streetwear customer service pakistan"
+        url="https://drakewears.com/contact"
+        schema={contactFaqSchema}
+      />
       <main className="main-content">
         <div className="container">
           <div className="contact-layout">

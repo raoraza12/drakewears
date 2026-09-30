@@ -107,6 +107,89 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'drakewears API Running ✨', status: 'OK' });
 });
 
+// Google Search Console Site Verification
+app.get('/googlecbd639bd70f468f7.html', (req, res) => {
+  res.type('text/html').send('google-site-verification: googlecbd639bd70f468f7.html');
+});
+
+// Dynamic XML Sitemap for Google, Bing & Search Engines (Auto-syncs with Products DB)
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const products = await prisma.product.findMany({
+      select: {
+        slug: true,
+        updatedAt: true,
+        name: true,
+        images: true,
+        category: true
+      },
+      orderBy: { updatedAt: 'desc' }
+    });
+
+    const baseUrl = 'https://drakewears.com';
+    const nowIso = new Date().toISOString().split('T')[0];
+
+    // Core Brand Pages
+    const staticPages = [
+      { loc: `${baseUrl}/`, priority: '1.0', changefreq: 'daily', lastmod: nowIso },
+      { loc: `${baseUrl}/shop`, priority: '0.9', changefreq: 'daily', lastmod: nowIso },
+      { loc: `${baseUrl}/shop?category=baggy-trousers`, priority: '0.85', changefreq: 'weekly', lastmod: nowIso },
+      { loc: `${baseUrl}/shop?category=drop-shoulder-tees`, priority: '0.85', changefreq: 'weekly', lastmod: nowIso },
+      { loc: `${baseUrl}/about`, priority: '0.7', changefreq: 'monthly', lastmod: nowIso },
+      { loc: `${baseUrl}/contact`, priority: '0.7', changefreq: 'monthly', lastmod: nowIso },
+      { loc: `${baseUrl}/terms`, priority: '0.5', changefreq: 'yearly', lastmod: nowIso },
+      { loc: `${baseUrl}/privacy`, priority: '0.5', changefreq: 'yearly', lastmod: nowIso },
+    ];
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
+    xml += `        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n`;
+
+    // Static pages
+    for (const page of staticPages) {
+      xml += `  <url>\n`;
+      xml += `    <loc>${page.loc}</loc>\n`;
+      xml += `    <lastmod>${page.lastmod}</lastmod>\n`;
+      xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+      xml += `    <priority>${page.priority}</priority>\n`;
+      xml += `  </url>\n`;
+    }
+
+    // Dynamic Products with Google Image Extension
+    for (const prod of products) {
+      if (!prod.slug) continue;
+      const prodUrl = `${baseUrl}/shop/${prod.slug}`;
+      const lastModDate = prod.updatedAt ? new Date(prod.updatedAt).toISOString().split('T')[0] : nowIso;
+
+      xml += `  <url>\n`;
+      xml += `    <loc>${prodUrl}</loc>\n`;
+      xml += `    <lastmod>${lastModDate}</lastmod>\n`;
+      xml += `    <changefreq>weekly</changefreq>\n`;
+      xml += `    <priority>0.85</priority>\n`;
+
+      if (Array.isArray(prod.images) && prod.images.length > 0) {
+        const imgUrl = prod.images[0].replace(/&/g, '&amp;');
+        const imgTitle = (prod.name || 'DRAKEWEARS Streetwear').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        xml += `    <image:image>\n`;
+        xml += `      <image:loc>${imgUrl}</image:loc>\n`;
+        xml += `      <image:title>${imgTitle}</image:title>\n`;
+        xml += `    </image:image>\n`;
+      }
+
+      xml += `  </url>\n`;
+    }
+
+    xml += `</urlset>`;
+
+    res.header('Content-Type', 'application/xml; charset=utf-8');
+    res.header('Cache-Control', 'public, max-age=3600, s-maxage=86400');
+    return res.send(xml);
+  } catch (err) {
+    console.error('Sitemap generation error:', err);
+    res.status(500).send('Error generating sitemap');
+  }
+});
+
 // Serve Frontend build in Production
 const fs = require('fs');
 const candidatePaths = [

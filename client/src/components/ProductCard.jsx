@@ -82,7 +82,7 @@ export default function ProductCard({ product }) {
       <div className="product-card-img-wrap">
         <img 
           src={currentImage} 
-          alt={product.name} 
+          alt={`DRAKEWEARS ${product.name} - ${product.category || 'Luxury Streetwear'}`} 
           className="product-main-img" 
           loading="lazy" 
           onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_IMG; }}
