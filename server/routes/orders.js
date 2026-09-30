@@ -165,10 +165,13 @@ router.post('/', optionalAuth, async (req, res) => {
       normalizedPhone = '0' + normalizedPhone.slice(4);
     }
 
-    // 3. Email Validation (if provided)
+    // 3. Email Validation (Mandatory for order confirmation & tracking)
     const cleanEmail = (shippingAddress?.email || '').trim().toLowerCase();
-    if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      return res.status(400).json({ message: 'Please provide a valid email address.' });
+    if (!cleanEmail) {
+      return res.status(400).json({ message: 'Email address is required to place an order.' });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return res.status(400).json({ message: 'Please provide a valid email address (e.g. name@gmail.com).' });
     }
 
     // 4. Address Validation

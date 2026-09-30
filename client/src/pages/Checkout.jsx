@@ -92,8 +92,10 @@ export default function Checkout() {
     }
 
     const cleanEmail = form.email.trim();
-    if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      errs.email = 'Please enter a valid email address (e.g. name@example.com).';
+    if (!cleanEmail) {
+      errs.email = 'Email address is required to place an order.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      errs.email = 'Please enter a valid email address (e.g. name@gmail.com).';
     }
 
     const cleanStreet = form.street.trim();
@@ -359,7 +361,7 @@ export default function Checkout() {
               </div>
 
               <div className="form-group" style={{ marginTop: 14 }}>
-                <label className="form-label">Email Address (Optional / Recommended for order receipts)</label>
+                <label className="form-label">Email Address * (Required for order confirmation & tracking)</label>
                 <input 
                   className={`form-input ${errors.email ? 'input-error' : ''}`} 
                   name="email" 
@@ -367,7 +369,8 @@ export default function Checkout() {
                   autoComplete="email"
                   value={form.email} 
                   onChange={handleChange} 
-                  placeholder="customer@example.com" 
+                  required
+                  placeholder="e.g. customer@gmail.com" 
                 />
                 {errors.email && <span className="field-error-text">{errors.email}</span>}
               </div>

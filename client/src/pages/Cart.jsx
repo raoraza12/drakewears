@@ -16,12 +16,7 @@ export default function Cart() {
   const shippingFee = total >= 5000 ? 0 : defaultShipping;
 
   const handleCheckoutClick = () => {
-    if (!user) {
-      toast('Please login or register to continue to checkout', { icon: '🔒' });
-      navigate('/login?redirect=/checkout');
-    } else {
-      navigate('/checkout');
-    }
+    navigate('/checkout');
   };
 
   if (items.length === 0) return (

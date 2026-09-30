@@ -37,11 +37,6 @@ const CartDrawer = () => {
 
   const handleProceedToCheckout = () => {
     setIsOpen(false);
-    if (!user) {
-      toast.error('Please login or register to checkout');
-      navigate('/login?redirect=/checkout');
-      return;
-    }
     navigate('/checkout');
   };
 
