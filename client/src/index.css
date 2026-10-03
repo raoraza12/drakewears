@@ -661,4 +661,159 @@ html {
   border-width: 0;
 }
 
+/* ==========================================================
+   UNIVERSAL CLOTHING BRAND MICRO-ANIMATIONS (CARDS, BTNS, BOXES)
+   High-Fashion Streetwear Tactile Feel & Fluid Transitions
+   ========================================================== */
+
+/* 1. ALL BUTTONS & CTAS: Tactile Lift & Spring Press Feedback */
+button:not(:disabled),
+.btn-primary,
+.btn-outline,
+.btn-icon,
+.home-vault-cta-btn,
+.quick-add-btn,
+.vault-card-notify-btn,
+.vault-cs-btn-whatsapp,
+.vault-cs-btn-instagram,
+.checkout-btn,
+a[class*="btn"],
+.action-btn {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 0.22s ease, 
+              border-color 0.22s ease, 
+              color 0.22s ease !important;
+  will-change: transform;
+}
+
+button:hover:not(:disabled),
+.btn-primary:hover,
+.btn-outline:hover,
+.home-vault-cta-btn:hover,
+.vault-card-notify-btn:hover,
+a[class*="btn"]:hover {
+  transform: translateY(-2px);
+}
+
+button:active:not(:disabled),
+.btn-primary:active,
+.btn-outline:active,
+.btn-icon:active,
+.home-vault-cta-btn:active,
+.quick-add-btn:active,
+.vault-card-notify-btn:active,
+.vault-cs-btn-whatsapp:active,
+.vault-cs-btn-instagram:active,
+a[class*="btn"]:active {
+  transform: translateY(1px) scale(0.972) !important;
+}
+
+/* 2. ALL CARDS: Smooth Floating Elevation & Shadow Diffusion */
+.product-card,
+.category-card-3d,
+.spec-card-3d,
+.vault-preview-card,
+.home-vault-card,
+.review-card,
+.stat-card,
+.coupon-card,
+.admin-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.3s ease !important;
+  will-change: transform, box-shadow;
+}
+
+.product-card:hover {
+  transform: translateY(-6px) scale(1.008);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.09), 0 4px 14px rgba(0, 0, 0, 0.03);
+}
+
+.spec-card-3d:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.08);
+}
+
+/* Image Scale Inside Cards */
+.product-card .product-main-img,
+.category-card-3d img,
+.img-hover-wrapper img {
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.product-card:hover .product-main-img,
+.category-card-3d:hover img,
+.img-hover-wrapper:hover img {
+  transform: scale(1.055);
+}
+
+/* 3. ALL BOXES & INTERACTIVE CONTAINERS */
+.home-vault-card,
+.vault-cs-highlight,
+.categories-3d-section,
+.filter-dropdown,
+.checkout-box,
+.cart-summary,
+.specs-3d-grid > div {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s ease,
+              border-color 0.25s ease;
+}
+
+/* Inputs & Form Elements Focus Glow */
+input.form-input,
+textarea.form-input,
+select.form-input {
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease !important;
+}
+
+input.form-input:focus,
+textarea.form-input:focus,
+select.form-input:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Badges & Tags Subtle Pop */
+.badge-best,
+.badge-new,
+.badge-sale,
+.badge-vault,
+.home-vault-live-pill,
+.home-vault-tag-pill,
+.spec-tag-pill,
+.vault-cs-badge,
+.vault-chip-pill,
+.vault-veil-badge {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.badge-best:hover,
+.badge-new:hover,
+.badge-sale:hover,
+.badge-vault:hover,
+.home-vault-live-pill:hover,
+.home-vault-tag-pill:hover,
+.vault-cs-badge:hover {
+  transform: translateY(-1px) scale(1.04);
+}
+
+/* Wishlist Button Micro-Spring */
+.wishlist-btn {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 0.2s ease, 
+              color 0.2s ease, 
+              opacity 0.2s ease !important;
+}
+
+.wishlist-btn:hover {
+  transform: scale(1.14) !important;
+}
+
+.wishlist-btn:active {
+  transform: scale(0.92) !important;
+}
+
+
 

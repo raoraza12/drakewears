@@ -75,7 +75,7 @@ const StorefrontLayout = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="/orders/track" element={<OrderTracking />} />
           <Route path="/track" element={<OrderTracking />} />

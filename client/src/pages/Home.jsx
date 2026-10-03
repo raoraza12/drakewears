@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiLayers, FiShield, FiPackage, FiAward, FiUnlock, FiArrowRight } from 'react-icons/fi';
+import { FiLayers, FiShield, FiPackage, FiAward, FiUnlock, FiLock, FiArrowRight } from 'react-icons/fi';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
 import API from '../api';
@@ -334,8 +334,6 @@ const Home = () => {
         <section className="home-vault-spotlight scroll-reveal">
           <div className="container">
             <div className="home-vault-card">
-              <div className="home-vault-ambient-glow"></div>
-              
               <div className="home-vault-content">
                 <div className="home-vault-badge-row">
                   <span className="home-vault-live-pill">
@@ -349,38 +347,14 @@ const Home = () => {
                   1-of-1 Curated Vintage &amp; Archive Pieces
                 </p>
 
-                <p className="home-vault-desc">
-                  Hand-sourced rare vintage grails, 90s archive cuts, and curated pre-loved streetwear. 
-                  Every piece in the Vault is uniquely individual—only 1 piece in stock. Once claimed, the vault seals forever.
-                </p>
-
-                <div className="home-vault-features">
-                  <div className="vault-feat-item">
-                    <span className="vault-feat-icon">⚡</span>
-                    <div>
-                      <strong>Single Piece Only</strong>
-                      <p>1-of-1 exclusivity. Never reproduced.</p>
-                    </div>
-                  </div>
-                  <div className="vault-feat-item">
-                    <span className="vault-feat-icon">✦</span>
-                    <div>
-                      <strong>Flat Inch Measurements</strong>
-                      <p>Pit-to-pit &amp; waist measured for true fit.</p>
-                    </div>
-                  </div>
-                  <div className="vault-feat-item">
-                    <span className="vault-feat-icon">🔒</span>
-                    <div>
-                      <strong>100% Sanitized &amp; Graded</strong>
-                      <p>Professionally washed &amp; steam pressed.</p>
-                    </div>
-                  </div>
+                <div className="home-vault-coming-soon-pill">
+                  <FiLock size={14} className="coming-soon-lock-icon" />
+                  <span>COMING SOON • DROP #01</span>
                 </div>
 
                 <div className="home-vault-action-row">
                   <Link to="/vault" className="home-vault-cta-btn">
-                    <FiUnlock size={18} /> ENTER THE VAULT
+                    <FiLock size={16} /> ENTER THE VAULT
                   </Link>
                   <Link to="/vault" className="home-vault-link-btn">
                     Explore Drops <FiArrowRight size={15} />
@@ -389,19 +363,22 @@ const Home = () => {
               </div>
 
               <div className="home-vault-visual">
-                <div className="vault-visual-frame">
-                  <img 
-                    src="/carousel-comingsoon.jpg" 
-                    alt="Drake Vault 1-of-1 Collection" 
-                    className="vault-visual-img"
-                  />
-                  <div className="vault-stamp-tag">
-                    <span>1 OF 1</span>
-                    <small>ARCHIVE DROP</small>
+                <div className="vault-visual-card">
+                  <div className="vault-card-glow"></div>
+                  <div className="vault-card-header">
+                    <span className="vault-chip-pill">1 OF 1</span>
+                    <span className="vault-chip-status">SEALED</span>
                   </div>
-                  <div className="vault-visual-caption">
-                    <span className="caption-status">STATUS: UNLOCKED</span>
-                    <span className="caption-text">LIMITED PIECES</span>
+                  <div className="vault-card-center">
+                    <div className="vault-lock-orb">
+                      <FiLock size={32} />
+                    </div>
+                    <div className="vault-card-big-title">ARCHIVE GRAILS</div>
+                    <div className="vault-card-drop-tag">DROP #01 • COMING SOON</div>
+                  </div>
+                  <div className="vault-card-footer">
+                    <span>STATUS: PREPARING</span>
+                    <span>STRICT EXCLUSIVITY</span>
                   </div>
                 </div>
               </div>

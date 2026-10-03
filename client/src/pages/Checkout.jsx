@@ -198,7 +198,7 @@ export default function Checkout() {
         shippingAddress: { 
           name: cleanName, 
           phone: normalizedPhone, 
-          email: form.email.trim() || undefined,
+          email: form.email.trim(),
           street: form.street.trim(), 
           city: form.city.trim(), 
           state: form.state.trim() || 'Punjab', 
@@ -301,9 +301,15 @@ export default function Checkout() {
             <a href={waUrl} target="_blank" rel="noopener noreferrer" className="btn-whatsapp-confirm">
               <FiMessageSquare size={18} /> Confirm via WhatsApp
             </a>
-            <Link to="/orders" className="btn-primary" style={{ textAlign: 'center', justifyContent: 'center' }}>
-              View My Orders
-            </Link>
+            {user ? (
+              <Link to="/orders" className="btn-primary" style={{ textAlign: 'center', justifyContent: 'center' }}>
+                View My Orders
+              </Link>
+            ) : (
+              <Link to="/track" className="btn-primary" style={{ textAlign: 'center', justifyContent: 'center' }}>
+                Track Order Status
+              </Link>
+            )}
             <Link to="/shop" className="btn-outline" style={{ textAlign: 'center', justifyContent: 'center' }}>
               Continue Shopping
             </Link>
