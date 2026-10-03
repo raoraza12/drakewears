@@ -497,16 +497,26 @@ const OrderManager = () => {
                                 </button>
                               )}
 
-                              {/* Prominent APPROVE ORDER Button for Pending */}
+                              {/* Prominent APPROVE & DECLINE Buttons for Pending */}
                               {order.status === 'pending' && (
-                                <button
-                                  type="button"
-                                  className="btn-approve"
-                                  onClick={() => handleApproveOrder(orderId)}
-                                  title="Approve Order & Move to Processing"
-                                >
-                                  <FiCheckCircle size={14} /> Approve Order
-                                </button>
+                                <>
+                                  <button
+                                    type="button"
+                                    className="btn-approve"
+                                    onClick={() => handleApproveOrder(orderId)}
+                                    title="Approve Order & Move to Processing"
+                                  >
+                                    <FiCheckCircle size={14} /> Approve Order
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn-decline"
+                                    onClick={() => handleUpdateStatus(orderId, 'cancelled')}
+                                    title="Decline / Reject Order"
+                                  >
+                                    <FiXCircle size={14} /> Decline
+                                  </button>
+                                </>
                               )}
 
                               {/* Quick Next Steps */}
@@ -794,16 +804,26 @@ const OrderManager = () => {
 
                   {/* Mobile Action Buttons */}
                   <div className="mobile-card-actions">
-                    {/* Big APPROVE Button if Pending */}
+                    {/* Big APPROVE & DECLINE Buttons if Pending */}
                     {isPending && (
-                      <button
-                        type="button"
-                        className="btn-approve"
-                        style={{ width: '100%', padding: '12px', fontSize: '0.9rem' }}
-                        onClick={() => handleApproveOrder(orderId)}
-                      >
-                        <FiCheckCircle size={18} /> Approve Order Now
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px', width: '100%', marginBottom: '4px' }}>
+                        <button
+                          type="button"
+                          className="btn-approve"
+                          style={{ flex: 1, padding: '10px', fontSize: '0.88rem' }}
+                          onClick={() => handleApproveOrder(orderId)}
+                        >
+                          <FiCheckCircle size={16} /> Approve
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-decline"
+                          style={{ flex: 1, padding: '10px', fontSize: '0.88rem' }}
+                          onClick={() => handleUpdateStatus(orderId, 'cancelled')}
+                        >
+                          <FiXCircle size={16} /> Decline
+                        </button>
+                      </div>
                     )}
 
                     <div className="mobile-action-buttons">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiMessageCircle, FiPlus, FiCheckCircle, FiTruck, FiPackage } from 'react-icons/fi';
+import { FiMessageCircle, FiPlus, FiCheckCircle, FiTruck, FiPackage, FiXCircle } from 'react-icons/fi';
 import API from '../../api';
 import toast from 'react-hot-toast';
 import './OrderManager.css';
@@ -175,35 +175,57 @@ const WhatsappOrders = () => {
                           <td onClick={e => e.stopPropagation()}>
                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                               {order.status === 'pending' && (
-                                <button 
-                                  type="button"
-                                  className="btn-approve" 
-                                  onClick={() => handleUpdateStatus(order.id || order._id, 'processing')}
-                                >
-                                  <FiCheckCircle size={13} /> Approve
-                                </button>
+                                <>
+                                  <button 
+                                    type="button"
+                                    className="btn-approve" 
+                                    onClick={() => handleUpdateStatus(order.id || order._id, 'processing')}
+                                    title="Approve Order"
+                                  >
+                                    <FiCheckCircle size={13} /> Approve
+                                  </button>
+                                  <button 
+                                    type="button"
+                                    className="btn-decline" 
+                                    onClick={() => handleUpdateStatus(order.id || order._id, 'cancelled')}
+                                    title="Decline / Reject Order"
+                                  >
+                                    <FiXCircle size={13} /> Decline
+                                  </button>
+                                </>
                               )}
                               {order.status === 'processing' && (
-                                <button 
-                                  type="button"
-                                  className="btn-ship" 
-                                  onClick={() => handleUpdateStatus(order.id || order._id, 'shipped')}
-                                >
-                                  <FiTruck size={13} /> Ship
-                                </button>
+                                <>
+                                  <button 
+                                    type="button"
+                                    className="btn-ship" 
+                                    onClick={() => handleUpdateStatus(order.id || order._id, 'shipped')}
+                                    title="Mark as Shipped"
+                                  >
+                                    <FiTruck size={13} /> Ship
+                                  </button>
+                                  <button 
+                                    type="button"
+                                    className="btn-decline-outline" 
+                                    onClick={() => handleUpdateStatus(order.id || order._id, 'cancelled')}
+                                    title="Cancel Order"
+                                  >
+                                    <FiXCircle size={12} /> Cancel
+                                  </button>
+                                </>
                               )}
                               {order.status === 'shipped' && (
                                 <button 
                                   type="button"
                                   className="btn-deliver" 
                                   onClick={() => handleUpdateStatus(order.id || order._id, 'delivered')}
+                                  title="Mark as Delivered"
                                 >
                                   <FiPackage size={13} /> Delivered
                                 </button>
                               )}
                               <select 
-                                className="form-input" 
-                                style={{ padding: '5px 8px', fontSize: '0.78rem', width: 'auto', background: '#1c1c22' }}
+                                className="order-status-select" 
                                 value={order.status}
                                 onChange={(e) => handleUpdateStatus(order.id || order._id, e.target.value)}
                               >
@@ -305,24 +327,44 @@ const WhatsappOrders = () => {
 
                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '10px' }}>
                         {order.status === 'pending' && (
-                          <button 
-                            type="button"
-                            className="btn-approve" 
-                            style={{ flex: 1, padding: '8px', minHeight: '38px', fontSize: '0.8rem' }}
-                            onClick={() => handleUpdateStatus(order.id || order._id, 'processing')}
-                          >
-                            <FiCheckCircle size={13} /> Approve
-                          </button>
+                          <>
+                            <button 
+                              type="button"
+                              className="btn-approve" 
+                              style={{ flex: 1, padding: '8px', minHeight: '38px', fontSize: '0.8rem' }}
+                              onClick={() => handleUpdateStatus(order.id || order._id, 'processing')}
+                            >
+                              <FiCheckCircle size={13} /> Approve
+                            </button>
+                            <button 
+                              type="button"
+                              className="btn-decline" 
+                              style={{ flex: 1, padding: '8px', minHeight: '38px', fontSize: '0.8rem' }}
+                              onClick={() => handleUpdateStatus(order.id || order._id, 'cancelled')}
+                            >
+                              <FiXCircle size={13} /> Decline
+                            </button>
+                          </>
                         )}
                         {order.status === 'processing' && (
-                          <button 
-                            type="button"
-                            className="btn-ship" 
-                            style={{ flex: 1, padding: '8px', minHeight: '38px', fontSize: '0.8rem' }}
-                            onClick={() => handleUpdateStatus(order.id || order._id, 'shipped')}
-                          >
-                            <FiTruck size={13} /> Ship
-                          </button>
+                          <>
+                            <button 
+                              type="button"
+                              className="btn-ship" 
+                              style={{ flex: 1, padding: '8px', minHeight: '38px', fontSize: '0.8rem' }}
+                              onClick={() => handleUpdateStatus(order.id || order._id, 'shipped')}
+                            >
+                              <FiTruck size={13} /> Ship
+                            </button>
+                            <button 
+                              type="button"
+                              className="btn-decline-outline" 
+                              style={{ flex: 1, padding: '8px', minHeight: '38px', fontSize: '0.8rem' }}
+                              onClick={() => handleUpdateStatus(order.id || order._id, 'cancelled')}
+                            >
+                              <FiXCircle size={12} /> Cancel
+                            </button>
+                          </>
                         )}
                         {order.status === 'shipped' && (
                           <button 
@@ -335,8 +377,8 @@ const WhatsappOrders = () => {
                           </button>
                         )}
                         <select 
-                          className="form-input" 
-                          style={{ flex: 1, padding: '6px 8px', fontSize: '0.8rem', minHeight: '38px', background: '#1c1c22' }}
+                          className="order-status-select" 
+                          style={{ flex: 1, minHeight: '38px' }}
                           value={order.status}
                           onChange={(e) => handleUpdateStatus(order.id || order._id, e.target.value)}
                         >

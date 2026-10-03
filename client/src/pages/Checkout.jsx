@@ -562,8 +562,20 @@ export default function Checkout() {
       {showReviewModal && (
         <div className="checkout-modal-overlay" onClick={() => !loading && setShowReviewModal(false)}>
           <div className="checkout-review-card" onClick={e => e.stopPropagation()}>
-            <h3 className="checkout-review-title">Review & Confirm Your Order</h3>
-            <p className="checkout-review-subtitle">Please double-check your shipping details before finalizing.</p>
+            <div className="checkout-review-header">
+              <div>
+                <h3 className="checkout-review-title">Review & Confirm Your Order</h3>
+                <p className="checkout-review-subtitle">Please double-check your shipping details before finalizing.</p>
+              </div>
+              <button 
+                type="button" 
+                className="review-modal-close" 
+                onClick={() => !loading && setShowReviewModal(false)}
+                aria-label="Close review modal"
+              >
+                <FiX size={20} />
+              </button>
+            </div>
             
             {/* Delivery Information */}
             <div className="review-info-section">
@@ -609,17 +621,16 @@ export default function Checkout() {
                 <span className="review-label">Delivery Shipping:</span>
                 <span className="review-value">{shippingFee === 0 ? 'FREE' : `Rs. ${shippingFee.toLocaleString()}`}</span>
               </div>
-              <div className="review-row" style={{ borderTop: '1px solid var(--border-light)', paddingTop: '10px', marginTop: '6px' }}>
-                <span className="review-label" style={{ fontWeight: 700, color: 'var(--cream)' }}>Total Payable:</span>
-                <span className="review-value" style={{ color: 'var(--gold)', fontSize: '1.1rem', fontWeight: 800 }}>Rs. {grandTotal.toLocaleString()}</span>
+              <div className="review-row review-total-row">
+                <span className="review-total-label">Total Payable:</span>
+                <span className="review-total-val">Rs. {grandTotal.toLocaleString()}</span>
               </div>
             </div>
 
             <div className="review-modal-actions">
               <button 
                 type="button" 
-                className="btn-outline" 
-                style={{ flex: 1, padding: '14px' }}
+                className="btn-review-edit" 
                 onClick={() => setShowReviewModal(false)}
                 disabled={loading}
               >
@@ -627,8 +638,7 @@ export default function Checkout() {
               </button>
               <button 
                 type="button" 
-                className="btn-primary" 
-                style={{ flex: 2, padding: '14px', justifyContent: 'center' }}
+                className="btn-review-confirm" 
                 onClick={handleFinalSubmit}
                 disabled={loading}
               >
