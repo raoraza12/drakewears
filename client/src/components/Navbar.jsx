@@ -239,8 +239,8 @@ const Navbar = () => {
               <Link to="/shop?category=bottoms" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
                 ↳ Bottoms
               </Link>
-              <Link to="/shop?category=drop-shoulder-tees" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
-                ↳ Drop Shoulder Tees
+              <Link to="/shop?category=tops" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
+                ↳ Tops
               </Link>
               <Link to="/shop?category=hoodies" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
                 ↳ Hoodies & Fleece

@@ -25,7 +25,7 @@ const ProductForm = () => {
     care: '',
   });
 
-  const categories = ['Bottoms', 'Drop Shoulder Tees', 'Drake Vault'];
+  const categories = ['Tops', 'Bottoms', 'Drake Vault'];
   const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'Free Size'];
 
   useEffect(() => {
@@ -90,8 +90,8 @@ const ProductForm = () => {
               let autoCategory = form.category;
               if (val.toLowerCase().includes('trouser') || val.toLowerCase().includes('pant')) {
                 autoCategory = 'Bottoms';
-              } else if (val.toLowerCase().includes('tee') || val.toLowerCase().includes('shirt')) {
-                autoCategory = 'Drop Shoulder Tees';
+              } else if (val.toLowerCase().includes('tee') || val.toLowerCase().includes('shirt') || val.toLowerCase().includes('top')) {
+                autoCategory = 'Tops';
               }
               setForm({...form, name: val, category: autoCategory});
             }} placeholder="e.g. Signature Silk Blazer" />

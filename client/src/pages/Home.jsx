@@ -309,20 +309,20 @@ const Home = () => {
               </Link>
 
               <Link 
-                to="/shop?category=drop-shoulder-tees" 
+                to="/shop?category=tops" 
                 className="category-card-3d scroll-reveal scroll-delay-2"
               >
                 <div className="cat-card-img-box">
                   <img 
                     src="/home-category-tees.png" 
-                    alt="Drop Shoulder Tees" 
+                    alt="Tops" 
                     style={{ objectPosition: 'center 15%' }}
                   />
                   <div className="cat-card-glass-glow"></div>
                 </div>
                 <div className="cat-card-content">
-                  <span className="cat-drop-tag">TOPS</span>
-                  <h3 className="cat-title">Drop Shoulder Tees</h3>
+                  <span className="cat-drop-tag">COLLECTION</span>
+                  <h3 className="cat-title">Tops</h3>
                   <div className="cat-action-row">
                     <span className="cat-cta-text">Shop Now</span>
                     <span className="cat-arrow-circle">→</span>

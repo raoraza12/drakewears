@@ -7,7 +7,7 @@ import {
   FiChevronUp, FiX, FiCheck, FiFolderPlus, FiBox 
 } from 'react-icons/fi';
 
-const DEFAULT_CATEGORIES = ['Bottoms', 'Drop Shoulder Tees', 'Drake Vault'];
+const DEFAULT_CATEGORIES = ['Tops', 'Bottoms', 'Drake Vault'];
 
 const loadStoredCategories = () => {
   try {
@@ -212,8 +212,8 @@ const ProductManager = () => {
       if (!autoCategory) {
         if (value.toLowerCase().includes('trouser') || value.toLowerCase().includes('pant')) {
           autoCategory = 'Bottoms';
-        } else if (value.toLowerCase().includes('tee') || value.toLowerCase().includes('shirt')) {
-          autoCategory = 'Drop Shoulder Tees';
+        } else if (value.toLowerCase().includes('tee') || value.toLowerCase().includes('shirt') || value.toLowerCase().includes('top')) {
+          autoCategory = 'Tops';
         }
       }
       setFormData({ ...formData, [name]: value, category: autoCategory });

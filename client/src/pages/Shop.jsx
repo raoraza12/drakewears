@@ -55,10 +55,11 @@ const Shop = () => {
 
   // Derive categories dynamically from products
   const availableCategories = useMemo(() => {
-    const set = new Set(['Bottoms', 'Drop Shoulder Tees']);
+    const set = new Set(['Tops', 'Bottoms']);
     products.forEach(p => {
       if (p.category) {
         if (p.category === 'Baggy Trousers') set.add('Bottoms');
+        else if (p.category === 'Drop Shoulder Tees') set.add('Tops');
         else set.add(p.category);
       }
     });
@@ -88,8 +89,12 @@ const Shop = () => {
         const sub = (p.subcategory || '').toLowerCase();
         let act = activeCategory.toLowerCase();
         if (act === 'baggy-trousers' || act === 'baggy trousers' || act === 'trousers') act = 'bottoms';
+        if (act === 'drop-shoulder-tees' || act === 'tees' || act === 't-shirts') act = 'tops';
         if (act === 'bottoms') {
           return cat.includes('bottom') || cat.includes('trouser') || sub.includes('bottom') || sub.includes('trouser');
+        }
+        if (act === 'tops') {
+          return cat.includes('top') || cat.includes('tee') || cat.includes('shirt') || sub.includes('top') || sub.includes('tee');
         }
         return cat.includes(act) || sub.includes(act) || act.includes(cat);
       });

@@ -34,7 +34,7 @@ const Footer = () => {
             <h3 className="footer-heading">Shop</h3>
             <Link to="/shop">All Products</Link>
             <Link to="/shop?category=bottoms">Bottoms</Link>
-            <Link to="/shop?category=drop-shoulder-tees">Drop Shoulder Tees</Link>
+            <Link to="/shop?category=tops">Tops</Link>
           </div>
           
           <div className="footer-links-group">

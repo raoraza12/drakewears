@@ -883,7 +883,7 @@ const ProductDetail = () => {
                   className={`size-tab-btn ${sizeModalCategory === 'tees' ? 'active' : ''}`}
                   onClick={() => setSizeModalCategory('tees')}
                 >
-                  👕 Baggy Tees &amp; Tops
+                  👕 Tops
                 </button>
                 <button 
                   type="button"
