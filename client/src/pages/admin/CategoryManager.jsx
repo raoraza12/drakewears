@@ -4,12 +4,31 @@ import toast from 'react-hot-toast';
 import API from '../../api';
 import './Admin.css';
 
+const DEPRECATED_CATEGORIES = new Set([
+  'baggy trousers',
+  'drop shoulder tees',
+  'baggy-trousers',
+  'drop-shoulder-tees',
+  'baggy trouser',
+  'drop shoulder tee'
+]);
+
 const CategoryManager = () => {
   const [categories, setCategories] = useState(() => {
     const saved = localStorage.getItem('drakewears_admin_categories');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          const cleaned = parsed.filter(c => {
+            const name = typeof c === 'string' ? c : c?.name;
+            return name && !DEPRECATED_CATEGORIES.has(name.toLowerCase().trim());
+          });
+          if (cleaned.length > 0) {
+            localStorage.setItem('drakewears_admin_categories', JSON.stringify(cleaned));
+            return cleaned;
+          }
+        }
       } catch {
         /* ignore invalid storage */
       }
@@ -33,9 +52,11 @@ const CategoryManager = () => {
       setProducts(allProds);
 
       // Auto add any categories from live DB if not already present
-      const dbCategories = Array.from(new Set(allProds.map(p => p.category).filter(Boolean)));
+      const dbCategories = Array.from(new Set(allProds.map(p => p.category).filter(Boolean)))
+        .filter(cat => !DEPRECATED_CATEGORIES.has(cat.toLowerCase().trim()));
       setCategories(prev => {
-        const existingNames = prev.map(c => c.name.toLowerCase().trim());
+        const validPrev = prev.filter(c => !DEPRECATED_CATEGORIES.has((c.name || '').toLowerCase().trim()));
+        const existingNames = validPrev.map(c => c.name.toLowerCase().trim());
         const toAdd = dbCategories
           .filter(cat => !existingNames.includes(cat.toLowerCase().trim()))
           .map(cat => ({
@@ -43,10 +64,9 @@ const CategoryManager = () => {
             name: cat,
             status: 'Active'
           }));
-        if (toAdd.length > 0) {
-          return [...prev, ...toAdd];
-        }
-        return prev;
+        const merged = toAdd.length > 0 ? [...validPrev, ...toAdd] : validPrev;
+        localStorage.setItem('drakewears_admin_categories', JSON.stringify(merged));
+        return merged;
       });
     } catch (error) {
       console.error('Failed to fetch products:', error);

@@ -7,6 +7,15 @@ import {
   FiChevronUp, FiX, FiCheck, FiFolderPlus, FiBox 
 } from 'react-icons/fi';
 
+const DEPRECATED_CATEGORIES = new Set([
+  'baggy trousers',
+  'drop shoulder tees',
+  'baggy-trousers',
+  'drop-shoulder-tees',
+  'baggy trouser',
+  'drop shoulder tee'
+]);
+
 const DEFAULT_CATEGORIES = ['Tops', 'Bottoms', 'Drake Vault'];
 
 const loadStoredCategories = () => {
@@ -17,7 +26,17 @@ const loadStoredCategories = () => {
       if (Array.isArray(parsed)) {
         const names = parsed
           .map(c => (typeof c === 'string' ? c.trim() : c.name?.trim()))
-          .filter(Boolean);
+          .filter(Boolean)
+          .filter(name => !DEPRECATED_CATEGORIES.has(name.toLowerCase()));
+
+        // Clean up storage immediately
+        const cleanedList = names.map(cat => ({
+          id: 'cat-' + cat.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          name: cat,
+          status: 'Active'
+        }));
+        localStorage.setItem('drakewears_admin_categories', JSON.stringify(cleanedList));
+
         if (names.length > 0) {
           return Array.from(new Set([...DEFAULT_CATEGORIES, ...names]));
         }
@@ -31,6 +50,7 @@ const loadStoredCategories = () => {
 
 const syncCategoriesToStorage = (cats) => {
   try {
+    const validCats = cats.filter(cat => !DEPRECATED_CATEGORIES.has((cat || '').toLowerCase().trim()));
     const existingRaw = localStorage.getItem('drakewears_admin_categories');
     let existingList = [];
     if (existingRaw) {
@@ -44,11 +64,13 @@ const syncCategoriesToStorage = (cats) => {
     if (Array.isArray(existingList)) {
       existingList.forEach(item => {
         const name = typeof item === 'string' ? item : item.name;
-        if (name) existingMap.set(name.toLowerCase().trim(), item);
+        if (name && !DEPRECATED_CATEGORIES.has(name.toLowerCase().trim())) {
+          existingMap.set(name.toLowerCase().trim(), item);
+        }
       });
     }
 
-    const finalList = cats.map(cat => {
+    const finalList = validCats.map(cat => {
       const found = existingMap.get(cat.toLowerCase().trim());
       if (found && typeof found === 'object') return found;
       return { 
@@ -115,10 +137,12 @@ const ProductManager = () => {
       // Auto-discover any new categories found directly on products
       const dbCategories = fetchedProducts
         .map(p => p.category?.trim())
-        .filter(Boolean);
+        .filter(Boolean)
+        .filter(name => !DEPRECATED_CATEGORIES.has(name.toLowerCase()));
 
       setCategories(prev => {
-        const merged = Array.from(new Set([...prev, ...dbCategories]));
+        const validPrev = prev.filter(c => !DEPRECATED_CATEGORIES.has((c || '').toLowerCase().trim()));
+        const merged = Array.from(new Set([...validPrev, ...dbCategories]));
         syncCategoriesToStorage(merged);
         return merged;
       });
@@ -572,7 +596,9 @@ const ProductManager = () => {
                 <FiBox size={14} /> All Categories ({products.length})
               </button>
 
-              {categories.map(cat => {
+              {categories
+                .filter(cat => !DEPRECATED_CATEGORIES.has((cat || '').toLowerCase().trim()))
+                .map(cat => {
                 const count = products.filter(p => (p.category || '').toLowerCase().trim() === cat.toLowerCase().trim()).length;
                 const isSelected = selectedCategoryFilter === cat;
                 return (
