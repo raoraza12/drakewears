@@ -1,9 +1,7 @@
 import { useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FiHeart, FiShoppingBag, FiStar } from 'react-icons/fi';
-import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import './ProductCard.css';
 
@@ -12,8 +10,6 @@ const FALLBACK_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 export default function ProductCard({ product }) {
   const cardRef = useRef(null);
   const { addToCart } = useCart();
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const { toggleWishlist, isWishlisted } = useWishlist();
   const [currentImage, setCurrentImage] = useState(product.images?.[0] || FALLBACK_IMG);
   const wishlisted = isWishlisted(product.id || product._id);
@@ -61,17 +57,18 @@ export default function ProductCard({ product }) {
   const handleQuickAdd = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!user) {
-      toast.error('Please login or register to add items to your bag');
-      navigate('/login');
-      return;
-    }
     const size = product.sizes?.[0] || 'M';
     const color = product.colors?.[0] || null;
     addToCart(product, size, color, 1);
   };
 
   const productTarget = `/shop/${product.slug || product.id || product._id || ''}`;
+
+  // Auto "New" badge if created within the last 10 days OR flagged as newArrival
+  const isRecentlyAdded = product.createdAt 
+    ? (Date.now() - new Date(product.createdAt).getTime()) <= (10 * 24 * 60 * 60 * 1000)
+    : false;
+  const isNew = Boolean(product.newArrival || isRecentlyAdded);
 
   return (
     <Link 
@@ -92,7 +89,7 @@ export default function ProductCard({ product }) {
         />
         <div className="product-badges">
           {isVaultProduct && <span className="badge-vault">1 OF 1</span>}
-          {product.newArrival && <span className="badge-new">New</span>}
+          {isNew && <span className="badge-new">New</span>}
           {discount > 0 && <span className="badge-sale">-{discount}%</span>}
           {product.bestseller && <span className="badge-best">Bestseller</span>}
         </div>
@@ -122,9 +119,9 @@ export default function ProductCard({ product }) {
           <span className="rating-count">({product.numReviews})</span>
         </div>
         <div className="product-pricing">
-          <span className="product-price">Rs. {product.price.toLocaleString()}</span>
-          {product.comparePrice > 0 && (
-            <span className="product-compare">Rs. {product.comparePrice.toLocaleString()}</span>
+          <span className="product-price">Rs. {Number(product.price || 0).toLocaleString()}</span>
+          {Number(product.comparePrice || 0) > 0 && (
+            <span className="product-compare">Rs. {Number(product.comparePrice || 0).toLocaleString()}</span>
           )}
         </div>
         <div className="product-sizes">

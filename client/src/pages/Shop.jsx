@@ -8,18 +8,20 @@ import './Shop.css';
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get('category');
+  const filterParam = searchParams.get('filter');
   const searchParam = searchParams.get('search') || '';
   
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('newest');
 
+  const isNewFilter = filterParam === 'new' || categoryParam === 'new-arrivals';
   const activeCategory = categoryParam 
     ? categoryParam.replace(/-/g, ' ').toLowerCase() 
     : 'all';
 
   useEffect(() => {
-    API.get('/products').then(res => {
+    API.get('/products?limit=1000').then(res => {
       setProducts(res.data.products || res.data || []);
       setLoading(false);
     }).catch(err => {
@@ -30,11 +32,19 @@ const Shop = () => {
 
   const handleCategoryChange = (catName) => {
     const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('filter');
     if (catName === 'all') {
       nextParams.delete('category');
     } else {
       nextParams.set('category', catName.replace(/\s+/g, '-').toLowerCase());
     }
+    setSearchParams(nextParams);
+  };
+
+  const handleFilterNew = () => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('category');
+    nextParams.set('filter', 'new');
     setSearchParams(nextParams);
   };
 
@@ -52,12 +62,24 @@ const Shop = () => {
     return Array.from(set);
   }, [products]);
 
+  const [nowTimestamp] = useState(() => Date.now());
+
   // Filter & sort
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
+    // New Arrivals filter (via ?filter=new or category=new-arrivals)
+    if (isNewFilter) {
+      result = result.filter(p => {
+        const isRecent = p.createdAt 
+          ? (nowTimestamp - new Date(p.createdAt).getTime()) <= (10 * 24 * 60 * 60 * 1000)
+          : false;
+        return Boolean(p.newArrival || isRecent);
+      });
+    }
+
     // Category filter
-    if (activeCategory !== 'all') {
+    if (!isNewFilter && activeCategory !== 'all') {
       result = result.filter(p => {
         const cat = (p.category || '').toLowerCase();
         const sub = (p.subcategory || '').toLowerCase();
@@ -89,19 +111,25 @@ const Shop = () => {
     }
 
     return result;
-  }, [products, activeCategory, searchParam, sortBy]);
+  }, [products, activeCategory, searchParam, sortBy, isNewFilter, nowTimestamp]);
 
-  const categoryNameFormatted = activeCategory !== 'all' 
-    ? activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)
-    : 'Streetwear Collection';
+  const categoryNameFormatted = isNewFilter
+    ? 'New Arrivals'
+    : (activeCategory !== 'all' 
+      ? activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)
+      : 'Streetwear Collection');
 
-  const pageTitle = activeCategory !== 'all'
-    ? `${categoryNameFormatted} - Buy Streetwear in Pakistan | DRAKEWEARS`
-    : 'Shop Luxury Streetwear, Baggy Trousers & Tees | DRAKEWEARS Pakistan';
+  const pageTitle = isNewFilter
+    ? 'New Arrivals - Latest Luxury Streetwear Drops | DRAKEWEARS Pakistan'
+    : (activeCategory !== 'all'
+      ? `${categoryNameFormatted} - Buy Streetwear in Pakistan | DRAKEWEARS`
+      : 'Shop Luxury Streetwear, Baggy Trousers & Tees | DRAKEWEARS Pakistan');
 
-  const pageDescription = activeCategory !== 'all'
-    ? `Discover premium ${categoryNameFormatted} at DRAKEWEARS Pakistan. Crafted with heavyweight fabrics, relaxed cuts, and luxury streetwear aesthetics. Free delivery over Rs. 5,000.`
-    : 'Explore all DRAKEWEARS drops. Heavyweight drop shoulder tees, baggy cargo trousers, luxury hoodies & athleisure. Fast nationwide delivery with Cash on Delivery.';
+  const pageDescription = isNewFilter
+    ? 'Explore the latest New Arrivals at DRAKEWEARS Pakistan. Fresh drops of heavyweight drop shoulder tees, baggy trousers, and luxury hoodies.'
+    : (activeCategory !== 'all'
+      ? `Discover premium ${categoryNameFormatted} at DRAKEWEARS Pakistan. Crafted with heavyweight fabrics, relaxed cuts, and luxury streetwear aesthetics. Free delivery over Rs. 5,000.`
+      : 'Explore all DRAKEWEARS drops. Heavyweight drop shoulder tees, baggy cargo trousers, luxury hoodies & athleisure. Fast nationwide delivery with Cash on Delivery.');
 
   const canonicalUrl = activeCategory !== 'all'
     ? `https://drakewears.com/shop?category=${encodeURIComponent(categoryParam)}`
@@ -186,22 +214,33 @@ const Shop = () => {
             <div className="category-pills" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
               <button 
                 type="button"
-                className={`category-pill ${activeCategory === 'all' ? 'active' : ''}`}
-                onClick={() => handleCategoryChange('all')}
+                className={`category-pill ${activeCategory === 'all' && !isNewFilter ? 'active' : ''}`}
+                onClick={() => {
+                  const nextParams = new URLSearchParams();
+                  setSearchParams(nextParams);
+                }}
               >
                 All
+              </button>
+              <button 
+                type="button"
+                className={`category-pill ${isNewFilter ? 'active' : ''}`}
+                onClick={handleFilterNew}
+                style={{ fontWeight: 700, letterSpacing: '0.04em' }}
+              >
+                ⚡ New Arrivals
               </button>
               {availableCategories.map(cat => (
                 <button 
                   key={cat}
                   type="button"
-                  className={`category-pill ${activeCategory === cat.toLowerCase() ? 'active' : ''}`}
+                  className={`category-pill ${!isNewFilter && activeCategory === cat.toLowerCase() ? 'active' : ''}`}
                   onClick={() => handleCategoryChange(cat)}
                 >
                   {cat}
                 </button>
               ))}
-              {(activeCategory !== 'all' || searchParam) && (
+              {(activeCategory !== 'all' || isNewFilter || searchParam) && (
                 <button
                   type="button"
                   onClick={handleClearFilters}

@@ -41,6 +41,7 @@ const Footer = () => {
             <h3 className="footer-heading">Information</h3>
             <Link to="/about">Our Story</Link>
             <Link to="/contact">Contact</Link>
+            <Link to="/track">Track Your Order</Link>
           </div>
           
           <div className="footer-newsletter">

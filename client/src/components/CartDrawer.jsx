@@ -17,6 +17,7 @@ const CartDrawer = () => {
   
   const [customerName, setCustomerName] = useState(user?.name || '');
   const [customerPhone, setCustomerPhone] = useState(user?.phone || '');
+  const [customerEmail, setCustomerEmail] = useState(user?.email || '');
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const cartUserInitRef = React.useRef(false);
 
@@ -24,6 +25,7 @@ const CartDrawer = () => {
     if (user && !cartUserInitRef.current) {
       if (user.name) setCustomerName(user.name);
       if (user.phone) setCustomerPhone(user.phone);
+      if (user.email) setCustomerEmail(user.email);
       cartUserInitRef.current = true;
     }
   }, [user]);
@@ -42,15 +44,26 @@ const CartDrawer = () => {
 
   const handleWhatsappCheckout = async (e) => {
     e.preventDefault();
+
+    const cleanPhoneDigits = customerPhone.replace(/[\s\-()]/g, '').replace(/^0092/, '+92');
+    if (!/^((\+92)?(0)?3[0-9]{9})$/.test(cleanPhoneDigits)) {
+      toast.error('Please enter a valid Pakistani mobile number (e.g. 0321-8254922)');
+      return;
+    }
+    const cleanEmail = customerEmail.trim().toLowerCase();
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      toast.error('Please enter a valid email address (e.g. customer@gmail.com)');
+      return;
+    }
     
     // Save order to database via public whatsapp orders endpoint
     try {
       const orderItems = items.map(i => ({
-        product: i.product.id || i.product._id,
-        name: i.product.name,
-        image: i.product.images?.[0] || '',
-        price: i.product.price,
-        quantity: i.quantity,
+        product: i.product?.id || i.product?._id,
+        name: i.product?.name || 'Product',
+        image: i.product?.images?.[0] || '',
+        price: Number(i.product?.price) || 0,
+        quantity: Math.max(1, Number(i.quantity) || 1),
         size: i.size || null,
         color: (typeof i.color === 'object' ? i.color?.name : i.color) || null
       }));
@@ -58,7 +71,8 @@ const CartDrawer = () => {
       await API.post('/orders/whatsapp', {
         items: orderItems,
         customerName,
-        phoneNumber: customerPhone,
+        phoneNumber: cleanPhoneDigits,
+        email: cleanEmail,
         paymentMethod,
         subtotal: total,
         shippingFee: 0,
@@ -68,13 +82,12 @@ const CartDrawer = () => {
       clearCart();
     } catch (err) {
       console.error('Failed to save WhatsApp order:', err);
-      // Continue to WhatsApp even if save fails
     }
     
     let itemsText = items.map(item => {
       const colorStr = typeof item.color === 'object' ? item.color?.name : item.color;
       const meta = [item.size ? `Size: ${item.size}` : '', colorStr ? `Color: ${colorStr}` : ''].filter(Boolean).join(', ');
-      return `• ${item.quantity}x ${item.product.name}${meta ? ` (${meta})` : ''} - Rs. ${(item.product.price * item.quantity).toLocaleString()}`;
+      return `• ${item.quantity}x ${item.product?.name || 'Product'}${meta ? ` (${meta})` : ''} - Rs. ${((Number(item.product?.price) || 0) * (Number(item.quantity) || 1)).toLocaleString()}`;
     }).join('\n');
     
     const message = `🛍️ *NEW CART ORDER - DRAKEWEARS*\n\n*Items:*\n${itemsText}\n\n*Total:* Rs. ${total.toLocaleString()}\n\n*Customer Details:*\nName: ${customerName}\nPhone: ${customerPhone}\nPayment: ${paymentMethod}\n\nHello drakewears! I want to confirm this order.`;
@@ -120,7 +133,7 @@ const CartDrawer = () => {
                     <h4 className="text-body" style={{ fontWeight: 500 }}>{item.product.name}</h4>
                     {metaText && <p className="text-caption">{metaText}</p>}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-                      <span className="text-body">Rs. {item.product.price.toLocaleString()}</span>
+                      <span className="text-body">Rs. {(Number(item.product?.price) || 0).toLocaleString()}</span>
                       <div className="qty-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--border-medium)', padding: '2px 8px' }}>
                         <button className="icon-btn" style={{ padding: 0 }} onClick={() => updateQty(item.key, item.quantity - 1)}><FiMinus size={12} /></button>
                         <span className="text-caption">{item.quantity}</span>
@@ -138,7 +151,7 @@ const CartDrawer = () => {
         <div className="cart-footer">
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
             <span className="h3" style={{ fontSize: '1.25rem' }}>Total</span>
-            <span className="h3" style={{ fontSize: '1.25rem' }}>Rs. {total.toLocaleString()}</span>
+            <span className="h3" style={{ fontSize: '1.25rem' }}>Rs. {(Number(total) || 0).toLocaleString()}</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <button 
@@ -181,8 +194,13 @@ const CartDrawer = () => {
               </div>
               
               <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label htmlFor="cart-phone">Contact Number</label>
-                <input type="tel" id="cart-phone" className="form-input" required value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} />
+                <label htmlFor="cart-phone">Contact Number * (e.g. 0321-8254922)</label>
+                <input type="tel" id="cart-phone" className="form-input" required placeholder="0321-8254922" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} />
+              </div>
+              
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label htmlFor="cart-email">Email Address * (For order confirmation)</label>
+                <input type="email" id="cart-email" className="form-input" required placeholder="customer@gmail.com" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} />
               </div>
               
               <div className="form-group" style={{ marginBottom: '24px' }}>

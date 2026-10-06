@@ -82,8 +82,12 @@ const ProductManager = () => {
   const [formData, setFormData] = useState({
     name: '',
     price: '',
+    comparePrice: '',
+    stock: '',
+    description: '',
     category: '',
     colors: '',
+    newArrival: true,
   });
   const [showInlineAddCat, setShowInlineAddCat] = useState(false);
   const [inlineCatInput, setInlineCatInput] = useState('');
@@ -149,10 +153,14 @@ const ProductManager = () => {
     }
 
     setFormData({
-      name: product.name,
-      price: product.price,
+      name: product.name || '',
+      price: product.price ?? '',
+      comparePrice: product.comparePrice ?? '',
+      stock: product.stock !== undefined ? product.stock : '',
+      description: product.description || '',
       category: prodCategory,
-      colors: product.colors?.map(c => c.name).join(', ') || ''
+      colors: product.colors?.map(c => c.name).join(', ') || '',
+      newArrival: product.newArrival !== undefined ? Boolean(product.newArrival) : true,
     });
 
     setColorItems(product.colors?.length ? product.colors.map(c => ({ 
@@ -183,8 +191,12 @@ const ProductManager = () => {
     setFormData({
       name: '',
       price: '',
+      comparePrice: '',
+      stock: '',
+      description: '',
       category: catName,
-      colors: ''
+      colors: '',
+      newArrival: true,
     });
     setColorItems([{ name: '', hex: '#000000', image: '', file: null, preview: '' }]);
     setGalleryItems([{ id: 'img-1', url: '', file: null, preview: '' }]);
@@ -388,13 +400,16 @@ const ProductManager = () => {
 
       // 3. Save Product
       const productData = {
-        name: formData.name,
+        name: formData.name.trim(),
         slug: formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         price: Number(formData.price),
+        comparePrice: formData.comparePrice !== '' ? Number(formData.comparePrice) : 0,
+        stock: formData.stock !== '' ? Number(formData.stock) : 0,
         category: finalCat,
-        description: formData.name + ' - Premium quality streetwear.',
+        description: formData.description?.trim() || (formData.name + ' - Premium quality streetwear.'),
         images: finalImages,
-        colors: colorsArray
+        colors: colorsArray,
+        newArrival: formData.newArrival !== undefined ? Boolean(formData.newArrival) : true,
       };
 
       if (editingId) {
@@ -405,7 +420,7 @@ const ProductManager = () => {
         toast.success(`Product added to ${finalCat}!`);
       }
 
-      setFormData({ name: '', price: '', category: '', colors: '' });
+      setFormData({ name: '', price: '', comparePrice: '', stock: '', description: '', category: '', colors: '', newArrival: true });
       setColorItems([{ name: '', hex: '#000000', image: '', file: null, preview: '' }]);
       setGalleryItems([{ id: 'img-init-1', url: '', file: null, preview: '' }]);
       setEditingId(null);
@@ -991,16 +1006,138 @@ const ProductManager = () => {
               />
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontWeight: '500', color: 'var(--text-primary)' }}>Price (RS) *</label>
+            {/* Professional Dual Pricing Section: Active Price & Strikethrough Original/Compare Price */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
+                  Active Selling Price (RS) *
+                </label>
+                <input 
+                  type="number" 
+                  name="price" 
+                  value={formData.price} 
+                  onChange={handleInputChange} 
+                  required 
+                  className="form-input" 
+                  placeholder="e.g. 1799" 
+                />
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                  Amount customer actually pays at checkout.
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
+                  Original / Strikethrough Price (RS) <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>(Optional for Sale)</span>
+                </label>
+                <input 
+                  type="number" 
+                  name="comparePrice" 
+                  value={formData.comparePrice} 
+                  onChange={handleInputChange} 
+                  className="form-input" 
+                  placeholder="e.g. 2499 (cut price)" 
+                />
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                  Will be shown crossed out (~~Rs. 2,499~~) to display sale discount.
+                </span>
+              </div>
+            </div>
+
+            {/* Live Discount Calculator Preview */}
+            {Number(formData.comparePrice) > Number(formData.price) && Number(formData.price) > 0 && (
+              <div style={{
+                background: 'rgba(34, 197, 94, 0.08)',
+                border: '1px solid rgba(34, 197, 94, 0.3)',
+                padding: '10px 16px',
+                borderRadius: '8px',
+                fontSize: '0.88rem',
+                color: '#16a34a',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                fontWeight: 600
+              }}>
+                <span>🔥 Sale Preview:</span>
+                <span>Active: <strong>Rs. {Number(formData.price).toLocaleString()}</strong></span>
+                <span style={{ textDecoration: 'line-through', color: '#71717a' }}>Rs. {Number(formData.comparePrice).toLocaleString()}</span>
+                <span style={{ background: '#dc2626', color: '#fff', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700 }}>
+                  -{Math.round(((Number(formData.comparePrice) - Number(formData.price)) / Number(formData.comparePrice)) * 100)}% OFF
+                </span>
+              </div>
+            )}
+
+            {/* New Arrival Tag & Spotlight Toggle */}
+            <div 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 16px',
+                background: formData.newArrival ? 'rgba(34, 197, 94, 0.08)' : '#f8fafc',
+                border: `1px solid ${formData.newArrival ? 'rgba(34, 197, 94, 0.35)' : 'var(--border-medium)'}`,
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+              onClick={() => setFormData(p => ({ ...p, newArrival: !p.newArrival }))}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <input 
+                  type="checkbox"
+                  id="prod-new-arrival"
+                  checked={Boolean(formData.newArrival)}
+                  onChange={e => setFormData(p => ({ ...p, newArrival: e.target.checked }))}
+                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                />
+                <label htmlFor="prod-new-arrival" style={{ cursor: 'pointer', margin: 0 }}>
+                  <strong style={{ fontSize: '0.92rem', color: 'var(--text-primary)', display: 'block' }}>
+                    ⚡ Feature as New Arrival (Auto "NEW" Badge on Storefront)
+                  </strong>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    Displays "NEW" tag on product cards and features in the New Arrivals carousel for 10 days.
+                  </span>
+                </label>
+              </div>
+              <span style={{
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                padding: '3px 10px',
+                borderRadius: '4px',
+                background: formData.newArrival ? '#16a34a' : '#64748b',
+                color: '#fff',
+                letterSpacing: '0.04em'
+              }}>
+                {formData.newArrival ? 'ACTIVE' : 'OFF'}
+              </span>
+            </div>
+
+            {/* Inventory Stock Units */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontWeight: '600', color: 'var(--text-primary)' }}>Stock Units Available</label>
               <input 
                 type="number" 
-                name="price" 
-                value={formData.price} 
+                name="stock" 
+                value={formData.stock} 
                 onChange={handleInputChange} 
-                required 
                 className="form-input" 
-                placeholder="e.g. 3499" 
+                placeholder="e.g. 50" 
+              />
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                Units currently in stock. Auto-decrements when orders are placed.
+              </span>
+            </div>
+
+            {/* Product Description */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontWeight: '600', color: 'var(--text-primary)' }}>Product Description</label>
+              <textarea 
+                rows={3}
+                name="description" 
+                value={formData.description} 
+                onChange={handleInputChange} 
+                className="form-input" 
+                placeholder="e.g. Crafted from 450 GSM ultra-heavyweight fleece with relaxed modern drape..."
+                style={{ resize: 'vertical' }}
               />
             </div>
 

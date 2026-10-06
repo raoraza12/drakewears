@@ -28,7 +28,7 @@ router.post('/products', async (req, res) => {
       stock = 0,
       tags = [],
       featured = false,
-      newArrival = false,
+      newArrival = true,
       bestseller = false,
       material = '',
       care = ''
@@ -65,7 +65,7 @@ router.post('/products', async (req, res) => {
         stock: parseInt(stock, 10) || 0,
         tags: Array.isArray(tags) ? tags : [],
         featured: Boolean(featured),
-        newArrival: Boolean(newArrival),
+        newArrival: newArrival !== undefined ? Boolean(newArrival) : true,
         bestseller: Boolean(bestseller),
         material: material || '',
         care: care || ''
@@ -310,9 +310,11 @@ router.delete('/orders/:id', async (req, res) => {
 // --- COUPON MANAGEMENT ---
 router.get('/coupons', async (req, res) => {
   try {
-    const coupons = await req.prisma.coupon.findMany();
+    const coupons = await req.prisma.coupon.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
     // Add _id for backwards compatibility
-    res.json(coupons.map(c => ({...c, _id: c.id})));
+    res.json(coupons.map(c => ({ ...c, _id: c.id })));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -320,12 +322,66 @@ router.get('/coupons', async (req, res) => {
 
 router.post('/coupons', async (req, res) => {
   try {
-    const data = {...req.body};
-    if (data.expirationDate) {
-      data.expirationDate = new Date(data.expirationDate);
+    const { code, discountType, discountValue, minPurchaseAmount, usageLimit, expirationDate, isActive } = req.body;
+    
+    const cleanCode = (code || '').trim().toUpperCase();
+    if (!cleanCode) {
+      return res.status(400).json({ message: 'Coupon code is required' });
     }
-    const coupon = await req.prisma.coupon.create({ data });
-    res.status(201).json({...coupon, _id: coupon.id});
+
+    const existing = await req.prisma.coupon.findUnique({ where: { code: cleanCode } });
+    if (existing) {
+      return res.status(400).json({ message: `Coupon '${cleanCode}' already exists.` });
+    }
+
+    const numValue = parseFloat(discountValue);
+    if (isNaN(numValue) || numValue <= 0) {
+      return res.status(400).json({ message: 'Valid discount value greater than 0 is required' });
+    }
+
+    const parsedMinPurchase = parseFloat(minPurchaseAmount) || 0;
+    // Default usageLimit = 1 (single-use auto-expiring coupon) unless explicitly specified
+    const parsedUsageLimit = usageLimit !== undefined && usageLimit !== '' ? parseInt(usageLimit, 10) : 1;
+
+    let parsedExpiry;
+    if (expirationDate) {
+      parsedExpiry = new Date(expirationDate);
+      parsedExpiry.setHours(23, 59, 59, 999);
+    } else {
+      parsedExpiry = new Date();
+      parsedExpiry.setMonth(parsedExpiry.getMonth() + 6);
+    }
+
+    const coupon = await req.prisma.coupon.create({
+      data: {
+        code: cleanCode,
+        discountType: discountType || 'percentage',
+        discountValue: numValue,
+        minPurchaseAmount: parsedMinPurchase,
+        usageLimit: isNaN(parsedUsageLimit) ? 1 : parsedUsageLimit,
+        expirationDate: parsedExpiry,
+        isActive: isActive !== undefined ? Boolean(isActive) : true
+      }
+    });
+
+    res.status(201).json({ ...coupon, _id: coupon.id });
+  } catch (err) {
+    console.error('Create coupon error:', err);
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.patch('/coupons/:id/toggle', async (req, res) => {
+  try {
+    const coupon = await req.prisma.coupon.findUnique({ where: { id: req.params.id } });
+    if (!coupon) {
+      return res.status(404).json({ message: 'Coupon not found' });
+    }
+    const updated = await req.prisma.coupon.update({
+      where: { id: req.params.id },
+      data: { isActive: !coupon.isActive }
+    });
+    res.json({ ...updated, _id: updated.id });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

@@ -65,8 +65,8 @@ export function CartProvider({ children }) {
 
   const clearCart = () => setItems([]);
 
-  const total = items.reduce((acc, i) => acc + i.product.price * i.quantity, 0);
-  const count = items.reduce((acc, i) => acc + i.quantity, 0);
+  const total = items.reduce((acc, i) => acc + (Number(i.product?.price) || 0) * (Number(i.quantity) || 1), 0);
+  const count = items.reduce((acc, i) => acc + (Number(i.quantity) || 0), 0);
 
   return (
     <CartContext.Provider value={{ items, count, total, isOpen, setIsOpen, addToCart, removeFromCart, updateQty, clearCart }}>

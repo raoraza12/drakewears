@@ -1,14 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiArrowRight } from 'react-icons/fi';
-import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import './Cart.css';
 
 export default function Cart() {
   const { items, updateQty, removeFromCart, total, clearCart } = useCart();
-  const { user } = useAuth();
   const { settings } = useSettings();
   const navigate = useNavigate();
 
@@ -59,7 +56,7 @@ export default function Cart() {
                     <span className="qty-val">{item.quantity}</span>
                     <button className="qty-btn" onClick={() => updateQty(item.key, item.quantity + 1)}><FiPlus size={12} /></button>
                   </div>
-                  <span className="cart-page-price">Rs. {(item.product.price * item.quantity).toLocaleString()}</span>
+                  <span className="cart-page-price">Rs. {((Number(item.product?.price) || 0) * (Number(item.quantity) || 1)).toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -68,10 +65,10 @@ export default function Cart() {
         <div className="cart-summary-box">
           <h3 className="cart-summary-title">Order Summary</h3>
           <div className="cart-summary-rows">
-            <div className="cart-summary-row"><span>Subtotal ({items.reduce((a,i) => a + i.quantity, 0)} items)</span><span>Rs. {total.toLocaleString()}</span></div>
+            <div className="cart-summary-row"><span>Subtotal ({items.reduce((a,i) => a + (Number(i.quantity) || 0), 0)} items)</span><span>Rs. {(Number(total) || 0).toLocaleString()}</span></div>
             <div className="cart-summary-row"><span>Shipping</span><span>{shippingFee === 0 ? <span style={{color:'var(--green)'}}>FREE</span> : `Rs. ${shippingFee}`}</span></div>
-            {shippingFee > 0 && <p style={{fontSize:'0.75rem', color:'var(--text-muted)'}}>Add Rs. {(5000 - total).toLocaleString()} more for free delivery</p>}
-            <div className="cart-summary-row total"><span>Total</span><span style={{color:'var(--gold)'}}>Rs. {(total + shippingFee).toLocaleString()}</span></div>
+            {shippingFee > 0 && <p style={{fontSize:'0.75rem', color:'var(--text-muted)'}}>Add Rs. {(Number(5000 - total) || 0).toLocaleString()} more for free delivery</p>}
+            <div className="cart-summary-row total"><span>Total</span><span style={{color:'var(--gold)'}}>Rs. {(Number(total + shippingFee) || 0).toLocaleString()}</span></div>
           </div>
           <button 
             type="button" 

@@ -1,116 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import { FiLock, FiBell, FiCheck } from 'react-icons/fi';
-import { FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { FiLock, FiArrowRight } from 'react-icons/fi';
+import { FaWhatsapp, FaInstagram } from 'react-icons/fa';
 import { useSettings } from '../context/SettingsContext';
+import SEOHead from '../components/SEOHead';
 import './Vault.css';
-
-const VAULT_PIECES = [
-  {
-    id: 'pant',
-    title: 'Vintage Double-Knee Baggy Pant',
-    edition: '1 OF 1',
-    status: 'SEALED',
-  },
-  {
-    id: 'tee',
-    title: 'Heavyweight Boxy Drop-Tee',
-    edition: '1 OF 1',
-    status: 'SEALED',
-  },
-  {
-    id: 'cap',
-    title: 'Archive Washed 6-Panel Cap',
-    edition: '1 OF 1',
-    status: 'SEALED',
-  },
-];
 
 const Vault = () => {
   const { settings } = useSettings();
   const phone = settings?.contactPhone ? settings.contactPhone.replace(/[^0-9]/g, '') : '923218254922';
-  const [notified, setNotified] = useState({});
 
   useEffect(() => {
-    document.title = 'The Drake Vault | 1-of-1 Archive';
+    document.title = 'The Drake Vault | Coming Soon';
   }, []);
 
-  const handleNotify = (title) => {
-    setNotified((prev) => ({ ...prev, [title]: true }));
-    const text = encodeURIComponent(`Hi DrakeWears, notify me for the 1-of-1 piece "${title}"!`);
-    window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${text}`, '_blank');
-  };
-
   return (
-    <div className="vault-minimal-page">
-      <div className="container vault-minimal-inner">
-        {/* Minimal Editorial Hero */}
-        <div className="vault-minimal-hero">
-          <div className="vault-minimal-tag">
-            <FiLock size={12} color="#f59e0b" />
-            <span>ARCHIVE DROP #01</span>
+    <div className="vault-page-clean">
+      <SEOHead
+        title="The Drake Vault - Coming Soon | DRAKEWEARS Pakistan"
+        description="The Drake Vault: Exclusive 1-of-1 curated streetwear archive drops. Coming soon."
+      />
+      <div className="container vault-inner-clean">
+        <div className="vault-clean-content">
+          <div className="vault-clean-badge">
+            <FiLock size={13} color="#f59e0b" />
+            <span>ARCHIVE VAULT</span>
           </div>
 
-          <h1 className="vault-minimal-title">THE DRAKE VAULT</h1>
-          <p className="vault-minimal-slogan">1-of-1 Curated Streetwear Archive</p>
-
-          <div className="vault-minimal-coming-soon">
-            <span className="cs-pulse-dot"></span>
-            <span>COMING SOON</span>
+          <h1 className="vault-clean-title">THE DRAKE VAULT</h1>
+          
+          <div className="vault-clean-hero-box">
+            <span className="vault-pulse-dot"></span>
+            <span className="vault-coming-soon-text">COMING SOON</span>
           </div>
 
-          <div className="vault-minimal-actions">
+          <p className="vault-clean-desc">
+            Curated 1-of-1 Streetwear Archive drops are currently sealed. Exclusive pieces will be released soon.
+          </p>
+
+          <div className="vault-clean-actions">
+            <Link to="/shop" className="btn-primary vault-shop-btn">
+              Explore Available Collection <FiArrowRight size={16} />
+            </Link>
             <a
-              href={`https://api.whatsapp.com/send?phone=${phone}&text=Hi%20DrakeWears,%20notify%20me%20when%20The%20Drake%20Vault%20drops!`}
+              href={`https://api.whatsapp.com/send?phone=${phone}&text=Hi%20DrakeWears,%20please%20notify%20me%20when%20The%20Drake%20Vault%20drops!`}
               target="_blank"
               rel="noopener noreferrer"
-              className="vault-btn-whatsapp"
+              className="vault-clean-whatsapp"
             >
-              <FaWhatsapp size={16} /> Notify on WhatsApp
+              <FaWhatsapp size={16} /> Get VIP WhatsApp Alert
             </a>
             <a
               href="https://www.instagram.com/drakewears_official"
               target="_blank"
               rel="noopener noreferrer"
-              className="vault-btn-instagram"
+              className="vault-clean-instagram"
             >
-              <FaInstagram size={16} /> Follow on IG
+              <FaInstagram size={16} /> Follow on Instagram
             </a>
           </div>
-        </div>
-
-        {/* 3 Clean Visual Cards — Zero Text Clutter */}
-        <div className="vault-minimal-grid">
-          {VAULT_PIECES.map((piece) => (
-            <div key={piece.id} className="vault-minimal-card">
-              <div className="vault-card-frame">
-                <span className="vault-edition-chip">{piece.edition}</span>
-                <div className="vault-lock-indicator">
-                  <div className="vault-lock-orb-sm">
-                    <FiLock size={22} color="#f59e0b" />
-                  </div>
-                  <span className="vault-status-text">{piece.status}</span>
-                </div>
-              </div>
-
-              <div className="vault-card-meta">
-                <h3 className="vault-piece-title">{piece.title}</h3>
-                <button
-                  onClick={() => handleNotify(piece.title)}
-                  className={`vault-notify-btn ${notified[piece.title] ? 'is-done' : ''}`}
-                >
-                  {notified[piece.title] ? (
-                    <>
-                      <FiCheck size={14} /> VIP Access Requested
-                    </>
-                  ) : (
-                    <>
-                      <FiBell size={14} /> Notify Me
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>

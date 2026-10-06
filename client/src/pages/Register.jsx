@@ -13,7 +13,7 @@ const KNOWN_FAKE_DOMAINS = [
 ];
 
 export default function Register() {
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -40,6 +40,17 @@ export default function Register() {
       return;
     }
 
+    // Phone validation (Pakistani standard)
+    const cleanPhone = form.phone.replace(/[^0-9]/g, '');
+    let standardPhone = cleanPhone;
+    if (cleanPhone.startsWith('92') && cleanPhone.length === 12) {
+      standardPhone = '0' + cleanPhone.slice(2);
+    }
+    if (!/^03[0-9]{9}$/.test(standardPhone)) {
+      setError('Please provide a valid 11-digit Pakistani phone number (e.g. 03001234567)');
+      return;
+    }
+
     if (form.password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
@@ -47,7 +58,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await register(form.name.trim(), emailTrimmed, form.password);
+      await register(form.name.trim(), emailTrimmed, form.password, standardPhone);
       toast.success('Account created! Welcome to drakewears ✨');
       navigate(redirect);
     } catch (err) {
@@ -94,6 +105,17 @@ export default function Register() {
               onChange={e => { setError(''); setForm(p => ({...p, email: e.target.value})); }} 
               required 
               placeholder="you@example.com" 
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Phone Number (WhatsApp)</label>
+            <input 
+              className="form-input" 
+              type="tel" 
+              value={form.phone} 
+              onChange={e => { setError(''); setForm(p => ({...p, phone: e.target.value})); }} 
+              required 
+              placeholder="03001234567" 
             />
           </div>
           <div className="form-group">

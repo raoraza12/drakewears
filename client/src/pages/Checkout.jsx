@@ -491,7 +491,7 @@ export default function Checkout() {
                     </span>
                   )}
                 </div>
-                <span className="summary-item-price">Rs. {(item.product.price * item.quantity).toLocaleString()}</span>
+                <span className="summary-item-price">Rs. {((Number(item.product?.price) || 0) * (Number(item.quantity) || 1)).toLocaleString()}</span>
               </div>
             ))}
           </div>

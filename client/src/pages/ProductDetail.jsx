@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { 
   FiCheckCircle, 
   FiStar, 
@@ -25,7 +25,6 @@ import './ProductDetail.css';
 
 const ProductDetail = () => {
   const { slug } = useParams();
-  const navigate = useNavigate();
   const { addToCart } = useCart();
   const { user } = useAuth();
   const { toggleWishlist, isWishlisted } = useWishlist();
@@ -38,6 +37,7 @@ const ProductDetail = () => {
   const [showWhatsappModal, setShowWhatsappModal] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const touchStartX = useRef(null);
@@ -77,6 +77,9 @@ const ProductDetail = () => {
       if (user?.phone) {
         setCustomerPhone(user.phone);
       }
+      if (user?.email) {
+        setCustomerEmail(user.email);
+      }
       if (prod?.name) {
         document.title = `${prod.name} | DRAKEWEARS`;
       }
@@ -96,6 +99,22 @@ const ProductDetail = () => {
     return cat.includes('trouser') || cat.includes('pant') || sub.includes('trouser') || sub.includes('pant') || name.includes('trouser') || name.includes('pant');
   }, [product]);
 
+  const isVaultProduct = useMemo(() => {
+    if (!product) return false;
+    const cat = (product.category || '').toLowerCase();
+    const sub = (product.subcategory || '').toLowerCase();
+    const hasTag = Array.isArray(product.tags) && product.tags.some(t => typeof t === 'string' && (t.toLowerCase().includes('vault') || t.toLowerCase().includes('1-of-1')));
+    return cat.includes('vault') || sub.includes('vault') || hasTag;
+  }, [product]);
+
+  const isNew = useMemo(() => {
+    if (!product) return false;
+    const isRecent = product.createdAt 
+      ? (new Date().getTime() - new Date(product.createdAt).getTime()) <= (10 * 24 * 60 * 60 * 1000)
+      : false;
+    return Boolean(product.newArrival || isRecent);
+  }, [product]);
+
   useEffect(() => {
     if (product) {
       setSizeModalCategory(isTrouser ? 'trousers' : 'tees');
@@ -107,7 +126,7 @@ const ProductDetail = () => {
     if (!product?.colors) return [];
     let list = product.colors;
     if (typeof list === 'string') {
-      try { list = JSON.parse(list); } catch (e) { list = [{ name: product.colors, hex: '#000000' }]; }
+      try { list = JSON.parse(list); } catch { list = [{ name: product.colors, hex: '#000000' }]; }
     }
     if (!Array.isArray(list)) return [];
     return list.map(c => {
@@ -122,7 +141,7 @@ const ProductDetail = () => {
     if (!product?.sizes) return ['S', 'M', 'L', 'XL'];
     let list = product.sizes;
     if (typeof list === 'string') {
-      try { list = JSON.parse(list); } catch (e) { list = list.split(',').map(s => s.trim()); }
+      try { list = JSON.parse(list); } catch { list = list.split(',').map(s => s.trim()); }
     }
     if (!Array.isArray(list) || list.length === 0) return ['S', 'M', 'L', 'XL'];
     return list.filter(Boolean);
@@ -282,6 +301,17 @@ const ProductDetail = () => {
 
   const handleWhatsappOrder = async (e) => {
     e.preventDefault();
+
+    const cleanPhoneDigits = customerPhone.replace(/[\s\-()]/g, '').replace(/^0092/, '+92');
+    if (!/^((\+92)?(0)?3[0-9]{9})$/.test(cleanPhoneDigits)) {
+      toast.error('Please enter a valid Pakistani mobile number (e.g. 0321-8254922)');
+      return;
+    }
+    const cleanEmail = customerEmail.trim().toLowerCase();
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      toast.error('Please enter a valid email address (e.g. customer@gmail.com)');
+      return;
+    }
     
     const chosenSize = selectedSize || (product.sizes?.length > 0 ? product.sizes[0] : '');
     const chosenColor = selectedColor || (product.colors?.length > 0 ? product.colors[0].name : '');
@@ -300,7 +330,8 @@ const ProductDetail = () => {
             color: chosenColor || null
           }],
           customerName,
-          phoneNumber: customerPhone,
+          phoneNumber: cleanPhoneDigits,
+          email: cleanEmail,
           paymentMethod,
           subtotal: product.price,
           shippingFee: 0,
@@ -462,7 +493,31 @@ const ProductDetail = () => {
               </div>
               
               <div className="product-header">
-                <h1 className="product-title h2" style={{ marginTop: '16px', marginBottom: '8px' }}>{product.name}</h1>
+                {/* Product Badges (New Arrival / Sale / Vault / Bestseller) */}
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '14px', flexWrap: 'wrap' }}>
+                  {isVaultProduct && (
+                    <span style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: '#000', fontSize: '0.68rem', fontWeight: 900, padding: '3px 8px', borderRadius: '4px', letterSpacing: '0.08em' }}>
+                      1 OF 1 ARCHIVE
+                    </span>
+                  )}
+                  {isNew && (
+                    <span style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', borderRadius: '4px', letterSpacing: '0.08em' }}>
+                      NEW ARRIVAL
+                    </span>
+                  )}
+                  {Boolean(product.comparePrice && product.comparePrice > product.price) && (
+                    <span style={{ background: '#dc2626', color: '#fff', fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', borderRadius: '4px', letterSpacing: '0.08em' }}>
+                      SAVE {Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}%
+                    </span>
+                  )}
+                  {product.bestseller && (
+                    <span style={{ background: 'rgba(201, 168, 76, 0.15)', color: 'var(--gold, #c9a84c)', border: '1px solid rgba(201, 168, 76, 0.3)', fontSize: '0.68rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px', letterSpacing: '0.08em' }}>
+                      BESTSELLER
+                    </span>
+                  )}
+                </div>
+
+                <h1 className="product-title h2" style={{ marginTop: '10px', marginBottom: '8px' }}>{product.name}</h1>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <div style={{ display: 'flex', gap: '2px', color: '#c9a84c' }}>
                     {[...Array(5)].map((_, i) => (
@@ -473,7 +528,14 @@ const ProductDetail = () => {
                     {currentRating} ({currentNumReviews} review{currentNumReviews !== 1 ? 's' : ''})
                   </span>
                 </div>
-                <div className="product-price h3" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Rs. {product.price?.toLocaleString()}</div>
+                <div className="product-price h3" style={{ fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  <span>Rs. {product.price?.toLocaleString()}</span>
+                  {product.comparePrice > product.price && (
+                    <span style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', textDecoration: 'line-through', fontWeight: 400 }}>
+                      Rs. {product.comparePrice.toLocaleString()}
+                    </span>
+                  )}
+                </div>
               </div>
               
               <div className="product-description text-muted" style={{ marginTop: '24px', marginBottom: '32px' }}>
@@ -754,14 +816,27 @@ const ProductDetail = () => {
                   />
                 </div>
                 <div className="form-group" style={{ marginBottom: '16px' }}>
-                  <label htmlFor="wa-phone">Contact Number</label>
+                  <label htmlFor="wa-phone">Contact Number * (e.g. 0321-8254922)</label>
                   <input 
                     type="tel" 
                     id="wa-phone" 
                     className="form-input" 
                     required 
+                    placeholder="0321-8254922"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label htmlFor="wa-email">Email Address * (For order updates)</label>
+                  <input 
+                    type="email" 
+                    id="wa-email" 
+                    className="form-input" 
+                    required 
+                    placeholder="customer@gmail.com"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
                   />
                 </div>
                 <div className="form-group" style={{ marginBottom: '24px' }}>

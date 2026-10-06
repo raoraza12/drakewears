@@ -53,6 +53,7 @@ import Analytics from './pages/admin/Analytics';
 import Inventory from './pages/admin/Inventory';
 import ReviewManager from './pages/admin/ReviewManager';
 import CouponManager from './pages/admin/CouponManager';
+import CatalogArchive from './pages/admin/CatalogArchive';
 
 const StorefrontLayout = () => {
   const { settings } = useSettings();
@@ -139,6 +140,8 @@ const PAGE_TITLES = {
   '/admin/users': 'Customer Accounts | DRAKEWEARS Admin',
   '/admin/analytics': 'Analytics & Reports | DRAKEWEARS Admin',
   '/admin/settings': 'Brand Customization | DRAKEWEARS Admin',
+  '/admin/catalog-archive': 'Product Master Archive | DRAKEWEARS Admin',
+  '/drakewearsofficial/catalog-archive': 'Product Master Archive | DRAKEWEARS Admin',
 };
 
 const ScrollRevealManager = () => {
@@ -240,6 +243,7 @@ function App() {
             <Route path="categories" element={<CategoryManager />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="inventory" element={<Inventory />} />
+            <Route path="catalog-archive" element={<CatalogArchive />} />
             <Route path="reviews" element={<ReviewManager />} />
             <Route path="coupons" element={<CouponManager />} />
           </Route>

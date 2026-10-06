@@ -9,21 +9,21 @@ import './Home.css';
 const HERO_SLIDES = [
   {
     id: 0,
+    image: '/carousel-newarrivals.jpg',
+    ctaLink: '/shop?filter=new',
+    alt: 'New Arrivals - DrakeWears Latest Drop',
+  },
+  {
+    id: 1,
     image: '/carousel-gymwears.jpg',
     ctaLink: '/shop',
     alt: 'Gymwears - DrakeWears Performance Drop',
   },
   {
-    id: 1,
+    id: 2,
     image: '/carousel-casualwears.jpg',
     ctaLink: '/shop?category=baggy-trousers',
     alt: 'Casual Wears - DrakeWears Streetwear Collection',
-  },
-  {
-    id: 2,
-    image: '/carousel-comingsoon.jpg',
-    ctaLink: '/shop',
-    alt: 'Coming Soon - Limited Atelier Vault Drop',
   },
 ];
 
@@ -56,6 +56,7 @@ const ATELIER_SPECS = [
 
 const Home = () => {
   const [popularProducts, setPopularProducts] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -64,10 +65,14 @@ const Home = () => {
   const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0 });
   const minSwipeDistance = 40;
 
-  // Fetch popular products
+  // Fetch popular products & newest arrivals
   useEffect(() => {
     API.get('/products?sort=popular&limit=4')
       .then(res => setPopularProducts(res.data.products || res.data || []))
+      .catch(err => console.error(err));
+
+    API.get('/products?sort=newest&limit=8')
+      .then(res => setNewArrivals(res.data.products || res.data || []))
       .catch(err => console.error(err));
   }, []);
 
@@ -408,6 +413,33 @@ const Home = () => {
                   <div className="spec-card-bottom-line"></div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ==========================================================
+            4.5. NEW ARRIVALS: FRESH DROPS (AUTO 10-DAY SPOTLIGHT)
+            ========================================================== */}
+        <section className="featured-section new-arrivals-home-section" style={{ borderTop: '1px solid var(--border-light)' }}>
+          <div className="container">
+            <div className="section-header scroll-reveal">
+              <div>
+                <span className="section-kicker" style={{ color: 'var(--gold, #c9a84c)', fontWeight: 800, letterSpacing: '0.12em' }}>⚡ JUST DROPPED</span>
+                <h2 className="h2" style={{ marginTop: '4px' }}>New Arrivals</h2>
+              </div>
+              <Link to="/shop?filter=new" className="btn-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                Explore All New Drops <FiArrowRight size={14} />
+              </Link>
+            </div>
+            
+            <div className="products-grid scroll-reveal scroll-delay-1">
+              {newArrivals.length === 0 ? (
+                <p style={{ color: 'var(--text-secondary)' }}>Loading latest arrivals...</p>
+              ) : (
+                newArrivals.slice(0, 4).map((product) => (
+                  <ProductCard key={product.id || product._id} product={product} />
+                ))
+              )}
             </div>
           </div>
         </section>

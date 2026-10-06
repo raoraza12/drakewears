@@ -84,21 +84,24 @@ router.post('/validate-coupon', async (req, res) => {
     }
 
     if (!coupon.isActive) {
-      return res.status(400).json({ message: 'This coupon is inactive' });
+      if (coupon.usageLimit > 0 && coupon.usedCount >= coupon.usageLimit) {
+        return res.status(400).json({ message: 'This coupon has already been used and is now expired.' });
+      }
+      return res.status(400).json({ message: 'This coupon is currently inactive.' });
+    }
+
+    if (coupon.usageLimit > 0 && coupon.usedCount >= coupon.usageLimit) {
+      return res.status(400).json({ message: 'This coupon has already been used and is now expired.' });
     }
 
     if (coupon.expirationDate && new Date() > new Date(coupon.expirationDate)) {
-      return res.status(400).json({ message: 'This coupon has expired' });
+      return res.status(400).json({ message: 'This coupon has expired.' });
     }
 
     if (subtotal !== undefined && Number(subtotal) < coupon.minPurchaseAmount) {
       return res.status(400).json({ 
         message: `Minimum order amount of Rs. ${coupon.minPurchaseAmount.toLocaleString()} required` 
       });
-    }
-
-    if (coupon.usageLimit > 0 && coupon.usedCount >= coupon.usageLimit) {
-      return res.status(400).json({ message: 'Coupon usage limit reached' });
     }
 
     let calculatedDiscount = 0;
@@ -218,6 +221,28 @@ router.post('/', optionalAuth, async (req, res) => {
     const calculatedDiscount = Math.max(0, Number(discount) || 0);
     const calculatedTotal = Math.max(0, calculatedSubtotal + calculatedShipping - calculatedDiscount);
 
+    // 6. Verify coupon validity before locking & creating order
+    let verifiedCoupon = null;
+    if (req.body.couponCode && String(req.body.couponCode).trim()) {
+      const cCode = String(req.body.couponCode).trim().toUpperCase();
+      if (cCode !== 'DRAKEFREESHIP') {
+        const found = await req.prisma.coupon.findUnique({ where: { code: cCode } });
+        if (!found) {
+          return res.status(400).json({ message: 'Invalid coupon code applied.' });
+        }
+        if (!found.isActive) {
+          return res.status(400).json({ message: 'This coupon is inactive or has already been used.' });
+        }
+        if (found.expirationDate && new Date() > new Date(found.expirationDate)) {
+          return res.status(400).json({ message: 'This coupon has expired.' });
+        }
+        if (found.usageLimit > 0 && found.usedCount >= found.usageLimit) {
+          return res.status(400).json({ message: 'This coupon has already been used and is no longer valid.' });
+        }
+        verifiedCoupon = found;
+      }
+    }
+
     // 7. Backend Concurrency & Duplicate Submission Prevention (Immediate lock before any DB write)
     const idempotencyKey = `${normalizedPhone}_${calculatedTotal}`;
     if (activeOrderLocks.has(idempotencyKey)) {
@@ -295,13 +320,24 @@ router.post('/', optionalAuth, async (req, res) => {
       }
     }
 
-    // Increment coupon used count if coupon applied
-    if (req.body.couponCode) {
-      const cCode = req.body.couponCode.trim().toUpperCase();
-      await req.prisma.coupon.update({
-        where: { code: cCode },
-        data: { usedCount: { increment: 1 } }
-      }).catch(() => {});
+    // Increment coupon used count & auto-expire single-use or limit-reached coupons
+    if (verifiedCoupon) {
+      try {
+        const nextUsedCount = (verifiedCoupon.usedCount || 0) + 1;
+        const reachedLimit = verifiedCoupon.usageLimit > 0 && nextUsedCount >= verifiedCoupon.usageLimit;
+        await req.prisma.coupon.update({
+          where: { id: verifiedCoupon.id },
+          data: {
+            usedCount: { increment: 1 },
+            isActive: reachedLimit ? false : verifiedCoupon.isActive
+          }
+        });
+        if (reachedLimit) {
+          console.log(`[Coupons] Coupon '${verifiedCoupon.code}' reached usage limit (${nextUsedCount}/${verifiedCoupon.usageLimit}) and was automatically expired/deactivated.`);
+        }
+      } catch (couponErr) {
+        console.warn('[Orders] Coupon update error:', couponErr.message);
+      }
     }
     
     // Send email notification to admin (non-blocking)
@@ -334,6 +370,7 @@ router.post('/whatsapp', optionalAuth, async (req, res) => {
       items, 
       customerName, 
       phoneNumber, 
+      email,
       paymentMethod = 'WhatsApp', 
       subtotal, 
       shippingFee = 0, 
@@ -347,11 +384,29 @@ router.post('/whatsapp', optionalAuth, async (req, res) => {
       notes
     } = req.body;
 
+    // Strict Phone Number & Email Validation
+    const rawPhone = (phoneNumber || '').replace(/[\s\-\(\)]/g, '').replace(/^0092/, '+92');
+    if (!rawPhone || !/^((\+92)?(0)?3[0-9]{9})$/.test(rawPhone)) {
+      return res.status(400).json({ message: 'Valid Pakistani mobile number (03XX-XXXXXXX) is required.' });
+    }
+    let normalizedPhone = rawPhone;
+    if (normalizedPhone.startsWith('+92')) {
+      normalizedPhone = '0' + normalizedPhone.slice(3);
+    } else if (normalizedPhone.startsWith('92') && normalizedPhone.length === 12) {
+      normalizedPhone = '0' + normalizedPhone.slice(2);
+    }
+
+    const cleanEmail = (email || '').trim().toLowerCase();
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return res.status(400).json({ message: 'Valid email address is mandatory for order updates and tracking.' });
+    }
+
     let userId = req.user?.id;
     if (!userId) {
       const user = await getOrCreateUser(req.prisma, {
         name: customerName,
-        phone: phoneNumber
+        phone: normalizedPhone,
+        email: cleanEmail
       });
       userId = user.id;
     }

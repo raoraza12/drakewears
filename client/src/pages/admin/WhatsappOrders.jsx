@@ -27,7 +27,7 @@ const WhatsappOrders = () => {
     try {
       const [ordersRes, productsRes] = await Promise.all([
         API.get('/admin/orders'),
-        API.get('/products') // Assuming this is public or accessible
+        API.get('/products?limit=1000')
       ]);
       const waOrders = ordersRes.data.filter(o => o.paymentMethod === 'WhatsApp' || (o.notes && o.notes.includes('[WHATSAPP_ORDER]')));
       setOrders(waOrders);

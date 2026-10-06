@@ -5,7 +5,7 @@ const router = express.Router();
 // GET all products with filters
 router.get('/', async (req, res) => {
   try {
-    const { category, subcategory, featured, newArrival, bestseller, search, minPrice, maxPrice, size, sort, limit = 20, page = 1 } = req.query;
+    const { category, subcategory, featured, newArrival, bestseller, search, minPrice, maxPrice, size, sort, limit = 1000, page = 1 } = req.query;
     const where = {};
     
     if (category) where.category = category;

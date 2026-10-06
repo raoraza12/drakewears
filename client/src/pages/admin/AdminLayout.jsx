@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
-import { FiHome, FiBox, FiShoppingCart, FiMessageCircle, FiUsers, FiSettings, FiLogOut, FiMenu, FiX, FiBarChart2, FiLayers, FiAlertTriangle, FiStar, FiSidebar, FiTag, FiFileText } from 'react-icons/fi';
+import { FiHome, FiBox, FiShoppingCart, FiMessageCircle, FiUsers, FiSettings, FiLogOut, FiMenu, FiX, FiBarChart2, FiLayers, FiAlertTriangle, FiStar, FiSidebar, FiTag, FiFileText, FiDatabase } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import './Admin.css';
 
@@ -50,6 +50,7 @@ const AdminLayout = () => {
     { path: '/drakewearsofficial/whatsapp-orders', icon: <FiMessageCircle />, label: 'WhatsApp Orders' },
     { path: '/drakewearsofficial/analytics', icon: <FiBarChart2 />, label: 'Analytics' },
     { path: '/drakewearsofficial/products', icon: <FiBox />, label: 'Products' },
+    { path: '/drakewearsofficial/catalog-archive', icon: <FiDatabase />, label: 'Master Archive' },
     { path: '/drakewearsofficial/categories', icon: <FiLayers />, label: 'Categories' },
     { path: '/drakewearsofficial/coupons', icon: <FiTag />, label: 'Coupons' },
     { path: '/drakewearsofficial/inventory', icon: <FiAlertTriangle />, label: 'Inventory' },

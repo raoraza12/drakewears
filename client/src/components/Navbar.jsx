@@ -106,7 +106,10 @@ const Navbar = () => {
               <Link to="/" className={`outfitters-nav-link ${location.pathname === '/' ? 'active' : ''}`}>
                 HOME
               </Link>
-              <Link to="/shop" className={`outfitters-nav-link ${location.pathname === '/shop' ? 'active' : ''}`}>
+              <Link to="/shop?filter=new" className={`outfitters-nav-link ${location.search.includes('filter=new') ? 'active' : ''}`}>
+                NEW ARRIVALS
+              </Link>
+              <Link to="/shop" className={`outfitters-nav-link ${location.pathname === '/shop' && !location.search.includes('filter=new') ? 'active' : ''}`}>
                 SHOP
               </Link>
               <Link to="/vault" className={`outfitters-nav-link vault-nav-link ${location.pathname === '/vault' || location.pathname === '/drake-vault' ? 'active' : ''}`}>
@@ -181,6 +184,7 @@ const Navbar = () => {
                     <div className="profile-links">
                       <Link to="/login" style={{ fontWeight: '700' }}>Login</Link>
                       <Link to="/register">Create Account</Link>
+                      <Link to="/track">Track Orders</Link>
                     </div>
                   )}
                 </div>
@@ -223,6 +227,9 @@ const Navbar = () => {
 
           <div className="outfitters-drawer-links">
             <Link to="/" onClick={() => setMobileMenuOpen(false)}>HOME</Link>
+            <Link to="/shop?filter=new" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--gold, #c9a84c)', fontWeight: 700 }}>
+              ⚡ NEW ARRIVALS
+            </Link>
             <Link to="/shop" onClick={() => setMobileMenuOpen(false)}>SHOP ALL</Link>
             <Link to="/vault" onClick={() => setMobileMenuOpen(false)} className="drawer-vault-item">
               <span>⚡ DRAKE VAULT</span>
@@ -247,9 +254,10 @@ const Navbar = () => {
             <Link to="/wishlist" onClick={() => setMobileMenuOpen(false)}>
               WISHLIST {wishlistCount > 0 && `(${wishlistCount})`}
             </Link>
-            <Link to="/orders" onClick={() => setMobileMenuOpen(false)}>TRACK ORDERS</Link>
+            <Link to="/track" onClick={() => setMobileMenuOpen(false)}>TRACK ORDERS</Link>
             {user ? (
               <>
+                <Link to="/orders" onClick={() => setMobileMenuOpen(false)}>MY ORDERS</Link>
                 <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>MY ACCOUNT ({user.name})</Link>
                 {user.role === 'admin' && (
                   <Link to="/drakewearsofficial" onClick={() => setMobileMenuOpen(false)} style={{ color: '#3b82f6', fontWeight: 700 }}>

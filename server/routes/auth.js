@@ -8,13 +8,28 @@ const router = express.Router();
 
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
-// Register with strict real-email validation
+// Register with strict real-email and phone validation
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
     
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Full name is required' });
+    }
+
+    if (!phone || !phone.trim()) {
+      return res.status(400).json({ message: 'Active Pakistani contact number is required (e.g. 03001234567)' });
+    }
+
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    let standardPhone = cleanPhone;
+    if (cleanPhone.startsWith('92') && cleanPhone.length === 12) {
+      standardPhone = '0' + cleanPhone.slice(2);
+    }
+    if (!/^03[0-9]{9}$/.test(standardPhone)) {
+      return res.status(400).json({ 
+        message: 'Please provide a valid 11-digit Pakistani phone number (e.g. 03001234567)' 
+      });
     }
 
     if (!password || password.length < 6) {
@@ -41,6 +56,7 @@ router.post('/register', async (req, res) => {
       data: {
         name: name.trim(),
         email: normalizedEmail,
+        phone: standardPhone,
         password: hashedPassword,
         role: 'user'
       }
@@ -50,6 +66,7 @@ router.post('/register', async (req, res) => {
       _id: user.id,
       name: user.name,
       email: user.email,
+      phone: user.phone || '',
       role: user.role,
       avatar: user.avatar || '',
       token: generateToken(user.id)
