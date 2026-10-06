@@ -7,7 +7,7 @@ import {
   FiChevronUp, FiX, FiCheck, FiFolderPlus, FiBox 
 } from 'react-icons/fi';
 
-const DEFAULT_CATEGORIES = ['Baggy Trousers', 'Drop Shoulder Tees', 'Drake Vault'];
+const DEFAULT_CATEGORIES = ['Bottoms', 'Drop Shoulder Tees', 'Drake Vault'];
 
 const loadStoredCategories = () => {
   try {
@@ -211,7 +211,7 @@ const ProductManager = () => {
       let autoCategory = formData.category;
       if (!autoCategory) {
         if (value.toLowerCase().includes('trouser') || value.toLowerCase().includes('pant')) {
-          autoCategory = 'Baggy Trousers';
+          autoCategory = 'Bottoms';
         } else if (value.toLowerCase().includes('tee') || value.toLowerCase().includes('shirt')) {
           autoCategory = 'Drop Shoulder Tees';
         }
@@ -489,7 +489,7 @@ const ProductManager = () => {
             onClick={() => {
               setActiveTab('add');
               setEditingId(null);
-              setFormData({ name: '', price: '', category: categories[0] || 'Baggy Trousers', colors: '' });
+              setFormData({ name: '', price: '', category: categories[0] || 'Bottoms', colors: '' });
               setColorItems([{ name: '', hex: '#000000', image: '', file: null, preview: '' }]);
               setGalleryItems([{ id: 'img-1', url: '', file: null, preview: '' }]);
               setShowInlineAddCat(false);

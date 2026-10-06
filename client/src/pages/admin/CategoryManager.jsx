@@ -16,7 +16,7 @@ const CategoryManager = () => {
     }
     return [
       { id: '1', name: 'Drop Shoulder Tees', status: 'Active' },
-      { id: '2', name: 'Baggy Trousers', status: 'Active' },
+      { id: '2', name: 'Bottoms', status: 'Active' },
       { id: '3', name: 'Drake Vault', status: 'Active' }
     ];
   });

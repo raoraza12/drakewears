@@ -22,7 +22,7 @@ const HERO_SLIDES = [
   {
     id: 2,
     image: '/carousel-casualwears.jpg',
-    ctaLink: '/shop?category=baggy-trousers',
+    ctaLink: '/shop?category=bottoms',
     alt: 'Casual Wears - DrakeWears Streetwear Collection',
   },
 ];
@@ -287,20 +287,20 @@ const Home = () => {
 
             <div className="categories-3d-grid">
               <Link 
-                to="/shop?category=baggy-trousers" 
+                to="/shop?category=bottoms" 
                 className="category-card-3d scroll-reveal scroll-delay-1"
               >
                 <div className="cat-card-img-box">
                   <img 
                     src="/home-category-baggy.jfif" 
                     onError={(e) => { e.currentTarget.src = '/home-page-category.jpg'; }}
-                    alt="Baggy Trousers" 
+                    alt="Bottoms" 
                   />
                   <div className="cat-card-glass-glow"></div>
                 </div>
                 <div className="cat-card-content">
-                  <span className="cat-drop-tag">BOTTOMS</span>
-                  <h3 className="cat-title">Baggy Trousers</h3>
+                  <span className="cat-drop-tag">COLLECTION</span>
+                  <h3 className="cat-title">Bottoms</h3>
                   <div className="cat-action-row">
                     <span className="cat-cta-text">Shop Now</span>
                     <span className="cat-arrow-circle">→</span>

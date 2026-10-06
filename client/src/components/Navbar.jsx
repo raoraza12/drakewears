@@ -236,8 +236,8 @@ const Navbar = () => {
               <span className="drawer-vault-badge">1 OF 1</span>
             </Link>
             <div className="drawer-categories-sub">
-              <Link to="/shop?category=baggy-trousers" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
-                ↳ Baggy Trousers
+              <Link to="/shop?category=bottoms" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
+                ↳ Bottoms
               </Link>
               <Link to="/shop?category=drop-shoulder-tees" onClick={() => setMobileMenuOpen(false)} className="drawer-sub-link">
                 ↳ Drop Shoulder Tees

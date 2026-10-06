@@ -112,7 +112,7 @@ const StorefrontLayout = () => {
 
 const PAGE_TITLES = {
   '/': 'DRAKEWEARS | Modern Luxury Streetwear & Apparel',
-  '/shop': 'Shop Streetwear, Baggy Trousers & Hoodies | DRAKEWEARS',
+  '/shop': 'Shop Streetwear, Bottoms & Tees | DRAKEWEARS',
   '/about': 'About Our Atelier & Craftsmanship | DRAKEWEARS',
   '/contact': 'Contact Us & VIP Client Support | DRAKEWEARS',
   '/privacy': 'Privacy Policy | DRAKEWEARS',

@@ -890,7 +890,7 @@ const ProductDetail = () => {
                   className={`size-tab-btn ${sizeModalCategory === 'trousers' ? 'active' : ''}`}
                   onClick={() => setSizeModalCategory('trousers')}
                 >
-                  👖 Baggy Trousers
+                  👖 Bottoms
                 </button>
               </div>
 

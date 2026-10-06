@@ -55,9 +55,12 @@ const Shop = () => {
 
   // Derive categories dynamically from products
   const availableCategories = useMemo(() => {
-    const set = new Set(['Drop Shoulder Tees', 'Baggy Trousers']);
+    const set = new Set(['Bottoms', 'Drop Shoulder Tees']);
     products.forEach(p => {
-      if (p.category) set.add(p.category);
+      if (p.category) {
+        if (p.category === 'Baggy Trousers') set.add('Bottoms');
+        else set.add(p.category);
+      }
     });
     return Array.from(set);
   }, [products]);
@@ -83,7 +86,11 @@ const Shop = () => {
       result = result.filter(p => {
         const cat = (p.category || '').toLowerCase();
         const sub = (p.subcategory || '').toLowerCase();
-        const act = activeCategory.toLowerCase();
+        let act = activeCategory.toLowerCase();
+        if (act === 'baggy-trousers' || act === 'baggy trousers' || act === 'trousers') act = 'bottoms';
+        if (act === 'bottoms') {
+          return cat.includes('bottom') || cat.includes('trouser') || sub.includes('bottom') || sub.includes('trouser');
+        }
         return cat.includes(act) || sub.includes(act) || act.includes(cat);
       });
     }
@@ -123,13 +130,13 @@ const Shop = () => {
     ? 'New Arrivals - Latest Luxury Streetwear Drops | DRAKEWEARS Pakistan'
     : (activeCategory !== 'all'
       ? `${categoryNameFormatted} - Buy Streetwear in Pakistan | DRAKEWEARS`
-      : 'Shop Luxury Streetwear, Baggy Trousers & Tees | DRAKEWEARS Pakistan');
+      : 'Shop Luxury Streetwear, Bottoms & Tees | DRAKEWEARS Pakistan');
 
   const pageDescription = isNewFilter
-    ? 'Explore the latest New Arrivals at DRAKEWEARS Pakistan. Fresh drops of heavyweight drop shoulder tees, baggy trousers, and luxury hoodies.'
+    ? 'Explore the latest New Arrivals at DRAKEWEARS Pakistan. Fresh drops of heavyweight drop shoulder tees, bottoms, and luxury hoodies.'
     : (activeCategory !== 'all'
       ? `Discover premium ${categoryNameFormatted} at DRAKEWEARS Pakistan. Crafted with heavyweight fabrics, relaxed cuts, and luxury streetwear aesthetics. Free delivery over Rs. 5,000.`
-      : 'Explore all DRAKEWEARS drops. Heavyweight drop shoulder tees, baggy cargo trousers, luxury hoodies & athleisure. Fast nationwide delivery with Cash on Delivery.');
+      : 'Explore all DRAKEWEARS drops. Heavyweight drop shoulder tees, bottoms, baggy cargo trousers, luxury hoodies & athleisure. Fast nationwide delivery with Cash on Delivery.');
 
   const canonicalUrl = activeCategory !== 'all'
     ? `https://drakewears.com/shop?category=${encodeURIComponent(categoryParam)}`

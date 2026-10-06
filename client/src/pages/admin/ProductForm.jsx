@@ -25,7 +25,7 @@ const ProductForm = () => {
     care: '',
   });
 
-  const categories = ['Baggy Trousers', 'Drop Shoulder Tees', 'Drake Vault'];
+  const categories = ['Bottoms', 'Drop Shoulder Tees', 'Drake Vault'];
   const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'Free Size'];
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const ProductForm = () => {
               const val = e.target.value;
               let autoCategory = form.category;
               if (val.toLowerCase().includes('trouser') || val.toLowerCase().includes('pant')) {
-                autoCategory = 'Baggy Trousers';
+                autoCategory = 'Bottoms';
               } else if (val.toLowerCase().includes('tee') || val.toLowerCase().includes('shirt')) {
                 autoCategory = 'Drop Shoulder Tees';
               }
