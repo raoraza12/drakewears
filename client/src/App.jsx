@@ -155,6 +155,14 @@ const ScrollRevealManager = () => {
       document.title = 'DRAKEWEARS Admin Portal';
     }
 
+    // Google Analytics 4 SPA Pageview Tracking
+    if (typeof window.gtag === 'function') {
+      window.gtag('config', 'G-K4BZHE0REG', {
+        page_path: location.pathname + location.search,
+        page_title: document.title
+      });
+    }
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -191,7 +199,7 @@ const ScrollRevealManager = () => {
       observer.disconnect();
       mutationObserver.disconnect();
     };
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   return null;
 };

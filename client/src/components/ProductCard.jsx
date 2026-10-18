@@ -65,9 +65,11 @@ export default function ProductCard({ product }) {
   const productTarget = `/shop/${product.slug || product.id || product._id || ''}`;
 
   // Auto "New" badge if created within the last 10 days OR flagged as newArrival
-  const isRecentlyAdded = product.createdAt 
-    ? (Date.now() - new Date(product.createdAt).getTime()) <= (10 * 24 * 60 * 60 * 1000)
-    : false;
+  const [isRecentlyAdded] = useState(() => {
+    return product.createdAt 
+      ? (Date.now() - new Date(product.createdAt).getTime()) <= (10 * 24 * 60 * 60 * 1000)
+      : false;
+  });
   const isNew = Boolean(product.newArrival || isRecentlyAdded);
 
   return (

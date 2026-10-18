@@ -96,7 +96,9 @@ export default function SEOHead({
       try {
         const existingScript = document.getElementById('drake-schema-jsonld');
         if (existingScript) existingScript.remove();
-      } catch (e) {}
+      } catch {
+        // Ignored on unmount
+      }
     };
   }, [title, description, keywords, image, url, type, schema, location.pathname]);
 

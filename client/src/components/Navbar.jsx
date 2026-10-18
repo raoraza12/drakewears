@@ -4,7 +4,6 @@ import { FiMenu, FiX, FiSearch, FiShoppingBag, FiUser, FiHeart, FiSun, FiMoon } 
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { useSettings } from '../context/SettingsContext';
 import API from '../api';
 import './Navbar.css';
 
@@ -42,7 +41,6 @@ const Navbar = () => {
   const { count, setIsOpen: setCartOpen } = useCart();
   const { user, logout } = useAuth();
   const { count: wishlistCount } = useWishlist();
-  const { settings } = useSettings();
 
   useEffect(() => {
     const handleScroll = () => {

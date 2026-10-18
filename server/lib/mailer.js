@@ -2,13 +2,15 @@ const nodemailer = require('nodemailer');
 
 // Create transporter - configure via ENV variables
 const createTransporter = () => {
-  // Default to Gmail SMTP if no custom SMTP is set
+  const port = parseInt(process.env.SMTP_PORT || '465');
+  const isSecure = process.env.SMTP_SECURE === 'true' || port === 465;
+
   const config = {
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+    host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+    port: port,
+    secure: isSecure, // true for 465 (SSL), false for 587 (STARTTLS)
     auth: {
-      user: process.env.SMTP_USER || process.env.ADMIN_EMAIL,
+      user: process.env.SMTP_USER || process.env.ADMIN_EMAIL || 'info@drakewears.com',
       pass: process.env.SMTP_PASS
     }
   };
@@ -21,8 +23,8 @@ const createTransporter = () => {
   return nodemailer.createTransport(config);
 };
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.SMTP_USER || '';
-const FROM_EMAIL = process.env.FROM_EMAIL || process.env.SMTP_USER || 'noreply@drakewears.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'info@drakewears.com';
+const FROM_EMAIL = process.env.FROM_EMAIL || process.env.SMTP_USER || 'info@drakewears.com';
 
 /**
  * Send order notification email to admin

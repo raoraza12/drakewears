@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiInstagram, FiTwitter, FiFacebook } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { useSettings } from '../context/SettingsContext';
 import './Footer.css';
 
 const Footer = () => {
-  const { settings } = useSettings();
   const [email, setEmail] = useState('');
 
   const handleNewsletterSubmit = (e) => {

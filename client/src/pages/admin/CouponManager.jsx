@@ -571,8 +571,6 @@ export default function CouponManager() {
             </div>
           ) : (
             coupons.map(coupon => {
-              const isExpired = coupon.expirationDate && new Date(coupon.expirationDate) < new Date();
-              const isExhausted = coupon.usageLimit > 0 && coupon.usedCount >= coupon.usageLimit;
               const isSingleUse = coupon.usageLimit === 1;
 
               return (

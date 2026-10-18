@@ -1,44 +1,560 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Main Brand & Store Pages -->
   <url>
     <loc>https://drakewears.com/</loc>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://drakewears.com/shop</loc>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://drakewears.com/vault</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop?category=Bottoms</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop?category=Tops</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://drakewears.com/shop?category=baggy-trousers</loc>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://drakewears.com/shop?category=drop-shoulder-tees</loc>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://drakewears.com/about</loc>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://drakewears.com/contact</loc>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://drakewears.com/orders/track</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://drakewears.com/terms</loc>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://drakewears.com/privacy</loc>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
+  </url>
+
+  <!-- DrakeWears Catalog Products (Total: 30) -->
+  <url>
+    <loc>https://drakewears.com/shop/nightflare-oversized-tee</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790613587/drakewears_products/hlytrn8v9gcp8owlacry.jpg</image:loc>
+      <image:title>Nightflare Oversized Tee</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790613589/drakewears_products/j4uwzrzju7shy8n11ku1.png</image:loc>
+      <image:title>Nightflare Oversized Tee</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/voidborn-oversized-tee</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790614226/drakewears_products/crybdcgub0v2kd6v59re.jpg</image:loc>
+      <image:title>Voidborn Oversized Tee</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790614226/drakewears_products/clvpr2lna5rsjdiqdb2x.jpg</image:loc>
+      <image:title>Voidborn Oversized Tee</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/vortex-sigil-oversized-tee</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790521957/drakewears_products/psjb00raznvyvxtkxibs.jpg</image:loc>
+      <image:title>Vortex Sigil Oversized Tee</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/f1-oversized-tee</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790613095/drakewears_products/dw3iiks5dev6oirhmwho.jpg</image:loc>
+      <image:title>F1 Oversized Tee</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790613095/drakewears_products/nxkswm6a5nx3f6a7fd1t.jpg</image:loc>
+      <image:title>F1 Oversized Tee</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/thunder-vein-oversized-tee</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790279053/drakewears_products/oxp42hsgvuyc39jzjxg9.png</image:loc>
+      <image:title>Thunder Vein Oversized Tee</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/void-fang-oversized-tee</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790276731/drakewears_products/uhift2yw6knoj6mcowtz.png</image:loc>
+      <image:title>Void Fang Oversized Tee</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/venom-strike-oversized-tee</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790278900/drakewears_products/uq8v9krzx4htcxlo6pt5.png</image:loc>
+      <image:title>Venom Strike Oversized Tee</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/shadow-reign-oversized-tee-</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1790278960/drakewears_products/yz5gztngdgcgzrj8gsao.png</image:loc>
+      <image:title>Shadow Reign Oversized Tee</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/razor-spine-baggy-trousers</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789894606/drakewears_products/i7sf0c2ww2fttrfdiez9.jpg</image:loc>
+      <image:title>Razor Spine Baggy Trousers</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789894606/drakewears_products/tmpo800z4cvjj0n12vu9.jpg</image:loc>
+      <image:title>Razor Spine Baggy Trousers</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789894607/drakewears_products/qirrr4xzxbybs5buc5tm.jpg</image:loc>
+      <image:title>Razor Spine Baggy Trousers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/grey-cyber-baggy-trousers</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789896367/drakewears_products/o7ej6itrwmgdph1ngwwd.jpg</image:loc>
+      <image:title>Grey Cyber Baggy Trousers</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789896367/drakewears_products/ryhdcu8hadloz4l6f45q.jpg</image:loc>
+      <image:title>Grey Cyber Baggy Trousers</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789896368/drakewears_products/np3s2uuykr2he7sggkob.jpg</image:loc>
+      <image:title>Grey Cyber Baggy Trousers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/cobalt-fire-baggy-trousers</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789898125/drakewears_products/x1tuzl1fxgslodvwowei.jpg</image:loc>
+      <image:title>Cobalt Fire Baggy Trousers</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789898126/drakewears_products/yrykj3pu8igbzxlkgc7j.jpg</image:loc>
+      <image:title>Cobalt Fire Baggy Trousers</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789898130/drakewears_products/y3rwqhpwqc2e0m0dxx7w.jpg</image:loc>
+      <image:title>Cobalt Fire Baggy Trousers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/cyber-venom-wide-leg-baggy-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888391/drakewears_products/hlxzvkbxlxplps6qmhd6.jpg</image:loc>
+      <image:title>Cyber venom wide-leg baggy trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888391/drakewears_products/v9eig0zjcks1ocjhpnpv.jpg</image:loc>
+      <image:title>Cyber venom wide-leg baggy trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888391/drakewears_products/xy96ytceda2lw2dv4yzy.jpg</image:loc>
+      <image:title>Cyber venom wide-leg baggy trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/pyro-skeleton-beggy-trouser-</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264104/drakewears_products/hpz67fmmwcpzqlqvplcr.jpg</image:loc>
+      <image:title>Pyro Skeleton Beggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264104/drakewears_products/a2yhjsqretamcvmc4gwn.jpg</image:loc>
+      <image:title>Pyro Skeleton Beggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264105/drakewears_products/txpvbou1sccgn3nyo8kq.jpg</image:loc>
+      <image:title>Pyro Skeleton Beggy Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/phantom-shard-cyber-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888489/drakewears_products/xcyb24qovui1mtla1rxm.jpg</image:loc>
+      <image:title>Phantom Shard Cyber Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888489/drakewears_products/vvdwwamjv6ldipok2fyj.jpg</image:loc>
+      <image:title>Phantom Shard Cyber Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888489/drakewears_products/v1yhjskl0eusycbayk9w.jpg</image:loc>
+      <image:title>Phantom Shard Cyber Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/midnight-hex-baggy-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789922993/drakewears_products/rjoeulzku2mzezbevqxz.jpg</image:loc>
+      <image:title>Midnight Hex Baggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789922991/drakewears_products/mczpxwz56awbcjjowoye.jpg</image:loc>
+      <image:title>Midnight Hex Baggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789922991/drakewears_products/hjcapxtnqpy3u655jxby.jpg</image:loc>
+      <image:title>Midnight Hex Baggy Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/ghost-thorn-cyber-baggy-trousers</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789846104/drakewears_products/l01g5xgg7axhnfcqam6j.jpg</image:loc>
+      <image:title>Ghost Thorn Cyber Baggy Trousers</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789846105/drakewears_products/tkxb0z6hqkkvuhcmerik.jpg</image:loc>
+      <image:title>Ghost Thorn Cyber Baggy Trousers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/obsidian-ritual-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789846931/drakewears_products/gncahuanuws4uzs5blbb.jpg</image:loc>
+      <image:title>Obsidian Ritual Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888145/drakewears_products/auysinngqukvqiqz57jl.jpg</image:loc>
+      <image:title>Obsidian Ritual Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888145/drakewears_products/qfbhiyxet0wyxgzwq4t0.jpg</image:loc>
+      <image:title>Obsidian Ritual Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/ghost-flame-baggy-trousers</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789897272/drakewears_products/qkahx00lcikmztbjamrv.jpg</image:loc>
+      <image:title>Ghost Flame Baggy Trousers</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789897272/drakewears_products/ascpspwptwfnphkwvhsk.jpg</image:loc>
+      <image:title>Ghost Flame Baggy Trousers</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789897272/drakewears_products/fsiwxayqpddle4r8mdnu.jpg</image:loc>
+      <image:title>Ghost Flame Baggy Trousers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/anarchy-thorn-beggy-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791263784/drakewears_products/e3hu2tuddfdjfpgzwjdn.jpg</image:loc>
+      <image:title>Anarchy Thorn Beggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791263784/drakewears_products/bmlbs1py6dtlrqfcukgw.jpg</image:loc>
+      <image:title>Anarchy Thorn Beggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791263785/drakewears_products/mvuhtyrfa25k1je8pfik.jpg</image:loc>
+      <image:title>Anarchy Thorn Beggy Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/dark-ritual-beggy-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789895701/drakewears_products/o0lq7lm7slmcmqb6askh.jpg</image:loc>
+      <image:title>Dark Ritual Beggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789895701/drakewears_products/olbswheaplv4k3ux4fp3.jpg</image:loc>
+      <image:title>Dark Ritual Beggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789895701/drakewears_products/cxqhzmkqttjnouk8wvz1.jpg</image:loc>
+      <image:title>Dark Ritual Beggy Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/scarlet-steed-wide-leg-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264225/drakewears_products/k01d346malplk0yh3dx7.jpg</image:loc>
+      <image:title>Scarlet Steed Wide-leg Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264226/drakewears_products/glqiuzslzrpwb9rqws2q.jpg</image:loc>
+      <image:title>Scarlet Steed Wide-leg Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264226/drakewears_products/evipmvuhzae10gtapo4m.jpg</image:loc>
+      <image:title>Scarlet Steed Wide-leg Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/vintage-headline-wide-leg-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264554/drakewears_products/ltvn3sigykvnlyu40ukz.jpg</image:loc>
+      <image:title>Vintage Headline Wide-leg Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264555/drakewears_products/zwvpakcjr2litbgs4lpo.jpg</image:loc>
+      <image:title>Vintage Headline Wide-leg Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264555/drakewears_products/hozc8iwikcrbgt3u3ixa.jpg</image:loc>
+      <image:title>Vintage Headline Wide-leg Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/shadow-samurai-beggy-trouser-</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264372/drakewears_products/nog5yu0rbdqjmbkxhert.jpg</image:loc>
+      <image:title>Shadow Samurai Beggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264372/drakewears_products/luoflshazzoaclfic8yv.jpg</image:loc>
+      <image:title>Shadow Samurai Beggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264372/drakewears_products/k6iewbadqd2kjvunpo3x.jpg</image:loc>
+      <image:title>Shadow Samurai Beggy Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/freezer-tag-beggy-trouser-</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791263861/drakewears_products/rrgzqv8nrnc0fgzl7r3o.jpg</image:loc>
+      <image:title>Freezer Tag Beggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791263861/drakewears_products/plftaa9oacdd4csoh1mi.jpg</image:loc>
+      <image:title>Freezer Tag Beggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791263861/drakewears_products/bbug1nhzcxuweqgrahds.jpg</image:loc>
+      <image:title>Freezer Tag Beggy Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/cyber-star-wide-leg-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264684/drakewears_products/maqrixtnneektxj64uj6.jpg</image:loc>
+      <image:title>Cyber Star Wide-leg Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264684/drakewears_products/ufg9nzgungo4suuucg7z.jpg</image:loc>
+      <image:title>Cyber Star Wide-leg Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791264684/drakewears_products/hmftoryzuzquotx9elgr.jpg</image:loc>
+      <image:title>Cyber Star Wide-leg Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/shadow-claw-gothic-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789930271/drakewears_products/g9exjmseb7gvc8qg2pfk.jpg</image:loc>
+      <image:title>Shadow Claw Gothic Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789930272/drakewears_products/abebbn0cvvrmptd72atb.jpg</image:loc>
+      <image:title>Shadow Claw Gothic Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789930272/drakewears_products/yi0sxbyhzm5xvvjzh8u3.jpg</image:loc>
+      <image:title>Shadow Claw Gothic Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/inferno-flare-wide-leg-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791263949/drakewears_products/niryhjmixazfdlfmstgf.jpg</image:loc>
+      <image:title>Inferno Flare Wide-leg Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1791263949/drakewears_products/lnphnq2fv5i2wnisovmy.jpg</image:loc>
+      <image:title>Inferno Flare Wide-leg Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/grave-witch-sigil-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789921672/drakewears_products/s6y9ukkrdbyqtgcy2y7e.jpg</image:loc>
+      <image:title>Grave-Witch Sigil Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789921672/drakewears_products/yptxov4h89jhmsorer3m.jpg</image:loc>
+      <image:title>Grave-Witch Sigil Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789921670/drakewears_products/r26ajzpxukuhna95gk1g.jpg</image:loc>
+      <image:title>Grave-Witch Sigil Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/drake-signature-metal-baggy-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888332/drakewears_products/o11ibwdvymvsxur9dsuq.jpg</image:loc>
+      <image:title>Drake Signature Metal baggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888332/drakewears_products/kawkbzh301v2twvtcll0.jpg</image:loc>
+      <image:title>Drake Signature Metal baggy Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789888332/drakewears_products/dkdnatjtmn0fkyg6rne9.jpg</image:loc>
+      <image:title>Drake Signature Metal baggy Trouser</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drakewears.com/shop/viper-fang-oversized-trouser</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789919828/drakewears_products/ue85gmxhmfimpvphagn6.jpg</image:loc>
+      <image:title>Viper Fang Oversized Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789919828/drakewears_products/ht59qpgbzhnwu8ignwdc.jpg</image:loc>
+      <image:title>Viper Fang Oversized Trouser</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/rwmcd7gk/image/upload/v1789919828/drakewears_products/hed3d0m33nuzqnimhiei.jpg</image:loc>
+      <image:title>Viper Fang Oversized Trouser</image:title>
+    </image:image>
   </url>
 </urlset>

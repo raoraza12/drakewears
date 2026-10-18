@@ -7,6 +7,7 @@ export default function GoogleAuthButton({ isSignUp = false, onError, redirect =
   const googleBtnRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [gisReady, setGisReady] = useState(false);
+  const handleCredentialResponseRef = useRef();
   
   const { googleLogin } = useAuth();
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ export default function GoogleAuthButton({ isSignUp = false, onError, redirect =
       setLoading(false);
     }
   };
+  handleCredentialResponseRef.current = handleCredentialResponse;
 
   useEffect(() => {
     if (!clientId) return;
@@ -51,7 +53,7 @@ export default function GoogleAuthButton({ isSignUp = false, onError, redirect =
         try {
           window.google.accounts.id.initialize({
             client_id: clientId,
-            callback: handleCredentialResponse,
+            callback: (resp) => handleCredentialResponseRef.current?.(resp),
             auto_select: false,
             cancel_on_tap_outside: true,
           });

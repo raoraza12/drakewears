@@ -133,10 +133,14 @@ app.get('/sitemap.xml', async (req, res) => {
     const staticPages = [
       { loc: `${baseUrl}/`, priority: '1.0', changefreq: 'daily', lastmod: nowIso },
       { loc: `${baseUrl}/shop`, priority: '0.9', changefreq: 'daily', lastmod: nowIso },
+      { loc: `${baseUrl}/vault`, priority: '0.85', changefreq: 'weekly', lastmod: nowIso },
+      { loc: `${baseUrl}/shop?category=Bottoms`, priority: '0.85', changefreq: 'weekly', lastmod: nowIso },
+      { loc: `${baseUrl}/shop?category=Tops`, priority: '0.85', changefreq: 'weekly', lastmod: nowIso },
       { loc: `${baseUrl}/shop?category=baggy-trousers`, priority: '0.85', changefreq: 'weekly', lastmod: nowIso },
       { loc: `${baseUrl}/shop?category=drop-shoulder-tees`, priority: '0.85', changefreq: 'weekly', lastmod: nowIso },
       { loc: `${baseUrl}/about`, priority: '0.7', changefreq: 'monthly', lastmod: nowIso },
       { loc: `${baseUrl}/contact`, priority: '0.7', changefreq: 'monthly', lastmod: nowIso },
+      { loc: `${baseUrl}/orders/track`, priority: '0.6', changefreq: 'monthly', lastmod: nowIso },
       { loc: `${baseUrl}/terms`, priority: '0.5', changefreq: 'yearly', lastmod: nowIso },
       { loc: `${baseUrl}/privacy`, priority: '0.5', changefreq: 'yearly', lastmod: nowIso },
     ];
@@ -168,12 +172,14 @@ app.get('/sitemap.xml', async (req, res) => {
       xml += `    <priority>0.85</priority>\n`;
 
       if (Array.isArray(prod.images) && prod.images.length > 0) {
-        const imgUrl = prod.images[0].replace(/&/g, '&amp;');
-        const imgTitle = (prod.name || 'DRAKEWEARS Streetwear').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        xml += `    <image:image>\n`;
-        xml += `      <image:loc>${imgUrl}</image:loc>\n`;
-        xml += `      <image:title>${imgTitle}</image:title>\n`;
-        xml += `    </image:image>\n`;
+        for (const img of prod.images.slice(0, 3)) {
+          const imgUrl = img.replace(/&/g, '&amp;');
+          const imgTitle = (prod.name || 'DRAKEWEARS Apparel').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          xml += `    <image:image>\n`;
+          xml += `      <image:loc>${imgUrl}</image:loc>\n`;
+          xml += `      <image:title>${imgTitle}</image:title>\n`;
+          xml += `    </image:image>\n`;
+        }
       }
 
       xml += `  </url>\n`;
