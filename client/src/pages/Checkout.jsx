@@ -56,6 +56,23 @@ export default function Checkout() {
     }
   }, [user]);
 
+  // Lock body scroll when review confirmation modal is active to prevent background scrolling
+  useEffect(() => {
+    if (showReviewModal) {
+      const originalOverflow = document.body.style.overflow;
+      const originalPaddingRight = document.body.style.paddingRight;
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+      if (scrollBarWidth > 0) {
+        document.body.style.paddingRight = `${scrollBarWidth}px`;
+      }
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPaddingRight;
+      };
+    }
+  }, [showReviewModal]);
+
   const defaultShipping = settings?.shippingFee || 150;
   const isFreeShipCoupon = appliedCoupon?.discountType === 'free_shipping';
   const shippingFee = (total >= 5000 || isFreeShipCoupon) ? 0 : defaultShipping;
@@ -774,62 +791,65 @@ export default function Checkout() {
               </button>
             </div>
             
-            {/* Delivery Information */}
-            <div className="review-info-section">
-              <h4 className="review-info-heading">Delivery Information</h4>
-              <div className="review-row">
-                <span className="review-label">Recipient:</span>
-                <span className="review-value">{form.name}</span>
-              </div>
-              <div className="review-row">
-                <span className="review-label">Phone:</span>
-                <span className="review-value">{form.phone}</span>
-              </div>
-              {form.email && (
+            {/* Scrollable Body Content */}
+            <div className="checkout-review-body">
+              {/* Delivery Information */}
+              <div className="review-info-section">
+                <h4 className="review-info-heading">Delivery Information</h4>
                 <div className="review-row">
-                  <span className="review-label">Email:</span>
-                  <span className="review-value">{form.email}</span>
+                  <span className="review-label">Recipient:</span>
+                  <span className="review-value">{form.name}</span>
                 </div>
-              )}
-              <div className="review-row">
-                <span className="review-label">Delivery Address:</span>
-                <span className="review-value">{form.street}, {form.city}, {form.state} {form.zip}</span>
-              </div>
-              <div className="review-row">
-                <span className="review-label">Payment Mode:</span>
-                <span className="review-value">{form.paymentMethod}</span>
-              </div>
-              {form.paymentMethod === 'EasyPaisa' && paymentReceipt && (
-                <div className="review-row" style={{ alignItems: 'center' }}>
-                  <span className="review-label">Payment Proof (SS):</span>
-                  <span className="review-value" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={paymentReceipt} alt="Payment SS" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #444' }} />
-                    <span style={{ color: '#55c688', fontSize: '12px' }}>✓ Attached</span>
-                  </span>
+                <div className="review-row">
+                  <span className="review-label">Phone:</span>
+                  <span className="review-value">{form.phone}</span>
                 </div>
-              )}
-            </div>
+                {form.email && (
+                  <div className="review-row">
+                    <span className="review-label">Email:</span>
+                    <span className="review-value">{form.email}</span>
+                  </div>
+                )}
+                <div className="review-row">
+                  <span className="review-label">Delivery Address:</span>
+                  <span className="review-value">{form.street}, {form.city}, {form.state} {form.zip}</span>
+                </div>
+                <div className="review-row">
+                  <span className="review-label">Payment Mode:</span>
+                  <span className="review-value">{form.paymentMethod}</span>
+                </div>
+                {form.paymentMethod === 'EasyPaisa' && paymentReceipt && (
+                  <div className="review-row" style={{ alignItems: 'center' }}>
+                    <span className="review-label">Payment Proof (SS):</span>
+                    <span className="review-value" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <img src={paymentReceipt} alt="Payment SS" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #444' }} />
+                      <span style={{ color: '#55c688', fontSize: '12px' }}>✓ Attached</span>
+                    </span>
+                  </div>
+                )}
+              </div>
 
-            {/* Pricing Summary */}
-            <div className="review-info-section">
-              <h4 className="review-info-heading">Order Total</h4>
-              <div className="review-row">
-                <span className="review-label">Items ({items.reduce((acc, i) => acc + i.quantity, 0)}):</span>
-                <span className="review-value">Rs. {total.toLocaleString()}</span>
-              </div>
-              {discountAmount > 0 && (
-                <div className="review-row" style={{ color: 'var(--green, #55c688)' }}>
-                  <span className="review-label">Discount ({appliedCoupon?.code}):</span>
-                  <span className="review-value">- Rs. {discountAmount.toLocaleString()}</span>
+              {/* Pricing Summary */}
+              <div className="review-info-section">
+                <h4 className="review-info-heading">Order Total</h4>
+                <div className="review-row">
+                  <span className="review-label">Items ({items.reduce((acc, i) => acc + i.quantity, 0)}):</span>
+                  <span className="review-value">Rs. {total.toLocaleString()}</span>
                 </div>
-              )}
-              <div className="review-row">
-                <span className="review-label">Delivery Shipping:</span>
-                <span className="review-value">{shippingFee === 0 ? 'FREE' : `Rs. ${shippingFee.toLocaleString()}`}</span>
-              </div>
-              <div className="review-row review-total-row">
-                <span className="review-total-label">Total Payable:</span>
-                <span className="review-total-val">Rs. {grandTotal.toLocaleString()}</span>
+                {discountAmount > 0 && (
+                  <div className="review-row" style={{ color: 'var(--green, #55c688)' }}>
+                    <span className="review-label">Discount ({appliedCoupon?.code}):</span>
+                    <span className="review-value">- Rs. {discountAmount.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="review-row">
+                  <span className="review-label">Delivery Shipping:</span>
+                  <span className="review-value">{shippingFee === 0 ? 'FREE' : `Rs. ${shippingFee.toLocaleString()}`}</span>
+                </div>
+                <div className="review-row review-total-row">
+                  <span className="review-total-label">Total Payable:</span>
+                  <span className="review-total-val">Rs. {grandTotal.toLocaleString()}</span>
+                </div>
               </div>
             </div>
 
