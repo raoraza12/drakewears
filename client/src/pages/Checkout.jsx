@@ -139,25 +139,56 @@ export default function Checkout() {
     }
 
     setReceiptUploading(true);
-    const formData = new FormData();
-    formData.append('receipt', file);
 
     try {
-      const res = await API.post('/upload/receipt', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setPaymentReceipt(res.data.url);
-      setErrors(prev => {
-        const next = { ...prev };
-        delete next.paymentReceipt;
-        return next;
-      });
-      toast.success('Payment screenshot uploaded successfully! 🎉');
+      let uploadedUrl = null;
+
+      // Primary Attempt: standard multipart FormData without manual Content-Type override
+      try {
+        const formData = new FormData();
+        formData.append('receipt', file);
+        const res = await API.post('/upload/receipt', formData);
+        if (res.data?.url) {
+          uploadedUrl = res.data.url;
+        }
+      } catch (formErr) {
+        console.warn('FormData upload attempt failed, trying base64 fallback:', formErr);
+      }
+
+      // Secondary Attempt: Base64 JSON fallback for mobile/web compatibility
+      if (!uploadedUrl) {
+        const base64Data = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        const res2 = await API.post('/upload/receipt', { imageBase64: base64Data });
+        if (res2.data?.url) {
+          uploadedUrl = res2.data.url;
+        }
+      }
+
+      if (uploadedUrl) {
+        setPaymentReceipt(uploadedUrl);
+        setErrors(prev => {
+          const next = { ...prev };
+          delete next.paymentReceipt;
+          return next;
+        });
+        toast.success('Payment screenshot uploaded successfully! 🎉');
+      } else {
+        throw new Error('Upload returned empty response');
+      }
     } catch (err) {
       console.error('Receipt upload failed:', err);
-      toast.error(err.response?.data?.message || 'Failed to upload screenshot. Please try again.');
+      toast.error(err.response?.data?.message || err.message || 'Failed to upload screenshot. Please try again.');
     } finally {
       setReceiptUploading(false);
+      try {
+        e.target.value = '';
+      } catch (_) {}
     }
   };
 
