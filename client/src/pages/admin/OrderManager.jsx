@@ -52,6 +52,7 @@ const OrderManager = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [invoiceOrder, setInvoiceOrder] = useState(null);
+  const [viewingReceipt, setViewingReceipt] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -364,8 +365,41 @@ const OrderManager = () => {
                             <small style={{ color: 'var(--text-secondary)', display: 'block', marginTop: '2px' }}>
                               {order.shippingAddress?.city ? `${order.shippingAddress.city} · ` : ''}{order.paymentMethod}
                             </small>
+                            {order.paymentMethod === 'EasyPaisa' && (
+                              <div style={{ marginTop: '4px' }}>
+                                {(order.shippingAddress?.paymentReceipt || (order.notes && order.notes.match(/\[PAYMENT_RECEIPT:\s*([^\]]+)\]/)?.[1])) ? (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setViewingReceipt(order.shippingAddress?.paymentReceipt || (order.notes && order.notes.match(/\[PAYMENT_RECEIPT:\s*([^\]]+)\]/)?.[1]));
+                                    }}
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '4px',
+                                      padding: '2px 8px',
+                                      background: 'rgba(56, 189, 248, 0.18)',
+                                      color: '#38bdf8',
+                                      border: '1px solid rgba(56, 189, 248, 0.45)',
+                                      borderRadius: '4px',
+                                      fontSize: '0.72rem',
+                                      fontWeight: 700,
+                                      cursor: 'pointer'
+                                    }}
+                                    title="Click to view payment proof screenshot"
+                                  >
+                                    🔍 View EasyPaisa SS
+                                  </button>
+                                ) : (
+                                  <span style={{ color: '#f59e0b', fontSize: '0.72rem', fontWeight: 600 }}>
+                                    ⚠️ No SS Attached
+                                  </span>
+                                )}
+                              </div>
+                            )}
                             {email && (
-                              <small style={{ color: 'var(--text-muted)', fontSize: '0.74rem', display: 'block' }}>{email}</small>
+                              <small style={{ color: 'var(--text-muted)', fontSize: '0.74rem', display: 'block', marginTop: '2px' }}>{email}</small>
                             )}
                           </td>
 
@@ -794,9 +828,43 @@ const OrderManager = () => {
 
                   {/* Total & Payment Mode */}
                   <div className="mobile-card-footer">
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                      Payment: <strong>{order.paymentMethod}</strong>
-                    </span>
+                    <div>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        Payment: <strong>{order.paymentMethod}</strong>
+                      </span>
+                      {order.paymentMethod === 'EasyPaisa' && (
+                        <div style={{ marginTop: '3px' }}>
+                          {(order.shippingAddress?.paymentReceipt || (order.notes && order.notes.match(/\[PAYMENT_RECEIPT:\s*([^\]]+)\]/)?.[1])) ? (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setViewingReceipt(order.shippingAddress?.paymentReceipt || (order.notes && order.notes.match(/\[PAYMENT_RECEIPT:\s*([^\]]+)\]/)?.[1]));
+                              }}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '2px 8px',
+                                background: 'rgba(56, 189, 248, 0.18)',
+                                color: '#38bdf8',
+                                border: '1px solid rgba(56, 189, 248, 0.45)',
+                                borderRadius: '4px',
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              🔍 View EasyPaisa SS
+                            </button>
+                          ) : (
+                            <span style={{ color: '#f59e0b', fontSize: '0.72rem', fontWeight: 600 }}>
+                              ⚠️ No SS Attached
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                     <div className="mobile-card-total">
                       Rs. {getOrderTotal(order).toLocaleString()}
                     </div>
@@ -1042,6 +1110,50 @@ const OrderManager = () => {
             <div style={{ borderTop: '1px dashed #ccc', paddingTop: '16px', textAlign: 'center', fontSize: '0.75rem', color: '#666' }}>
               <p style={{ margin: 0 }}>Thank you for shopping with DRAKEWEARS. For exchanges and queries, WhatsApp: +92 321 8254922</p>
               <p style={{ margin: '4px 0 0' }}>Streetwear Crafted for the Bold • www.drakewears.com</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* EasyPaisa Payment Screenshot Lightbox Modal */}
+      {viewingReceipt && (
+        <div 
+          onClick={() => setViewingReceipt(null)} 
+          style={{ 
+            position: 'fixed', 
+            top: 0, left: 0, right: 0, bottom: 0, 
+            backgroundColor: 'rgba(0, 0, 0, 0.85)', 
+            zIndex: 99999, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            padding: '20px' 
+          }}
+        >
+          <div onClick={e => e.stopPropagation()} style={{ maxWidth: '90vw', maxHeight: '90vh', background: '#141418', padding: '20px', borderRadius: '12px', border: '1px solid #333', textAlign: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.8)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <h3 style={{ margin: 0, color: '#38bdf8', fontSize: '16px', fontWeight: 700 }}>⚡ EasyPaisa Payment Screenshot (Proof)</h3>
+              <button 
+                onClick={() => setViewingReceipt(null)} 
+                style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', fontSize: '18px', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                ✕
+              </button>
+            </div>
+            <img 
+              src={viewingReceipt} 
+              alt="EasyPaisa Payment Screenshot" 
+              style={{ maxWidth: '100%', maxHeight: '72vh', objectFit: 'contain', borderRadius: '8px', border: '1px solid #333' }} 
+            />
+            <div style={{ marginTop: '14px', display: 'flex', justifyContent: 'center', gap: '16px' }}>
+              <a 
+                href={viewingReceipt} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{ color: '#c9a84c', fontSize: '13px', fontWeight: 600, textDecoration: 'underline' }}
+              >
+                Open Full Size Image in New Window ↗
+              </a>
             </div>
           </div>
         </div>

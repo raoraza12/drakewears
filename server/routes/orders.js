@@ -282,6 +282,8 @@ router.post('/', optionalAuth, async (req, res) => {
       userId = user.id;
     }
 
+    const paymentReceiptUrl = String(req.body.paymentReceipt || req.body.paymentProof || '').trim();
+
     // Complete immutable shipping address snapshot
     const shippingAddressSnapshot = {
       name: cleanName,
@@ -291,7 +293,8 @@ router.post('/', optionalAuth, async (req, res) => {
       city: cleanCity,
       state: cleanState,
       zip: cleanZip,
-      country: 'Pakistan'
+      country: 'Pakistan',
+      paymentReceipt: paymentReceiptUrl || undefined
     };
 
     // 5-second throttle for same phone & total in database
@@ -321,7 +324,7 @@ router.post('/', optionalAuth, async (req, res) => {
         shippingFee: calculatedShipping,
         discount: calculatedDiscount,
         total: calculatedTotal > 0 ? calculatedTotal : (Number(total) || calculatedSubtotal),
-        notes: notes ? String(notes).trim() : '',
+        notes: [notes ? String(notes).trim() : '', paymentReceiptUrl ? `[PAYMENT_RECEIPT: ${paymentReceiptUrl}]` : ''].filter(Boolean).join(' | '),
         items: {
           create: formattedItems
         }

@@ -76,4 +76,32 @@ router.post('/multiple', verifyToken, isAdmin, upload.array('images', 20), async
   }
 });
 
+// Customer Payment Receipt Upload (Public / Guest accessible for EasyPaisa checkout)
+router.post('/receipt', upload.single('receipt'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No screenshot file provided' });
+    }
+
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'drakewears_receipts' },
+      (error, result) => {
+        if (error) {
+          console.error('[Upload Receipt] Cloudinary error:', error);
+          return res.status(500).json({ message: 'Failed to upload receipt image' });
+        }
+        res.status(200).json({
+          message: 'Payment screenshot uploaded successfully',
+          url: result.secure_url
+        });
+      }
+    );
+    streamifier.createReadStream(req.file.buffer).pipe(stream);
+  } catch (error) {
+    console.error('[Upload Receipt] Handler error:', error);
+    res.status(500).json({ message: 'Error processing receipt upload' });
+  }
+});
+
 module.exports = router;
+

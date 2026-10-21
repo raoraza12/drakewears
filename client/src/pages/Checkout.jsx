@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FiShoppingBag, FiCheckCircle, FiTag, FiX, FiMessageSquare, FiAlertCircle, FiEdit2 } from 'react-icons/fi';
+import { FiShoppingBag, FiCheckCircle, FiTag, FiX, FiMessageSquare, FiAlertCircle, FiEdit2, FiUploadCloud, FiImage } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useSettings } from '../context/SettingsContext';
@@ -27,6 +27,8 @@ export default function Checkout() {
     notes: '' 
   });
 
+  const [paymentReceipt, setPaymentReceipt] = useState('');
+  const [receiptUploading, setReceiptUploading] = useState(false);
   const [errors, setErrors] = useState({});
   const [showReviewModal, setShowReviewModal] = useState(false);
   const initializedRef = useRef(false);
@@ -116,7 +118,47 @@ export default function Checkout() {
       errs.city = 'City can only contain letters and spaces.';
     }
 
+    if (form.paymentMethod === 'EasyPaisa' && !paymentReceipt) {
+      errs.paymentReceipt = 'Please upload your EasyPaisa payment screenshot (SS) to verify payment.';
+    }
+
     return { isValid: Object.keys(errs).length === 0, errors: errs };
+  };
+
+  const handleReceiptUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file (PNG, JPG, JPEG, WEBP)');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size cannot exceed 5MB');
+      return;
+    }
+
+    setReceiptUploading(true);
+    const formData = new FormData();
+    formData.append('receipt', file);
+
+    try {
+      const res = await API.post('/upload/receipt', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setPaymentReceipt(res.data.url);
+      setErrors(prev => {
+        const next = { ...prev };
+        delete next.paymentReceipt;
+        return next;
+      });
+      toast.success('Payment screenshot uploaded successfully! 🎉');
+    } catch (err) {
+      console.error('Receipt upload failed:', err);
+      toast.error(err.response?.data?.message || 'Failed to upload screenshot. Please try again.');
+    } finally {
+      setReceiptUploading(false);
+    }
   };
 
   const handleApplyCoupon = async (e) => {
@@ -217,9 +259,11 @@ export default function Checkout() {
           city: form.city.trim(), 
           state: form.state.trim() || 'Punjab', 
           zip: form.zip.trim() || '', 
-          country: 'Pakistan' 
+          country: 'Pakistan',
+          paymentReceipt: form.paymentMethod === 'EasyPaisa' ? paymentReceipt : undefined
         }, 
         paymentMethod: form.paymentMethod, 
+        paymentReceipt: form.paymentMethod === 'EasyPaisa' ? paymentReceipt : undefined,
         subtotal: total, 
         shippingFee, 
         discount: discountAmount, 
@@ -500,8 +544,91 @@ export default function Checkout() {
               ))}
 
               {form.paymentMethod === 'EasyPaisa' && (
-                <div className="payment-notice-banner">
-                  ⚡ <strong>EasyPaisa Instructions:</strong> Please transfer the exact order amount to <strong>03458999091 (Account Title: Huzaifa)</strong> and send the payment screenshot on WhatsApp after placing the order.
+                <div className="easypaisa-upload-card" style={{ marginTop: '16px', padding: '18px', background: 'var(--bg-card, #121217)', border: '1px solid #38bdf844', borderRadius: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <h4 style={{ margin: 0, color: '#38bdf8', fontSize: '15px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      ⚡ EasyPaisa Transfer Details
+                    </h4>
+                    <span style={{ fontSize: '11px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
+                      Step 1: Send Money
+                    </span>
+                  </div>
+
+                  <div style={{ background: 'rgba(0,0,0,0.25)', padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--border-light, #282830)', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ color: 'var(--text-secondary, #aaa)', fontSize: '13px' }}>Account Title:</span>
+                      <strong style={{ color: 'var(--text-primary, #fff)', fontSize: '14px' }}>Huzaifa</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ color: 'var(--text-secondary, #aaa)', fontSize: '13px' }}>EasyPaisa Number:</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <strong style={{ color: '#55c688', fontSize: '15px', letterSpacing: '0.5px' }}>0345-8999091</strong>
+                        <button 
+                          type="button" 
+                          onClick={() => { 
+                            navigator.clipboard.writeText('03458999091'); 
+                            toast.success('EasyPaisa number copied! 📋'); 
+                          }}
+                          style={{ background: 'rgba(255,255,255,0.12)', border: 'none', color: '#fff', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 600 }}
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: 'var(--text-secondary, #aaa)', fontSize: '13px' }}>Exact Amount:</span>
+                      <strong style={{ color: '#c9a84c', fontSize: '16px' }}>Rs. {grandTotal.toLocaleString()}</strong>
+                    </div>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid var(--border-light, #282830)', paddingTop: '14px' }}>
+                    <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontWeight: 700, color: 'var(--text-primary, #fff)' }}>Step 2: Upload Payment Screenshot (SS) *</span>
+                      <span style={{ fontSize: '11px', color: '#888' }}>Required for approval</span>
+                    </label>
+
+                    {!paymentReceipt && !receiptUploading && (
+                      <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '22px 16px', border: '2px dashed #444', borderRadius: '8px', cursor: 'pointer', background: 'rgba(255,255,255,0.02)', textAlign: 'center', transition: 'border-color 0.2s' }}>
+                        <FiUploadCloud size={28} color="#38bdf8" style={{ marginBottom: '8px' }} />
+                        <span style={{ fontSize: '13px', color: 'var(--text-primary, #eee)', fontWeight: 600 }}>Tap or Click to Select Screenshot (SS)</span>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted, #888)', marginTop: '4px' }}>Supports JPG, PNG, WEBP (Max 5MB)</span>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={handleReceiptUpload} 
+                          style={{ display: 'none' }} 
+                        />
+                      </label>
+                    )}
+
+                    {receiptUploading && (
+                      <div style={{ padding: '20px', textAlign: 'center', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: '1px solid #333' }}>
+                        <div style={{ color: '#38bdf8', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                          <span>⏳</span> Uploading payment screenshot...
+                        </div>
+                      </div>
+                    )}
+
+                    {paymentReceipt && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', background: 'rgba(85, 198, 136, 0.08)', border: '1px solid rgba(85, 198, 136, 0.35)', padding: '10px 14px', borderRadius: '8px' }}>
+                        <img src={paymentReceipt} alt="Receipt Preview" style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #444' }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ color: '#55c688', fontSize: '13px', fontWeight: 700 }}>✓ Screenshot Attached</div>
+                          <div style={{ color: 'var(--text-muted, #aaa)', fontSize: '11px', marginTop: '2px' }}>Admin will verify this proof to approve your order</div>
+                        </div>
+                        <label style={{ cursor: 'pointer', color: '#38bdf8', fontSize: '12px', fontWeight: 600, textDecoration: 'underline' }}>
+                          Change
+                          <input type="file" accept="image/*" onChange={handleReceiptUpload} style={{ display: 'none' }} />
+                        </label>
+                      </div>
+                    )}
+
+                    {errors.paymentReceipt && (
+                      <span className="field-error-text" style={{ display: 'block', marginTop: '6px', color: '#ef4444' }}>
+                        {errors.paymentReceipt}
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -641,6 +768,15 @@ export default function Checkout() {
                 <span className="review-label">Payment Mode:</span>
                 <span className="review-value">{form.paymentMethod}</span>
               </div>
+              {form.paymentMethod === 'EasyPaisa' && paymentReceipt && (
+                <div className="review-row" style={{ alignItems: 'center' }}>
+                  <span className="review-label">Payment Proof (SS):</span>
+                  <span className="review-value" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    <img src={paymentReceipt} alt="Payment SS" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #444' }} />
+                    <span style={{ color: '#55c688', fontSize: '12px' }}>✓ Attached</span>
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Pricing Summary */}
