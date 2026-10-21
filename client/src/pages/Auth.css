@@ -34,8 +34,30 @@
 }
 
 .auth-brand {
-  text-align: center; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 24px;
+}
+
+.auth-brand-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+}
+
+.auth-brand-logo:hover {
+  transform: scale(1.05);
+}
+
+.brand-adaptive-logo {
+  filter: none;
+}
+
+[data-theme="light"] .brand-adaptive-logo {
+  filter: invert(1);
 }
 
 .auth-title {

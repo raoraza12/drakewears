@@ -74,7 +74,7 @@ const AdminLayout = () => {
       <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link to="/" className="admin-logo" onClick={closeSidebarMobile} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', padding: '4px 0' }}>
-            <img src="/drakewears-logo.png?v=4" alt="drakewears" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
+            <img src="/drakewears-logo-white.png" alt="drakewears" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
           </Link>
           <button 
             onClick={toggleSidebar} 

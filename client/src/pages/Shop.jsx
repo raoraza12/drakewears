@@ -53,14 +53,15 @@ const Shop = () => {
     setSortBy('newest');
   };
 
-  // Derive categories dynamically from products
+  // Derive categories dynamically from products (excluding Drake Vault)
   const availableCategories = useMemo(() => {
     const set = new Set(['Tops', 'Bottoms']);
     products.forEach(p => {
-      if (p.category) {
-        if (p.category === 'Baggy Trousers') set.add('Bottoms');
-        else if (p.category === 'Drop Shoulder Tees') set.add('Tops');
-        else set.add(p.category);
+      const cat = (p.category || '').trim();
+      if (cat && cat.toLowerCase() !== 'drake vault' && !cat.toLowerCase().includes('vault')) {
+        if (cat === 'Baggy Trousers') set.add('Bottoms');
+        else if (cat === 'Drop Shoulder Tees') set.add('Tops');
+        else set.add(cat);
       }
     });
     return Array.from(set);
@@ -70,7 +71,11 @@ const Shop = () => {
 
   // Filter & sort
   const filteredProducts = useMemo(() => {
-    let result = [...products];
+    // Strictly exclude Drake Vault 1-of-1 items from standard retail shop
+    let result = products.filter(p => {
+      const cat = (p.category || '').toLowerCase().trim();
+      return cat !== 'drake vault' && !cat.includes('vault');
+    });
 
     // New Arrivals filter (via ?filter=new or category=new-arrivals)
     if (isNewFilter) {

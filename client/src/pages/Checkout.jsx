@@ -82,27 +82,29 @@ export default function Checkout() {
       errs.name = 'Name can only contain alphabetic letters, spaces, hyphens, apostrophes, and parentheses.';
     }
 
-    const cleanPhoneDigits = form.phone.replace(/[\s\-()]/g, '').replace(/^0092/, '+92');
+    const cleanPhoneDigits = form.phone.replace(/[\s\-()]/g, '');
     if (!cleanPhoneDigits) {
-      errs.phone = 'Phone number is required.';
-    } else if (!/^((\+92)?(0)?3[0-9]{9})$/.test(cleanPhoneDigits)) {
-      errs.phone = 'Enter a valid Pakistani mobile number (e.g. 0321-8254922, 0092-321-4456677, or +923218254922).';
-    } else if (/^(\+92|0)?3(\d)\2{8}$/.test(cleanPhoneDigits)) {
-      errs.phone = 'Please enter a genuine active mobile number.';
+      errs.phone = 'Active mobile number is required.';
+    } else if (!/^((\+92|0092|92)?(0)?3[0-5][0-9]{8})$/.test(cleanPhoneDigits)) {
+      errs.phone = 'Enter a valid Pakistani mobile number (e.g. 0321-8254922 or 0300-1234567).';
+    } else if (/^(\+92|0092|92|0)?3(\d)\2{8}$/.test(cleanPhoneDigits)) {
+      errs.phone = 'Please enter a genuine active mobile number (repeating digits rejected).';
+    } else if (['12345678', '87654321', '01234567', '11223344', '00112233'].some(seq => cleanPhoneDigits.includes(seq))) {
+      errs.phone = 'Please enter a genuine mobile number for delivery verification.';
     }
 
     const cleanEmail = form.email.trim();
     if (!cleanEmail) {
-      errs.email = 'Email address is required to place an order.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      errs.email = 'Please enter a valid email address (e.g. name@gmail.com).';
+      errs.email = 'Email address is compulsory for order confirmation and tracking.';
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(cleanEmail)) {
+      errs.email = 'Please enter a valid email address (e.g. customer@gmail.com).';
     }
 
     const cleanStreet = form.street.trim();
     if (!cleanStreet) {
-      errs.street = 'Complete street address is required.';
-    } else if (cleanStreet.length < 5) {
-      errs.street = 'Street address must be at least 5 characters (House #, Street, Area).';
+      errs.street = 'Complete street delivery address is required.';
+    } else if (cleanStreet.length < 10) {
+      errs.street = 'Please provide detailed delivery address (House/Flat #, Street #, Sector/Area).';
     }
 
     const cleanCity = form.city.trim();
@@ -110,6 +112,8 @@ export default function Checkout() {
       errs.city = 'City name is required.';
     } else if (cleanCity.length < 2) {
       errs.city = 'City must be at least 2 characters.';
+    } else if (!/^[\p{L}\p{M}\s'.-]{2,50}$/u.test(cleanCity)) {
+      errs.city = 'City can only contain letters and spaces.';
     }
 
     return { isValid: Object.keys(errs).length === 0, errors: errs };
@@ -155,6 +159,12 @@ export default function Checkout() {
       setErrors(valErrors);
       const firstError = Object.values(valErrors)[0];
       toast.error(firstError);
+      const firstKey = Object.keys(valErrors)[0];
+      const targetInput = document.querySelector(`[name="${firstKey}"]`);
+      if (targetInput) {
+        targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetInput.focus();
+      }
       return;
     }
 
@@ -174,8 +184,12 @@ export default function Checkout() {
       let normalizedPhone = rawPhone;
       if (normalizedPhone.startsWith('+92')) {
         normalizedPhone = '0' + normalizedPhone.slice(3);
+      } else if (normalizedPhone.startsWith('0092')) {
+        normalizedPhone = '0' + normalizedPhone.slice(4);
       } else if (normalizedPhone.startsWith('92') && normalizedPhone.length === 12) {
         normalizedPhone = '0' + normalizedPhone.slice(2);
+      } else if (normalizedPhone.length === 10 && normalizedPhone.startsWith('3')) {
+        normalizedPhone = '0' + normalizedPhone;
       }
 
       const orderItems = items.map(i => ({ 
@@ -220,16 +234,17 @@ export default function Checkout() {
       toast.success('Order placed successfully! 🎉');
       setPlacedOrder({
         id: createdOrder?.id || 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+        orderNumber: createdOrder?.orderNumber,
         total: grandTotal,
         items: orderItems,
         paymentMethod: form.paymentMethod,
         shippingAddress: { 
-          name: cleanName,
-          phone: normalizedPhone,
+          name: cleanName, 
+          phone: normalizedPhone, 
           email: form.email.trim(),
-          street: form.street.trim(),
-          city: form.city.trim(),
-          state: form.state.trim(),
+          street: form.street.trim(), 
+          city: form.city.trim(), 
+          state: form.state.trim(), 
           zip: form.zip.trim()
         }
       });
@@ -306,7 +321,7 @@ export default function Checkout() {
                 View My Orders
               </Link>
             ) : (
-              <Link to="/track" className="btn-primary" style={{ textAlign: 'center', justifyContent: 'center' }}>
+              <Link to={`/track?query=${placedOrder.orderNumber || placedOrder.id}`} className="btn-primary" style={{ textAlign: 'center', justifyContent: 'center' }}>
                 Track Order Status
               </Link>
             )}
@@ -367,7 +382,7 @@ export default function Checkout() {
               </div>
 
               <div className="form-group" style={{ marginTop: 14 }}>
-                <label className="form-label">Email Address * (Required for order confirmation & tracking)</label>
+                <label className="form-label">Email Address * (Compulsory for order confirmation & tracking updates)</label>
                 <input 
                   className={`form-input ${errors.email ? 'input-error' : ''}`} 
                   name="email" 
@@ -401,12 +416,36 @@ export default function Checkout() {
                   <input 
                     className={`form-input ${errors.city ? 'input-error' : ''}`} 
                     name="city" 
+                    list="pak-cities"
                     autoComplete="address-level2"
                     value={form.city} 
                     onChange={handleChange} 
                     required 
                     placeholder="Lahore / Karachi / Islamabad" 
                   />
+                  <datalist id="pak-cities">
+                    <option value="Karachi" />
+                    <option value="Lahore" />
+                    <option value="Islamabad" />
+                    <option value="Rawalpindi" />
+                    <option value="Faisalabad" />
+                    <option value="Multan" />
+                    <option value="Peshawar" />
+                    <option value="Quetta" />
+                    <option value="Sialkot" />
+                    <option value="Gujranwala" />
+                    <option value="Hyderabad" />
+                    <option value="Bahawalpur" />
+                    <option value="Sargodha" />
+                    <option value="Abbottabad" />
+                    <option value="Sukkur" />
+                    <option value="Gujrat" />
+                    <option value="Mardan" />
+                    <option value="Kasur" />
+                    <option value="Sahiwal" />
+                    <option value="Wah Cantt" />
+                    <option value="Mirpur" />
+                  </datalist>
                   {errors.city && <span className="field-error-text">{errors.city}</span>}
                 </div>
                 <div className="form-group">

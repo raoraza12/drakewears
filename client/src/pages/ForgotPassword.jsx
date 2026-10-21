@@ -40,8 +40,10 @@ export default function ForgotPassword() {
   return (
     <div className="auth-page page-wrapper">
       <div className="auth-card animate-fade-in">
-        <div className="auth-brand text-script" style={{ fontSize: '3.5rem', lineHeight: 1, textTransform: 'none', background: 'none', WebkitTextFillColor: 'initial', color: 'var(--text-primary)' }}>
-          drakewears
+        <div className="auth-brand">
+          <Link to="/" aria-label="DrakeWears Home" style={{ display: 'inline-flex', justifyContent: 'center' }}>
+            <img src="/drakewears-logo-white.png" alt="drakewears" className="auth-brand-logo brand-adaptive-logo" />
+          </Link>
         </div>
         <h1 className="auth-title">Reset Password</h1>
         <p className="auth-sub">Enter your email and we'll send you instructions to reset your password.</p>

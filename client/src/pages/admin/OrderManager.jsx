@@ -74,7 +74,7 @@ const OrderManager = () => {
   const handleApproveOrder = async (id) => {
     try {
       await API.put(`/admin/orders/${id}`, { status: 'processing' });
-      toast.success('Order Approved & moved to Processing! ✨');
+      toast.success('Order Approved & Customer Notified via Email! ✨');
       setOrders(orders.map(o => (o.id === id || o._id === id) ? { ...o, status: 'processing' } : o));
     } catch (err) {
       toast.error('Failed to approve order');

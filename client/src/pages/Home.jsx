@@ -65,14 +65,21 @@ const Home = () => {
   const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0 });
   const minSwipeDistance = 40;
 
-  // Fetch popular products & newest arrivals
+  // Fetch popular products & newest arrivals (excluding exclusive Drake Vault 1-of-1s)
   useEffect(() => {
-    API.get('/products?sort=popular&limit=4')
-      .then(res => setPopularProducts(res.data.products || res.data || []))
+    API.get('/products?sort=popular&limit=8')
+      .then(res => {
+        const list = (res.data.products || res.data || [])
+          .filter(p => (p.category || '').toLowerCase() !== 'drake vault');
+        setPopularProducts(list.slice(0, 4));
+      })
       .catch(err => console.error(err));
 
     API.get('/products?sort=newest&limit=8')
-      .then(res => setNewArrivals(res.data.products || res.data || []))
+      .then(res => {
+        const list = res.data.products || res.data || [];
+        setNewArrivals(list.slice(0, 8));
+      })
       .catch(err => console.error(err));
   }, []);
 
@@ -243,37 +250,6 @@ const Home = () => {
 
         </section>
 
-        {/* ==========================================================
-            2. LUXURY 3D MONOCHROME MARQUEE TICKER
-            ========================================================== */}
-        <section className="marquee-3d-section">
-          <div className="marquee-3d-track">
-            <div className="marquee-3d-group">
-              <span>DRAKEWEARS • ATELIER CUTS</span>
-              <span className="marquee-divider">/</span>
-              <span>HEAVYWEIGHT 450 GSM</span>
-              <span className="marquee-divider">/</span>
-              <span>BAGGY STREETWEAR FIT</span>
-              <span className="marquee-divider">/</span>
-              <span>LIMITED QUANTITIES</span>
-              <span className="marquee-divider">/</span>
-              <span>ZERO COMPROMISE</span>
-              <span className="marquee-divider">/</span>
-            </div>
-            <div className="marquee-3d-group" aria-hidden="true">
-              <span>DRAKEWEARS • ATELIER CUTS</span>
-              <span className="marquee-divider">/</span>
-              <span>HEAVYWEIGHT 450 GSM</span>
-              <span className="marquee-divider">/</span>
-              <span>BAGGY STREETWEAR FIT</span>
-              <span className="marquee-divider">/</span>
-              <span>LIMITED QUANTITIES</span>
-              <span className="marquee-divider">/</span>
-              <span>ZERO COMPROMISE</span>
-              <span className="marquee-divider">/</span>
-            </div>
-          </div>
-        </section>
 
         {/* ==========================================================
             3. CATEGORIES: 3D HOLOGRAPHIC TILES
@@ -333,63 +309,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* ==========================================================
-            3.5. THE DRAKE VAULT: 1-OF-1 CURATED ARCHIVE SPOTLIGHT
-            ========================================================== */}
-        <section className="home-vault-spotlight scroll-reveal">
-          <div className="container">
-            <div className="home-vault-card">
-              <div className="home-vault-content">
-                <div className="home-vault-badge-row">
-                  <span className="home-vault-live-pill">
-                    <span className="home-vault-live-dot"></span> ARCHIVE DROP
-                  </span>
-                  <span className="home-vault-tag-pill">STRICT 1-OF-1</span>
-                </div>
-
-                <h2 className="home-vault-title">THE DRAKE VAULT</h2>
-                <p className="home-vault-slogan">
-                  1-of-1 Curated Vintage &amp; Archive Pieces
-                </p>
-
-                <div className="home-vault-coming-soon-pill">
-                  <FiLock size={14} className="coming-soon-lock-icon" />
-                  <span>COMING SOON • DROP #01</span>
-                </div>
-
-                <div className="home-vault-action-row">
-                  <Link to="/vault" className="home-vault-cta-btn">
-                    <FiLock size={16} /> ENTER THE VAULT
-                  </Link>
-                  <Link to="/vault" className="home-vault-link-btn">
-                    Explore Drops <FiArrowRight size={15} />
-                  </Link>
-                </div>
-              </div>
-
-              <div className="home-vault-visual">
-                <div className="vault-visual-card">
-                  <div className="vault-card-glow"></div>
-                  <div className="vault-card-header">
-                    <span className="vault-chip-pill">1 OF 1</span>
-                    <span className="vault-chip-status">SEALED</span>
-                  </div>
-                  <div className="vault-card-center">
-                    <div className="vault-lock-orb">
-                      <FiLock size={32} />
-                    </div>
-                    <div className="vault-card-big-title">ARCHIVE GRAILS</div>
-                    <div className="vault-card-drop-tag">DROP #01 • COMING SOON</div>
-                  </div>
-                  <div className="vault-card-footer">
-                    <span>STATUS: PREPARING</span>
-                    <span>STRICT EXCLUSIVITY</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* ==========================================================
             4. TRUST STANDARDS (MINIMAL PUNCHY PILLARS)

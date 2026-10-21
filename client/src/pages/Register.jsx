@@ -72,7 +72,11 @@ export default function Register() {
   return (
     <div className="auth-page page-wrapper">
       <div className="auth-card">
-        <div className="auth-brand text-script" style={{ fontSize: '3.5rem', lineHeight: 1, textTransform: 'none', background: 'none', WebkitTextFillColor: 'initial', color: 'var(--text-primary)' }}>drakewears</div>
+        <div className="auth-brand">
+          <Link to="/" aria-label="DrakeWears Home" style={{ display: 'inline-flex', justifyContent: 'center' }}>
+            <img src="/drakewears-logo-white.png" alt="drakewears" className="auth-brand-logo brand-adaptive-logo" />
+          </Link>
+        </div>
         <h1 className="auth-title">Join drakewears</h1>
         <p className="auth-sub">Create your account and start shopping</p>
 

@@ -415,9 +415,203 @@ const sendAdminCancellationNotification = async (order, reason = '', cancelledBy
   }
 };
 
+/**
+ * Send order status update email (Approval/Processing, Shipped, Delivered) to customer
+ */
+const sendCustomerOrderStatusUpdate = async (order, items = [], newStatus = 'processing', trackingNumber = '', notes = '') => {
+  const customerEmail = order.shippingAddress?.email || (order.user?.email && !order.user.email.includes('@drakewearsbrand.local') && !order.user.email.includes('@drakewears.pk') ? order.user.email : null);
+  if (!customerEmail) {
+    console.log('[Mailer] Skipping status update email: No valid customer email provided.');
+    return false;
+  }
+
+  const transporter = createTransporter();
+  if (!transporter) {
+    console.log('[Mailer] Skipping status update email: SMTP credentials not configured.');
+    return false;
+  }
+
+  const customerName = order.shippingAddress?.name || 'Valued Customer';
+  const customerPhone = order.shippingAddress?.phone || 'N/A';
+  const orderNumber = order.orderNumber ? `#${order.orderNumber}` : `#${String(order.id).slice(-8).toUpperCase()}`;
+  const addressStr = [
+    order.shippingAddress?.street,
+    order.shippingAddress?.city,
+    order.shippingAddress?.state || 'Pakistan'
+  ].filter(Boolean).join(', ');
+
+  let statusTitle = `Order Update #${orderNumber} — DRAKEWEARS`;
+  let statusBadgeText = newStatus.toUpperCase();
+  let statusBadgeColor = '#c9a84c';
+  let statusBadgeBg = 'rgba(201, 168, 76, 0.15)';
+  let headlineMessage = `Your order status has been updated to <strong>${newStatus}</strong>.`;
+  let bannerHtml = '';
+
+  if (newStatus === 'processing' || newStatus === 'confirmed') {
+    statusTitle = `🎉 Order Approved & In Processing #${orderNumber} — DRAKEWEARS`;
+    statusBadgeText = 'ORDER APPROVED & PROCESSING';
+    statusBadgeColor = '#55c688';
+    statusBadgeBg = 'rgba(85, 198, 136, 0.15)';
+    headlineMessage = `Good news! Your order <strong style="color: #c9a84c;">${orderNumber}</strong> has been officially <strong>approved and verified</strong> by our team. Our master atelier is now preparing and packing your package for dispatch.`;
+    bannerHtml = `
+      <div style="background: rgba(85, 198, 136, 0.08); border: 1px solid rgba(85, 198, 136, 0.25); border-radius: 8px; padding: 14px; margin-bottom: 20px; text-align: center;">
+        <p style="margin: 0; font-size: 14px; font-weight: bold; color: #55c688;">🚚 Estimated Delivery: 2 to 4 Working Days</p>
+        <p style="margin: 4px 0 0; font-size: 13px; color: #aaa;">Courier partners: Leopards / TCS Express will deliver directly to your doorstep.</p>
+      </div>
+    `;
+  } else if (newStatus === 'shipped') {
+    statusTitle = `🚚 Your Order #${orderNumber} Has Been Shipped! — DRAKEWEARS`;
+    statusBadgeText = 'DISPATCHED / ON THE WAY';
+    statusBadgeColor = '#38bdf8';
+    statusBadgeBg = 'rgba(56, 189, 248, 0.15)';
+    headlineMessage = `Your parcel <strong style="color: #c9a84c;">${orderNumber}</strong> has departed our facility and has been handed over to the courier partner for delivery to your doorstep.`;
+    bannerHtml = `
+      <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 14px; margin-bottom: 20px; text-align: center;">
+        <p style="margin: 0; font-size: 14px; font-weight: bold; color: #38bdf8;">📦 Courier Tracking</p>
+        <p style="margin: 4px 0 0; font-size: 16px; font-weight: bold; color: #ffffff; letter-spacing: 1px;">${trackingNumber || 'Tracking will update shortly'}</p>
+        <p style="margin: 4px 0 0; font-size: 12px; color: #aaa;">Expected delivery in 24-48 hours. Please keep Cash on Delivery amount ready.</p>
+      </div>
+    `;
+  } else if (newStatus === 'delivered') {
+    statusTitle = `📦 Your Order #${orderNumber} Has Been Delivered! — DRAKEWEARS`;
+    statusBadgeText = 'DELIVERED';
+    statusBadgeColor = '#4ade80';
+    statusBadgeBg = 'rgba(74, 222, 128, 0.15)';
+    headlineMessage = `Your order <strong style="color: #c9a84c;">${orderNumber}</strong> has been marked as successfully delivered. Thank you for choosing DRAKEWEARS!`;
+    bannerHtml = `
+      <div style="background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.25); border-radius: 8px; padding: 14px; margin-bottom: 20px; text-align: center;">
+        <p style="margin: 0; font-size: 14px; font-weight: bold; color: #4ade80;">✨ Package Delivered</p>
+        <p style="margin: 4px 0 0; font-size: 13px; color: #aaa;">We hope you enjoy your new streetwear pieces. Tag @drakewears_official on Instagram!</p>
+      </div>
+    `;
+  }
+
+  let itemsHtml = '';
+  if (items && items.length > 0) {
+    itemsHtml = items.map(item => `
+      <tr>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #222; color: #eee;">
+          <strong>${item.name || 'Product'}</strong>
+          ${item.size ? `<br><small style="color: #999;">Size: ${item.size}</small>` : ''}
+          ${item.color ? `<br><small style="color: #999;">Color: ${item.color}</small>` : ''}
+        </td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #222; text-align: center; color: #eee;">
+          ${item.quantity || 1}
+        </td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #222; text-align: right; color: #c9a84c; font-weight: bold;">
+          Rs. ${(item.price || 0).toLocaleString()}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  const trackQuery = order.orderNumber || String(order.id).slice(-8).toUpperCase();
+  const trackUrl = `https://drakewears.com/track?query=${trackQuery}`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+    <body style="margin: 0; padding: 0; background-color: #0b0b0e; font-family: 'Helvetica Neue', Arial, sans-serif; color: #fff;">
+      <div style="max-width: 600px; margin: 20px auto; background-color: #121217; border: 1px solid #282830; border-radius: 12px; overflow: hidden;">
+        
+        <!-- Header -->
+        <div style="background-color: #0a0a0e; padding: 26px 20px; text-align: center; border-bottom: 1px solid #222;">
+          <h1 style="color: #c9a84c; margin: 0; font-size: 26px; letter-spacing: 3px; font-weight: 800;">DRAKEWEARS</h1>
+          <div style="display: inline-block; margin-top: 10px; padding: 4px 12px; background: ${statusBadgeBg}; border: 1px solid ${statusBadgeColor}; border-radius: 20px;">
+            <span style="color: ${statusBadgeColor}; font-size: 11px; font-weight: bold; letter-spacing: 1px;">${statusBadgeText}</span>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div style="padding: 28px 22px;">
+          <h2 style="margin: 0 0 10px; font-size: 19px; color: #fff;">Hello ${customerName},</h2>
+          <p style="color: #bbb; font-size: 14px; margin: 0 0 20px; line-height: 1.5;">
+            ${headlineMessage}
+          </p>
+
+          ${bannerHtml}
+
+          <!-- Delivery Snapshot -->
+          <div style="background-color: #181820; border-radius: 8px; padding: 16px; margin-bottom: 20px; border: 1px solid #222;">
+            <p style="margin: 0 0 8px; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">Delivery & Customer Info</p>
+            <p style="margin: 3px 0; font-size: 13px; color: #ddd;"><strong>Recipient:</strong> ${customerName}</p>
+            <p style="margin: 3px 0; font-size: 13px; color: #ddd;"><strong>Phone Number:</strong> ${customerPhone}</p>
+            <p style="margin: 3px 0; font-size: 13px; color: #ddd;"><strong>Delivery Address:</strong> ${addressStr}</p>
+            <p style="margin: 3px 0; font-size: 13px; color: #ddd;"><strong>Payment:</strong> ${order.paymentMethod || 'Cash on Delivery'} (${order.paymentStatus || 'pending'})</p>
+            ${trackingNumber ? `<p style="margin: 3px 0; font-size: 13px; color: #38bdf8;"><strong>Tracking #:</strong> ${trackingNumber}</p>` : ''}
+          </div>
+
+          <!-- Items Table -->
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+              <tr style="background: #0f0f14; border-bottom: 1px solid #333;">
+                <th style="padding: 10px; text-align: left; font-size: 12px; color: #a0a0a8; text-transform: uppercase;">Item</th>
+                <th style="padding: 10px; text-align: center; font-size: 12px; color: #a0a0a8; text-transform: uppercase;">Qty</th>
+                <th style="padding: 10px; text-align: right; font-size: 12px; color: #a0a0a8; text-transform: uppercase;">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+
+          <!-- Total Calculation -->
+          <div style="border-top: 1px solid #333; padding-top: 12px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #aaa; font-size: 13px;">
+              <span>Subtotal:</span>
+              <span>Rs. ${(order.subtotal || 0).toLocaleString()}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #aaa; font-size: 13px;">
+              <span>Shipping:</span>
+              <span>${order.shippingFee === 0 ? 'FREE' : `Rs. ${(order.shippingFee || 0).toLocaleString()}`}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid #333; font-size: 16px; font-weight: bold; color: #c9a84c;">
+              <span>Total Payable:</span>
+              <span>Rs. ${(order.total || 0).toLocaleString()}</span>
+            </div>
+          </div>
+
+          <!-- Live Tracking CTA -->
+          <div style="text-align: center; margin: 26px 0 16px;">
+            <a href="${trackUrl}" style="background-color: #c9a84c; color: #000; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block; letter-spacing: 0.5px;">
+              🔍 Track Live Order Status
+            </a>
+          </div>
+
+          <p style="font-size: 12px; color: #777; text-align: center; margin: 16px 0 0;">
+            Need help or need to update your address? Chat directly with our Atelier team on WhatsApp at <a href="https://api.whatsapp.com/send?phone=923218254922" style="color: #25d366; text-decoration: none;">+92 321 8254922</a>.
+          </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #0a0a0e; padding: 16px; text-align: center; border-top: 1px solid #222;">
+          <p style="color: #666; margin: 0; font-size: 11px;">DRAKEWEARS • Modern Luxury Streetwear • Lahore & Karachi, Pakistan</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"DRAKEWEARS" <${FROM_EMAIL}>`,
+      to: customerEmail,
+      subject: statusTitle,
+      html
+    });
+    console.log(`[Mailer] Order status update (${newStatus}) sent to customer: ${customerEmail} (ID: ${info.messageId})`);
+    return true;
+  } catch (err) {
+    console.error(`[Mailer] Failed to send customer status update (${newStatus}):`, err.message);
+    return false;
+  }
+};
+
 module.exports = { 
   sendOrderNotification, 
   sendCustomerOrderConfirmation, 
   sendCustomerOrderCancellation,
-  sendAdminCancellationNotification
+  sendAdminCancellationNotification,
+  sendCustomerOrderStatusUpdate
 };

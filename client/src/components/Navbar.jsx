@@ -96,7 +96,11 @@ const Navbar = () => {
             </button>
 
             <Link to="/" className="outfitters-brand-logo" aria-label="DrakeWears Home">
-              <span className="outfitters-logo-text">drakewears</span>
+              <img 
+                src="/drakewears-logo-white.png" 
+                alt="drakewears" 
+                className="outfitters-logo-img" 
+              />
             </Link>
 
             {/* Nav links right next to logo, exactly like Outfitters MEN, WOMEN, JUNIORS */}
@@ -207,7 +211,13 @@ const Navbar = () => {
       <div className={`outfitters-drawer-overlay ${mobileMenuOpen ? 'is-open' : ''}`} onClick={() => setMobileMenuOpen(false)}>
         <div className="outfitters-drawer" onClick={(e) => e.stopPropagation()}>
           <div className="outfitters-drawer-header">
-            <span className="outfitters-logo-text" style={{ fontSize: '1.6rem' }}>drakewears</span>
+            <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <img 
+                src="/drakewears-logo-white.png" 
+                alt="drakewears" 
+                style={{ height: '34px', width: 'auto', objectFit: 'contain' }} 
+              />
+            </Link>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <button 
                 className="drawer-theme-btn" 

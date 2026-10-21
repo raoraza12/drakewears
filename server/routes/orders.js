@@ -145,49 +145,70 @@ router.post('/', optionalAuth, async (req, res) => {
     }
 
     // 2. Strict Pakistani Mobile Number Validation & Normalization
-    const rawPhone = (shippingAddress?.phone || '').replace(/[\s\-\(\)]/g, '').replace(/^0092/, '+92');
+    const rawPhone = (shippingAddress?.phone || '').replace(/[\s\-\(\)]/g, '');
     if (!rawPhone) {
-      return res.status(400).json({ message: 'Phone number is required.' });
+      return res.status(400).json({ message: 'Active mobile number is required for delivery confirmation.' });
     }
-    const isPakPhone = /^((\+92)?(0)?3[0-9]{9})$/.test(rawPhone);
+    // Must be a valid Pakistani mobile number starting with 0300 to 0359
+    const isPakPhone = /^((\+92|0092|92)?(0)?3[0-5][0-9]{8})$/.test(rawPhone);
     if (!isPakPhone) {
-      return res.status(400).json({ message: 'Invalid phone number. Must be a valid Pakistani mobile number (e.g. 0321-8254922, 0092-321-4456677, or +923218254922).' });
+      return res.status(400).json({ message: 'Invalid phone number. Must be a valid Pakistani active mobile number (e.g. 0321-8254922, +92300-1234567).' });
     }
-    // Reject dummy repeating sequences e.g. 03000000000
-    if (/^(\+92|0)?3(\d)\2{8}$/.test(rawPhone)) {
-      return res.status(400).json({ message: 'Please provide a genuine phone number for delivery verification.' });
+    // Reject dummy repeating sequences e.g. 03000000000, 03111111111
+    if (/^(\+92|0092|92|0)?3(\d)\2{8}$/.test(rawPhone)) {
+      return res.status(400).json({ message: 'Please provide a genuine active mobile number. Repeating dummy numbers are not accepted.' });
+    }
+    // Reject obvious sequential fake numbers
+    const fakeSequences = ['12345678', '87654321', '01234567', '11223344', '00112233'];
+    if (fakeSequences.some(seq => rawPhone.includes(seq))) {
+      return res.status(400).json({ message: 'Please provide your genuine active phone number for parcel delivery.' });
     }
 
     // Standardize to clean 03XXXXXXXXX (11 digits) for database consistency
     let normalizedPhone = rawPhone;
     if (normalizedPhone.startsWith('+92')) {
       normalizedPhone = '0' + normalizedPhone.slice(3);
+    } else if (normalizedPhone.startsWith('0092')) {
+      normalizedPhone = '0' + normalizedPhone.slice(4);
     } else if (normalizedPhone.startsWith('92') && normalizedPhone.length === 12) {
       normalizedPhone = '0' + normalizedPhone.slice(2);
-    } else if (normalizedPhone.startsWith('0092') && normalizedPhone.length === 14) {
-      normalizedPhone = '0' + normalizedPhone.slice(4);
+    } else if (normalizedPhone.length === 10 && normalizedPhone.startsWith('3')) {
+      normalizedPhone = '0' + normalizedPhone;
     }
 
-    // 3. Email Validation (Mandatory for order confirmation & tracking)
+    // 3. Email Validation (MANDATORY & COMPULSORY)
     const cleanEmail = (shippingAddress?.email || '').trim().toLowerCase();
     if (!cleanEmail) {
-      return res.status(400).json({ message: 'Email address is required to place an order.' });
+      return res.status(400).json({ message: 'Email address is compulsory for order confirmation, digital invoice, and tracking updates.' });
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      return res.status(400).json({ message: 'Please provide a valid email address (e.g. name@gmail.com).' });
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(cleanEmail)) {
+      return res.status(400).json({ message: 'Please provide a valid active email address (e.g. name@gmail.com).' });
+    }
+    const dummyEmails = ['test@test.com', 'a@a.com', 'abc@abc.com', 'admin@admin.com', 'xyz@xyz.com', 'fake@fake.com'];
+    if (dummyEmails.includes(cleanEmail)) {
+      return res.status(400).json({ message: 'Please provide your genuine email address so we can send your order confirmation.' });
     }
 
-    // 4. Address Validation
+    // 4. Detailed Address & City Validation
     const cleanStreet = (shippingAddress?.street || '').trim();
     const cleanCity = (shippingAddress?.city || '').trim();
     const cleanState = (shippingAddress?.state || 'Punjab').trim();
     const cleanZip = (shippingAddress?.zip || '').trim();
 
-    if (!cleanStreet || cleanStreet.length < 5) {
-      return res.status(400).json({ message: 'Please provide a complete street delivery address (at least 5 characters).' });
+    if (!cleanStreet || cleanStreet.length < 10) {
+      return res.status(400).json({ message: 'Please provide a complete street delivery address (House/Apartment #, Street, Area/Sector) so the courier can deliver your parcel.' });
     }
+    const lowStreet = cleanStreet.toLowerCase();
+    const dummyStreets = ['karachi', 'lahore', 'islamabad', 'rawalpindi', 'peshawar', 'address', 'test', 'test address', 'near masjid', 'my house', 'home'];
+    if (dummyStreets.includes(lowStreet) || cleanStreet.split(/\s+/).length < 2) {
+      return res.status(400).json({ message: 'Please provide complete delivery details (House/Flat #, Street #, Sector/Area) for courier dispatch.' });
+    }
+
     if (!cleanCity || cleanCity.length < 2) {
       return res.status(400).json({ message: 'Please provide a valid city name (at least 2 characters).' });
+    }
+    if (!/^[\p{L}\p{M}\s'.\-]{2,50}$/u.test(cleanCity)) {
+      return res.status(400).json({ message: 'City name can only contain letters and spaces.' });
     }
 
     // 5. Cart Items Validation
@@ -384,21 +405,33 @@ router.post('/whatsapp', optionalAuth, async (req, res) => {
       notes
     } = req.body;
 
-    // Strict Phone Number & Email Validation
-    const rawPhone = (phoneNumber || '').replace(/[\s\-\(\)]/g, '').replace(/^0092/, '+92');
-    if (!rawPhone || !/^((\+92)?(0)?3[0-9]{9})$/.test(rawPhone)) {
-      return res.status(400).json({ message: 'Valid Pakistani mobile number (03XX-XXXXXXX) is required.' });
+    // Strict Phone Number & Compulsory Email Normalization
+    const rawPhone = (phoneNumber || '').replace(/[\s\-\(\)]/g, '');
+    if (!rawPhone || !/^((\+92|0092|92)?(0)?3[0-5][0-9]{8})$/.test(rawPhone)) {
+      return res.status(400).json({ message: 'Valid Pakistani active mobile number (03XX-XXXXXXX) is required.' });
     }
+    // Reject repeating dummy sequences
+    if (/^(\+92|0092|92|0)?3(\d)\2{8}$/.test(rawPhone)) {
+      return res.status(400).json({ message: 'Please provide a genuine active mobile number.' });
+    }
+
     let normalizedPhone = rawPhone;
     if (normalizedPhone.startsWith('+92')) {
       normalizedPhone = '0' + normalizedPhone.slice(3);
+    } else if (normalizedPhone.startsWith('0092')) {
+      normalizedPhone = '0' + normalizedPhone.slice(4);
     } else if (normalizedPhone.startsWith('92') && normalizedPhone.length === 12) {
       normalizedPhone = '0' + normalizedPhone.slice(2);
+    } else if (normalizedPhone.length === 10 && normalizedPhone.startsWith('3')) {
+      normalizedPhone = '0' + normalizedPhone;
     }
 
     const cleanEmail = (email || '').trim().toLowerCase();
-    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      return res.status(400).json({ message: 'Valid email address is mandatory for order updates and tracking.' });
+    if (!cleanEmail) {
+      return res.status(400).json({ message: 'Email address is compulsory for order confirmation and receipts.' });
+    }
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(cleanEmail)) {
+      return res.status(400).json({ message: 'Please provide a valid active email address (e.g. name@gmail.com).' });
     }
 
     let userId = req.user?.id;

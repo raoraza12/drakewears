@@ -302,13 +302,28 @@ const ProductDetail = () => {
   const handleWhatsappOrder = async (e) => {
     e.preventDefault();
 
-    const cleanPhoneDigits = customerPhone.replace(/[\s\-()]/g, '').replace(/^0092/, '+92');
-    if (!/^((\+92)?(0)?3[0-9]{9})$/.test(cleanPhoneDigits)) {
+    const cleanName = customerName.trim();
+    if (!cleanName || cleanName.length < 3) {
+      toast.error('Please enter your full name (at least 3 characters)');
+      return;
+    }
+
+    const cleanPhoneDigits = customerPhone.replace(/[\s\-()]/g, '');
+    if (!cleanPhoneDigits || !/^((\+92|0092|92)?(0)?3[0-5][0-9]{8})$/.test(cleanPhoneDigits)) {
       toast.error('Please enter a valid Pakistani mobile number (e.g. 0321-8254922)');
       return;
     }
+    if (/^(\+92|0092|92|0)?3(\d)\2{8}$/.test(cleanPhoneDigits)) {
+      toast.error('Please enter a genuine active mobile number');
+      return;
+    }
+
     const cleanEmail = customerEmail.trim().toLowerCase();
-    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+    if (!cleanEmail) {
+      toast.error('Email address is compulsory for order confirmation & tracking');
+      return;
+    }
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(cleanEmail)) {
       toast.error('Please enter a valid email address (e.g. customer@gmail.com)');
       return;
     }
@@ -828,12 +843,12 @@ const ProductDetail = () => {
                   />
                 </div>
                 <div className="form-group" style={{ marginBottom: '16px' }}>
-                  <label htmlFor="wa-email">Email Address * (For order updates)</label>
+                  <label htmlFor="wa-email">Email Address * (For order updates & confirmation)</label>
                   <input 
                     type="email" 
                     id="wa-email" 
                     className="form-input" 
-                    required 
+                    required
                     placeholder="customer@gmail.com"
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}

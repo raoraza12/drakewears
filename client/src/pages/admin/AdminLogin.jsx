@@ -44,8 +44,8 @@ export default function AdminLogin() {
       <div style={{ width: '100%', maxWidth: '420px', padding: 'clamp(24px, 6vw, 40px)', backgroundColor: '#141414', borderRadius: '14px', border: '1px solid #333', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
         
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h1 className="text-script" style={{ fontSize: '3rem', color: '#fff', margin: 0, lineHeight: 1 }}>drakewears</h1>
-          <p style={{ color: '#888', marginTop: '8px', fontSize: '0.9rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Admin Portal</p>
+          <img src="/drakewears-logo-white.png" alt="drakewears" style={{ height: '46px', width: 'auto', objectFit: 'contain', margin: '0 auto 8px' }} />
+          <p style={{ color: '#888', marginTop: '8px', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Admin Portal</p>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

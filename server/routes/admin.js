@@ -5,7 +5,8 @@ const { verifyToken, isAdmin } = require('../middleware/auth');
 const { 
   sendOrderNotification, 
   sendCustomerOrderCancellation, 
-  sendAdminCancellationNotification 
+  sendAdminCancellationNotification,
+  sendCustomerOrderStatusUpdate
 } = require('../lib/mailer');
 
 // Protect all admin routes
@@ -272,19 +273,30 @@ router.put('/orders/:id', async (req, res) => {
     if (trackingNumber !== undefined) updateData.trackingNumber = String(trackingNumber).trim();
     if (notes !== undefined) updateData.notes = String(notes).trim();
 
-    // If order is now being cancelled, restore product stock
-    if (status === 'cancelled' && currentOrder.status !== 'cancelled') {
-      for (const item of currentOrder.items) {
-        if (item.productId) {
-          await req.prisma.product.update({
-            where: { id: item.productId },
-            data: { stock: { increment: Math.max(1, item.quantity) } }
-          }).catch(e => console.warn('[Admin Orders] Stock restoration warning:', e.message));
+    // If order status is changed
+    if (status && status !== currentOrder.status) {
+      if (status === 'cancelled') {
+        for (const item of currentOrder.items) {
+          if (item.productId) {
+            await req.prisma.product.update({
+              where: { id: item.productId },
+              data: { stock: { increment: Math.max(1, item.quantity) } }
+            }).catch(e => console.warn('[Admin Orders] Stock restoration warning:', e.message));
+          }
         }
-      }
 
-      sendCustomerOrderCancellation(currentOrder, currentOrder.items, 'Cancelled by Admin').catch(() => {});
-      sendAdminCancellationNotification(currentOrder, 'Cancelled by Admin', 'Admin').catch(() => {});
+        sendCustomerOrderCancellation(currentOrder, currentOrder.items, 'Cancelled by Admin').catch(() => {});
+        sendAdminCancellationNotification(currentOrder, 'Cancelled by Admin', 'Admin').catch(() => {});
+      } else if (['processing', 'confirmed', 'shipped', 'delivered'].includes(status)) {
+        // Send email update directly to customer
+        sendCustomerOrderStatusUpdate(
+          { ...currentOrder, status, trackingNumber: trackingNumber || currentOrder.trackingNumber },
+          currentOrder.items,
+          status,
+          trackingNumber || currentOrder.trackingNumber,
+          notes || currentOrder.notes
+        ).catch(e => console.warn('[Admin Orders] Status update email warning:', e.message));
+      }
     }
 
     const order = await req.prisma.order.update({

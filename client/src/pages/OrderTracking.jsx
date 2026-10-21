@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { 
   FiSearch, 
   FiPackage, 
@@ -26,6 +26,7 @@ const CANCEL_REASONS = [
 
 export default function OrderTracking() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState(null);
@@ -38,21 +39,19 @@ export default function OrderTracking() {
   const [verificationPhone, setVerificationPhone] = useState('');
   const [submittingCancel, setSubmittingCancel] = useState(false);
 
-  const handleTrack = async (e) => {
-    e.preventDefault();
-    if (!query.trim()) return setError('Please enter your Order ID or registered Phone Number');
-
+  const fetchTracking = async (searchVal) => {
+    if (!searchVal || !searchVal.trim()) return;
     setLoading(true);
     setError('');
     setOrder(null);
 
     try {
-      const res = await API.get(`/orders/track/${encodeURIComponent(query.trim())}`);
+      const res = await API.get(`/orders/track/${encodeURIComponent(searchVal.trim())}`);
       setOrder(res.data);
       // Pre-fill phone if search query looks like a phone number
-      const cleanQ = query.trim().replace(/[^0-9]/g, '');
+      const cleanQ = searchVal.trim().replace(/[^0-9]/g, '');
       if (cleanQ.length >= 10) {
-        setVerificationPhone(query.trim());
+        setVerificationPhone(searchVal.trim());
       } else {
         setVerificationPhone('');
       }
@@ -63,6 +62,20 @@ export default function OrderTracking() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    const q = searchParams.get('query');
+    if (q) {
+      setQuery(q);
+      fetchTracking(q);
+    }
+  }, [searchParams]);
+
+  const handleTrack = async (e) => {
+    e.preventDefault();
+    if (!query.trim()) return setError('Please enter your Order ID or registered Phone Number');
+    fetchTracking(query);
   };
 
   const handleOpenCancelModal = () => {

@@ -27,7 +27,7 @@ const About = () => {
     <div className="page-wrapper about-3d-page">
       <SEOHead
         title="About DRAKEWEARS | Modern Luxury Streetwear & Craftsmanship"
-        description="Learn about DRAKEWEARS atelier, our signature 450 GSM heavyweight fabrics, bespoke streetwear fits, and philosophy of zero compromise in Pakistan."
+        description="Learn about DRAKEWEARS atelier, our signature luxury streetwear apparel, bespoke fits, and philosophy of zero compromise in Pakistan."
         keywords="about drakewears, streetwear brand pakistan, heavyweight fabric, pakistani luxury fashion"
         url="https://drakewears.com/about"
       />
@@ -42,10 +42,10 @@ const About = () => {
               drakewears
             </h1>
             <h2 className="h1" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.6rem)', fontWeight: 800, letterSpacing: '-0.02em', maxWidth: '750px', margin: '0 auto 16px' }}>
-              Heavyweight 450 GSM Streetwear. Built to Last.
+              Crafted Without Compromise. Luxury Streetwear Built to Last.
             </h2>
             <p className="text-body hero-subtext" style={{ maxWidth: '620px', margin: '0 auto', color: '#d4d4d8' }}>
-              Engineered with high-density cotton fleece, architectural baggy silhouettes, and zero shortcuts.
+              Engineered with supreme structured cotton, tailored architectural silhouettes, and meticulous attention to detail.
             </p>
           </div>
         </section>
@@ -75,9 +75,9 @@ const About = () => {
                   <span className="pillar-num">02</span>
                   <div className="pillar-icon"><FiLayers size={22} /></div>
                 </div>
-                <span className="pillar-sub">FABRIC DENSITY</span>
-                <h3 className="pillar-title">450 GSM Heavy French Terry</h3>
-                <p className="pillar-desc">We reject thin, flimsy blanks. High-density structured cotton that retains its silhouette wash after wash.</p>
+                <span className="pillar-sub">FABRIC EXCELLENCE</span>
+                <h3 className="pillar-title">Supreme Structured Cotton</h3>
+                <p className="pillar-desc">We reject thin, flimsy blanks. Luxury high-density cotton that retains its rich drape and shape wash after wash.</p>
                 <div className="pillar-bottom-bar"></div>
               </div>
 
@@ -117,19 +117,19 @@ const About = () => {
                 className="craft-image" 
               />
               <div className="craft-floating-badge">
-                <span>14 OZ RAW FINISH // SIGNATURE FIT</span>
+                <span>PREMIUM FINISH // SIGNATURE FIT</span>
               </div>
             </div>
             <div className="craft-text-container animate-on-scroll">
               <span className="section-kicker">MANUFACTURING DISCIPLINE</span>
               <h2 className="h2" style={{ marginTop: '8px', fontSize: '2.2rem', fontWeight: 900 }}>Crafted for Pakistan's Streets</h2>
               <p className="text-body" style={{ marginTop: '16px', lineHeight: 1.6, color: '#a1a1aa' }}>
-                We started DrakeWears to solve one clear frustration: standard Pakistani market me authentic baggy trousers aur heavy cotton nahi milte thay. Every piece is cut from high-GSM combed cotton with reinforced industrial seams.
+                We started DrakeWears to solve one clear frustration: standard Pakistani market me authentic baggy trousers aur heavy premium quality nahi milti thi. Every piece is cut from ultra-fine combed cotton with reinforced industrial seams.
               </p>
               <div className="craft-specs-mini-row" style={{ display: 'flex', gap: '24px', marginTop: '24px' }}>
                 <div>
-                  <strong style={{ display: 'block', fontSize: '1.3rem', color: '#fff' }}>450+</strong>
-                  <span style={{ fontSize: '0.72rem', color: '#71717a', letterSpacing: '0.1em' }}>GSM FLEECE</span>
+                  <strong style={{ display: 'block', fontSize: '1.3rem', color: '#fff' }}>100%</strong>
+                  <span style={{ fontSize: '0.72rem', color: '#71717a', letterSpacing: '0.1em' }}>PURE COTTON</span>
                 </div>
                 <div>
                   <strong style={{ display: 'block', fontSize: '1.3rem', color: '#fff' }}>COD</strong>
